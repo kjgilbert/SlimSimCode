@@ -69,7 +69,7 @@
 
 # at a given generation sample x number of DIPLOID individuals
 
-	...need to figure this out still...
+	...need to figure this out still...		ALTERNATIVE  is to print everything at the end, but how much space does that require (file size)?
 
 	# Ben's notes/comments to me on diploidy:	
 	In the current release version of SLiM, doing this is not particularly easy; you have to use 
