@@ -2,7 +2,22 @@
 
 
 
-# do WITHOUT FIXED muts - because their ID nums overlap... :/
+# do from each a file of sampled inds and their muts, then tack on data from fixed muts because that gives time mutation took to fix
+
+
+mean.var.muts <- function(poly.mut.dat, ind.dat, generation, fixed.mut.dat, num.inds.sampled){
+	
+	# from sample data at a single generation and fixed data from one file for all generations
+	
+	names(pdat) <- c("mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
+	
+	neut.muts <- c(which(pdat$mut.type == "m1"))
+	delet.mut.IDs <- pdat$mut.ID[-neut.muts]
+
+
+	
+	return(poly.muts.mean, poly.muts.var, num.fixed.muts, all.muts.mean, all.muts.var)
+}
 
 
 # first go through poly.muts file at that time point and find the ID numbers for all the deleterious mutations
@@ -19,7 +34,7 @@ pdat <- read.table("~/Documents/My_Documents/UofToronto/SLiM/Outputs/N_1thousand
 #	(8) the prevalence of the mutation (the number of genomes that contain the mutation, where – in the way that SLiM uses the term “genome” – there are two genomes per individual)
 names(pdat) <- c("mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
 
-neut.muts <- c(which(pdat$mut.type == "m1"), which(pdat$mut.type == "m2"))
+neut.muts <- c(which(pdat$mut.type == "m1"))
 delet.mut.IDs <- pdat$mut.ID[-neut.muts]
 
 
