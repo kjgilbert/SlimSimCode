@@ -1,4 +1,4 @@
-## CALCULATE PI (nucleotide diversity)
+## CALCULATE PI (nucleotide diversity) test
 
 
 #	nucleotide diversity, pi, in a sample of k homologous sequences (alleles)
