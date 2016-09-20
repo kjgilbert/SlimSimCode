@@ -7,7 +7,7 @@
 # so use full output at end
 
 
-calc.fitness <- function(full.poly.muts.dat, full.genomes.dat, fixed.mut.dat, pop.size){
+calc.fitness <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.mut.dat, pop.size){
 
 	fitness.results <- data.frame(matrix(NA, ncol=2))
 	names(fitness.results) <- c("individual", "poly.mut.fitness")	
@@ -29,8 +29,8 @@ calc.fitness <- function(full.poly.muts.dat, full.genomes.dat, fixed.mut.dat, po
 		
 		## fitness is multiplicative:
 		# remove neutral mutations because that will mess up the product
-		hom.fitness <- prod(1 + full.poly.muts.dat[which(full.poly.muts.dat$mut.ID %in% hom.muts) ,]$seln_coeff[full.poly.muts.dat[which(full.poly.muts.dat$mut.ID %in% hom.muts) ,]$seln_coeff !=0])
-		het.fitness <- prod(1 + (full.poly.muts.dat[which(full.poly.muts.dat$mut.ID %in% het.muts) ,]$seln_coeff[full.poly.muts.dat[which(full.poly.muts.dat$mut.ID %in% het.muts) ,]$seln_coeff !=0] * full.poly.muts.dat[which(full.poly.muts.dat$mut.ID %in% het.muts) ,]$dom_coeff[full.poly.muts.dat[which(full.poly.muts.dat$mut.ID %in% het.muts) ,]$seln_coeff !=0]))
+		hom.fitness <- prod(1 + diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% hom.muts) ,]$seln_coeff[diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% hom.muts) ,]$seln_coeff !=0])
+		het.fitness <- prod(1 + (diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% het.muts) ,]$seln_coeff[diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% het.muts) ,]$seln_coeff !=0] * diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% het.muts) ,]$dom_coeff[diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% het.muts) ,]$seln_coeff !=0]))
 	##	and take that value within this loop and save it, so that when getting decriment from fixed muts, can multiply together first then subtract from 1
 				
 		fitness.results[iterate.inds,] <- c(iterate.inds, (hom.fitness * het.fitness))
@@ -60,11 +60,11 @@ calc.fitness <- function(full.poly.muts.dat, full.genomes.dat, fixed.mut.dat, po
 
 ##	generation <- 100000
 ##	num.inds.sampled <- 100
-##	full.poly.muts.dat <- read.table("test_FULLfinal_polymuts.dat")
+##	diploid.poly.muts.dat <- read.table("test_FULLfinal_polymuts.dat")
 ##	full.genomes.dat <- read.table("test_FULLfinal_genomes.dat", sep="A")
 ##	fixed.mut.dat <- read.table("test_fixedmuts_allgens.dat")
 
-##	names(full.poly.muts.dat) <- c("mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
+##	names(diploid.poly.muts.dat) <- c("mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
 ##	names(fixed.mut.dat) <- c("mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
 
 
