@@ -43,6 +43,12 @@
 	}		
 	initializeRecombinationRate(5e-8);
 
+# ignore introns, still have 100Mbp genome
+
+	// one chromosome with coding elements over 200 bp tand empty 800 bp intervening, up to a total of 100Mbp in size
+	for (index in 0:99999){
+		initializeGenomicElement(g1, index*1000, index*1000 + 199);
+	}
 
 
 ###############
@@ -55,81 +61,22 @@
 
 	80000 late() { p1.outputSample(100); }
 
-# at a given generation (80,000), output all mutations that have fixed and been removed from the pop
+# at a given generation (80,000), output all mutations that have fixed and been removed from the pop, can also specify file
 
 	80000 late() { sim.outputFixedMutations(); }
+	10000 late() { sim.outputFixedMutations("FixedOutput_name_of_output.txt"); }
 
 # at a given generation, output full state of the population, can also specify file
 
 	10000 late() { sim.outputFull(); }
 	10000 late() { sim.outputFull("name_of_output.txt"); }
 
-
-############### CUSTOM ###############
-
 # at a given generation sample x number of DIPLOID individuals
 
-	...need to figure this out still...		ALTERNATIVE  is to print everything at the end, but how much space does that require (file size)?
-
-	# Ben's notes/comments to me on diploidy:	
-	In the current release version of SLiM, doing this is not particularly easy; you have to use 
-	the fact that every two genomes constitute one individual, collect the pairs of genomes you want, 
-	and then generate the output you want yourself.  In the GitHub head, which will soon be SLiM 2.1, 
-	it is much easier.  A new class has been introduced, Individual, so you can ask a subpop for 
-	its individuals, use the sample() function to get a random sample from that vector, and then 
-	get the .genome property from that sample to get all of the genomes for the sampled individuals, 
-	ordered in pairs.  You can then call new output methods that have been added on Genome, 
-	to output that vector of genomes in whichever format you want.  If you output in MS format, 
-	for example, I imagine there are existing tools that will calculate heterozygosity 
-	from an MS file, assuming that pairs of rows are individuals.  Anyway, if not, that’s 
-	quite trivial to code up in R or whatever.  You could also do the heterozygosity analysis 
-	directly in Eidos, and just output the final metric, of course; that might be the simplest 
-	way to go, in either version of SLiM, because then you avoid the complications both of 
-	producing the output and then of parsing the output file back in.  It should be quite easy 
-	to code up a heterozygosity calculator in Eidos.
-
-  If you generate the output in SLiM’s own format, here’s some R code I wrote a while back 
-  to calculate heterozygosity from a sample of 10 genomes.  It doesn’t worry about pairs of 
-  genomes being individuals, so you’d need to extend it if you need to take that into account, 
-  but perhaps it’s a starting point.  The fact that the sample size is 10 is hard-coded in 
-  several spots, including the “+ 11” near the start.  It actually generates a vector of 
-  estimates of pi, as I recall, and then you can take the mean across that vector if that’s 
-  what you want.  Something like that; it’s been a while since I looked at it.  :->
-
-heterozygosity_slim <- function(lines, L)
-{
-	genomes_start <- match("Genomes:", lines)
-	genomes_end <- match(T, grepl("// ********** CPU time used:", lines, fixed=T))
-	
-	if (!is.na(genomes_start) && !is.na(genomes_end) && (genomes_start + 11 == genomes_end))
-	{
-		genome_lines <- lines[(genomes_start + 1):(genomes_end - 1)]
-		#cat(paste(genome_lines, sep="", collapse="\n\n"), "\n\n")
-		
-		pi_vals <- NULL
-		
-		for (i in 1:10)
-		{
-			for (j in 1:10)
-			{
-				if (i < j)
-				{
-					muts1 <- as.integer(strsplit(genome_lines[i], " ", fixed=TRUE)[[1]][-(1:2)])
-					muts2 <- as.integer(strsplit(genome_lines[j], " ", fixed=TRUE)[[1]][-(1:2)])
-					
-					#cat("muts1:", muts1, "\n")
-					#cat("muts2:", muts2, "\n")
-					
-					shared_muts <- muts1[muts1 %in% muts2]
-					unshared_muts <- c(muts1[!(muts1 %in% shared_muts)], muts2[!(muts2 %in% shared_muts)])
-					pi_val <- length(unshared_muts) / L
-					pi_vals <- c(pi_vals, pi_val)
-				}
-			}
-		}
-		
-		return (pi_vals)
+	10000 late() { 
+		subsampDiploids = sim.subpopulations.individuals;
+		sampledIndividuals = sample(subsampDiploids, 100);
+		sampledIndividuals.genomes.output();
 	}
-	
-	return()
-}
+
+############### CUSTOM ###############
