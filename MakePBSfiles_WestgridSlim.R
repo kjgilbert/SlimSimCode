@@ -54,13 +54,15 @@ echo "Starting run at: `date`"
 
 '
 	section5 <- paste(load.command)
+	section5.5 <- "
+"
 	section6 <- paste(c(slim.directory, paste(c(input.directory, filename), collapse=""), paste(c(output.directory, "SampleOutput_", filename), collapse="")), collapse=" ")
 	section7 <- '
 echo "Job finished with exit code $? at: `date`"
 
 '
 
-	file.text <- paste(c(section1, section2, section3, section4, section5, section6, section7), collapse="")
+	file.text <- paste(c(section1, section2, section3, section4, section5, section5.5, section6, section7), collapse="")
 	write(file.text, file=paste(c("PBS_", westgrid.server, "_", filename, ".pbs"), collapse=""))
 }	
 
