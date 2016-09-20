@@ -16,11 +16,14 @@ make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=100
 	#	sample haploids or haploids
 	
 	
-	section1 <- "initialize() {"
-	section2 <- paste(c("	setSeed(", rand.seed, ");
-		"), collapse="")
-	section3 <- paste(c("	initializeMutationRate(", mut.rate, ");"), collapse="")
-	section4 <- '
+	sect1 <- "initialize() {
+"
+	sect2 <- paste(c("	setSeed(", rand.seed, ");
+"), collapse="")
+	sect3 <- paste(c("
+	initializeMutationRate(", mut.rate, ");
+"), collapse="")
+	sect4 <- '
 	initializeMutationType("m1", 0.5, "f", 0.0);			// neutral 
 	initializeMutationType("m2", 0.3, "g", -0.01, 0.3);		// delet, mostly small effect
 	initializeMutationType("m3", 0.05, "g", -0.5, 10);		// delet, few large effect
@@ -31,34 +34,57 @@ make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=100
 		initializeGenomicElement(g1, index*1000, index*1000 + 199);
 	}
 '
-	section5 <- paste(c("initializeRecombinationRate(", recomb.rate, ");"), collapse="")
-	section6 <- '
+	sect5 <- paste(c("
+	initializeRecombinationRate(", recomb.rate, ");"), collapse="")
+	sect6 <- '
 }
 
 1 {
 '
 	if(mate.sys == "outc"){
-		section7 <- paste(c('sim.addSubpop("p1", ', pop.size, ");"), collapse="")
+		sect7 <- paste(c('
+	sim.addSubpop("p1", ', pop.size, ");"), collapse="")
 	}
 	if(mate.sys == "asex"){
-		section7 <- paste(c('sim.addSubpop("p1", ', pop.size, ");
+		sect7 <- paste(c('
+	sim.addSubpop("p1", ', pop.size, ");
 	p1.setCloningRate(", prop.mate.type, ");"), collapse="")
 	}
-	if(mate.sys == "outc"){
-		section7 <- paste(c('sim.addSubpop("p1", ', pop.size, ");
+	if(mate.sys == "self"){
+		sect7 <- paste(c('
+	sim.addSubpop("p1", ', pop.size, ");
 	p1.setSelfingRate(", prop.mate.type, ");"), collapse="")
 	}
-	section8 <- "
+	sect8 <- "
 }
 
 "
-	
-	
 	sampling.points <- format(seq(pop.size, (total.N.gens*pop.size), by= pop.size), scientific=FALSE)
+	last.sample.point <- length(sampling.points)
+	sect9 <- NULL
+	for(i in 1:(last.sample.point-1)){
+		if(samp.type == "haploid"){
+			temp.sect <- paste(c(sampling.points[i], " late() { p1.outputSample(", samp.size, "); }"), collapse="")
+		}
+		if(samp.type == "diploid"){
+			temp.sect <- paste(c(sampling.points[i], " late() { 
+	subsampDiploids = sim.subpopulations.individuals;
+	sampledIndividuals = sample(subsampDiploids, ", samp.size, ");
+	sampledIndividuals.genomes.output();
+}"), collapse="")
+		}
+		sect9 <- paste(c(sect9, temp.sect), collapse="\n")
+	}
+	
+	sect10 <- "\n" 
+	
+	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFull("FullOutput_', filename.start, "_N", pop.size, "_del_", mate.sys, prop.mate.type, "_rep", rep,'.txt"); }
+',
+	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, "_N", pop.size, "_del_", mate.sys, prop.mate.type, "_rep", rep,'.txt"); }'), collapse="")
+	
+	
 
-
-	file.text <- paste(c(section1, section2, section3, section4, section5, section6, section7), collapse="")
+	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect8, sect9, sect10, sect11), collapse="")
 	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_del_", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
 }	
-
 
