@@ -60,7 +60,7 @@ echo "Job finished with exit code $? at: `date`"
 
 '
 
-	file.text <- paste(c(section1, section2, section3, section4, section5, section6, section7), collape="")
+	file.text <- paste(c(section1, section2, section3, section4, section5, section6, section7), collapse="")
 	write(file.text, file=paste(c("PBS_", westgrid.server, "_", filename, ".pbs"), collapse=""))
 }	
 
