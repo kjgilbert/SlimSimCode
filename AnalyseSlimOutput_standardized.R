@@ -122,7 +122,7 @@ for(i in 1:length(sample.output.files)){
 	## full data output
 	full.samp.muts.start <- as.numeric(unlist(strsplit(system(paste(c("grep -n Mutations ", full.file), collapse=""), intern=TRUE), split=":"))[1])
 	full.samp.inds.start <- as.numeric(strsplit(system(paste(c("grep -n Individuals ", full.file), collapse=""), intern=TRUE), split=":")[[1]][1])
-	full.samp.genomes.start <- as.numeric(strsplit(system(paste(c("grep -n Individuals ", full.file), collapse=""), intern=TRUE), split=":")[[1]][1])
+	full.samp.genomes.start <- as.numeric(strsplit(system(paste(c("grep -n Genomes ", full.file), collapse=""), intern=TRUE), split=":")[[1]][1])
 	full.samp.file.end <- as.numeric(head(tail(unlist(strsplit(system(paste(c("wc -l ", full.file), collapse=""), intern=TRUE), split=" ")), n=2), n=1))
 	
 
@@ -163,7 +163,7 @@ for(i in 1:length(sample.output.files)){
 			theta <- calc.theta(dat=genodat, num.inds.sampled, sequence.length)
 			pi.stats <- calc.pi.stats(mut.id.dat=polydat, muts.occurring.dat=genodat, num.inds.sampled, sequence.length)
 			mut.stats <- mean.var.muts(poly.mut.dat=polydat, ind.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled=(2*pop.size))
-			fitness.stats <- calc.fitness(full.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat)
+			fitness.stats <- calc.fitness(full.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=pop.size)
 			
 			results[iterate ,] <- c(full.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
 			iterate <- iterate + 1
