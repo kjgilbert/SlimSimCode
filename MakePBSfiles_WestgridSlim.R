@@ -42,7 +42,8 @@ make.pbs <- function(filename, RAM, walltime=NULL, westgrid.server=NULL){
 #PBS -S /bin/bash
 #PBS -l procs=1
 #PBS -m bea
-#PBS -M kgilbert@zoology.ubc.ca"
+#PBS -M kgilbert@zoology.ubc.ca
+"
 	section2 <- paste(c("#PBS -l walltime=", walltime), collapse="")	
 	section3 <- paste(c("#PBS -l pmem=", RAM), collapse="")	
 	section4 <- '
@@ -62,7 +63,7 @@ echo "Job finished with exit code $? at: `date`"
 
 '
 
-	file.text <- paste(c(section1, section2, section3, section4, section5, section5.5, section6, section7), collapse="")
+	file.text <- paste(c(section1, section2, section5.5, section3, section4, section5, section5.5, section6, section7), collapse="")
 	write(file.text, file=paste(c("PBS_", westgrid.server, "_", filename, ".pbs"), collapse=""))
 }	
 
