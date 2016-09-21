@@ -63,6 +63,7 @@ num.gens.sampled <- 10
 num.inds.sampled <- 100
 sequence.length <- 100000000 * (2/10)	# because coding regions are only 200 out of every 1000
 pop.size <- 10000
+output.file <- "SummStats_filename.csv"
 # __________
 
 
@@ -81,8 +82,9 @@ fixed.output.files <- c(
 )
 
 
-results <- data.frame(matrix(NA, ncol=25))
-names(results) <- c("file", "generation", "theta", "pi", "pi_n", "pi_s", "pi_n.pi_s", "mean.delet.muts.per.ind.poly", "var.delet.muts.per.ind.poly", "mean.neut.muts.per.ind.poly", "var.neut.muts.per.ind.poly", "mean.total.muts.per.ind.poly", "var.total.muts.per.ind.poly", "mean.delet.muts.per.ind.all", "var.delet.muts.per.ind.all", "mean.neut.muts.per.ind.all", "var.neut.muts.per.ind.all", "mean.total.muts.per.ind.all", "var.total.muts.per.ind.all", "num.delet.muts.fixed", "num.neut.muts.fixed", "mean.fitness.poly", "var.fitness.poly", "mean.fitness.total", "var.fitness.total")
+results <- data.frame(matrix(nrow=0, ncol=26))
+names(results) <- c("ignore", "file", "generation", "theta", "pi", "pi_n", "pi_s", "pi_n.pi_s", "mean.delet.muts.per.ind.poly", "var.delet.muts.per.ind.poly", "mean.neut.muts.per.ind.poly", "var.neut.muts.per.ind.poly", "mean.total.muts.per.ind.poly", "var.total.muts.per.ind.poly", "mean.delet.muts.per.ind.all", "var.delet.muts.per.ind.all", "mean.neut.muts.per.ind.all", "var.neut.muts.per.ind.all", "mean.total.muts.per.ind.all", "var.total.muts.per.ind.all", "num.delet.muts.fixed", "num.neut.muts.fixed", "mean.fitness.poly", "var.fitness.poly", "mean.fitness.total", "var.fitness.total")
+write.table(results, append=FALSE, file=output.file, sep=",", col.names=TRUE)
 
 
 iterate <- 1
@@ -130,10 +132,11 @@ for(i in 1:length(sample.output.files)){
 			mut.stats <- mean.var.muts(poly.mut.dat=polydat, ind.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled)
 			fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=num.inds.sampled)
 
-			results[iterate ,] <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
+			temp.results <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
+			write.table(t(temp.results), append=TRUE, file=output.file, sep=",", col.names=FALSE)
 			iterate <- iterate + 1
 		}
-print(c("spot 1", i,j))		
+
 		# for last, full time point
 		if(j == num.gens.sampled){
 			polydat <- read.table(full.file, skip=full.samp.muts.start, nrow=((full.samp.inds.start-1) - full.samp.muts.start), sep=" ")
@@ -148,11 +151,11 @@ print(c("spot 1", i,j))
 			mut.stats <- mean.var.muts(poly.mut.dat=polydat, ind.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled=(2*pop.size))
 			fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=pop.size)
 			
-			results[iterate ,] <- c(full.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
+			temp.results <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
+			write.table(temp.results, append=TRUE, file=output.file, sep=",", col.names=FALSE)
 			iterate <- iterate + 1
 		}
-print(c("spot 2", i,j))		
 	}
 }
 
-write.csv(results, file="SlimSummaryStatsResults.csv")
+print("Calculations complete :) ")
