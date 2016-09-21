@@ -109,7 +109,7 @@ for(i in 1:length(sample.output.files)){
 
 	## fixed data output
 	fixed.mut.id.start <- 2
-	fixeddat <- read.table(fixed.output.files, skip=fixed.mut.id.start)
+	fixeddat <- read.table(fixed.file, skip=fixed.mut.id.start)
 	names(fixeddat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
 
 
