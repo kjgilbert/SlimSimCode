@@ -19,7 +19,7 @@
 
 
 
-calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, sequence.length, do.by.freq=TRUE){
+calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, use.manual.sample=FALSE){
 	## WITH INFO ON NONSYNONYMOUS AND SYNONYMOUS MUTATIONS can also calculate pi_n/pi_s
 	
 	# because diploid:
@@ -50,82 +50,56 @@ calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, sequence.len
 	neut.muts <- mut.id.dat[mut.id.dat$mut.type == "m1" ,]
 	seln.muts <- mut.id.dat[mut.id.dat$mut.type != "m1" ,]
 			
-	if(do.by.freq == TRUE){
+	if(use.manual.sample == FALSE){
+		sfs.total <- table(mut.id.dat$mut.prev)
 		sfs.neut <- table(neut.muts$mut.prev)
-		to.sum <- NULL
-		for(i in as.numeric(names(sfs.neut))){
-			p <- i/sample.size
-			q <- 1-p
-			count <- sfs.neut[i]
-			temp.to.sum <- (2 * p * q) * count
-			print(temp.to.sum)
-			to.sum <- c(to.sum, temp.to.sum)
-		}
-		p.neut <- 
 		sfs.delet <- table(seln.muts$mut.prev)
 	}
-			
-			
-	# all possible mut IDs of any type (need for later calcs):
-	
-	selected.mut.IDs <- c(seln.muts$mut.ID)
-	neutral.mut.IDs <- c(neut.muts$mut.ID)
-	
-	
-	## WHERE genome.dat IS A FILE OF MUTATIONS PER CHROMOSOME IN A SINGLE FILE LINE (IN SLIM, AFTER p1:532 A 1 2 3 4 5 ...)
-	##		dat <- read.table(paste(c("genomes.out.", gens.sampled[gen], i), collapse=""), sep="A")
-	##		column 1 = pop ID, then colon, then the ID of the individual, then A for Autosome and then the number of mutations with the identifiers 0 through ...
-	
-	
-	
-	# so take random pairs, find the number of non-overlapping mutations, i.e. unique, so polymorphic between them
-	# sum across all pairs
-	# divide by num genomes * length genome
-	
-	# get all possible line number pairs
-	pairs <- combn(1:length(genome.dat[,1]), 2)
-	total.poly <- 0
-	nonsyn.total.poly <- 0
-	syn.total.poly <- 0
-	
-	for(k in 1:dim(pairs)[2]){
-		# take corresponding row for the pairs, and take second column of data file which has the mutation info
-		pair1 <- genome.dat[pairs[1,k], 2]
-		pair2 <- genome.dat[pairs[2,k], 2]
+	if(use.manual.sample == TRUE){
+		## would have to use this section of code when manually subsampling a full sample output, because don't have the allele frequencies in the sample...
 		
-		total.muts1 <- unlist(strsplit(as.character(pair1), split=" "))[-1]	# must remove 1 b/c splitting the data makes a leading space that comes up as a shared mutation
-		total.muts2 <- unlist(strsplit(as.character(pair2), split=" "))[-1]	# must remove 1 b/c splitting the data makes a leading space that comes up as a shared mutation
-				
-		neut.muts1 <- as.numeric(total.muts1[as.numeric(total.muts1) %in% neutral.mut.IDs])
-		neut.muts2 <- as.numeric(total.muts2[as.numeric(total.muts2) %in% neutral.mut.IDs])
-		seln.muts1 <- as.numeric(total.muts1[as.numeric(total.muts1) %in% selected.mut.IDs])
-		seln.muts2 <- as.numeric(total.muts2[as.numeric(total.muts2) %in% selected.mut.IDs])
+		# all possible mut IDs of any type (need for later calcs):
 		
-		# overall for pi
-		total.matches <- length(intersect(total.muts1, total.muts2))	# how many mutations are the same
-		poly1 <- length(total.muts1) - total.matches		# how many muts in ind 1 are not in ind 2
-		poly2 <- length(total.muts2) - total.matches		# how many muts in ind 2 are not in ind 1
-		temp.total.poly <- poly1 + poly2			# how many muts total are nonoverlapping between the two, i.e. the polymorphic/segregating sites
-		total.poly <- total.poly + temp.total.poly
-	
-		# nonsynonymous (selected) for pi_n
-		nonsyn.total.matches <- length(intersect(seln.muts1, seln.muts2))
-		nonsyn.poly1 <- length(seln.muts1) - nonsyn.total.matches
-		nonsyn.poly2 <- length(seln.muts2) - nonsyn.total.matches
-		nonsyn.temp.total.poly <- nonsyn.poly1 + nonsyn.poly2
-		nonsyn.total.poly <- nonsyn.total.poly + nonsyn.temp.total.poly
-	
-		# synonymous (neutral) for pi_s
-		syn.total.matches <- length(intersect(neut.muts1, neut.muts2))
-		syn.poly1 <- length(neut.muts1) - syn.total.matches
-		syn.poly2 <- length(neut.muts2) - syn.total.matches
-		syn.temp.total.poly <- syn.poly1 + syn.poly2
-		syn.total.poly <- syn.total.poly + syn.temp.total.poly
+		neutral.mut.IDs <- c(neut.muts$mut.ID)
+		selected.mut.IDs <- c(seln.muts$mut.ID)
+		
+		
+		all.mutations <- unlist(lapply(as.character(genome.dat[,2]), FUN=strsplit, split=" "))
+		just.neut.muts <- all.mutations[which(all.mutations %in% neutral.mut.IDs)]
+		just.delet.muts <- all.mutations[which(all.mutations %in% selected.mut.IDs)]
+		
+		# get the allele frequencies:
+		freqs.total <- table(all.mutations)
+		freqs.neut <- table(just.neut.muts)
+		freqs.delet <- table(just.delet.muts)
+
+		# get the frequency spectra
+		sfs.total <- table(freqs.total)
+		sfs.neut <- table(freqs.neut)
+		sfs.delet <- table(freqs.delet)
 	}
+
+	counts.sfs.total <- as.numeric(names(sfs.total))
+	p.all <- counts.sfs.total/sample.size
+	q.all <- 1-p.all
+	numerator.all <- 2*p.all*q.all*sfs.total
+	pi.all <- sum(numerator.all)/sum(sfs.total)
+
+	counts.sfs.neut <- as.numeric(names(sfs.neut))
+	p.neut <- counts.sfs.neut/sample.size
+	q.neut <- 1-p.neut
+	numerator.neut <- 2*p.neut*q.neut*sfs.neut
+	pi.synonymous <- sum(numerator.neut)/sum(sfs.neut)
+
+	counts.sfs.delet <- as.numeric(names(sfs.delet))
+	p.delet <- counts.sfs.delet/sample.size
+	q.delet <- 1-p.delet
+	numerator.delet <- 2*p.delet*q.delet*sfs.delet
+	pi.nonsynonymous <- sum(numerator.delet)/sum(sfs.delet)
 	
-	pi <- total.poly / (sample.size * sequence.length)
-	pi_n <- nonsyn.total.poly / (sample.size * sequence.length)
-	pi_s <- syn.total.poly / (sample.size * sequence.length)
+	pi <- pi.all
+	pi_n <- pi.nonsynonymous
+	pi_s <- pi.synonymous
 
 	return(c(pi, pi_n, pi_s))	
 }
