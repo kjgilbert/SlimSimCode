@@ -144,7 +144,7 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=pop.size)
 				
 				temp.results <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
-				write.table(temp.results, append=TRUE, file=summ.stats.output.file, sep=",", col.names=FALSE)
+				write.table(t(temp.results), append=TRUE, file=summ.stats.output.file, sep=",", col.names=FALSE)
 				iterate <- iterate + 1
 			}
 		}
