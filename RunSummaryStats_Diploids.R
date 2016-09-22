@@ -125,6 +125,8 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 				names(polydat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
 		
 				genodat <- read.table(full.file, skip=full.samp.genomes.start, nrow=(pop.size*2), sep="A")
+				
+				temp.pop.size <- pop.size
 	
 				gen <- format(j * pop.size, scientific=FALSE)
 				
@@ -135,13 +137,13 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 					diploid.sub.samp <- sort(c(sub.samp, (sub.samp + 1)))
 					
 					genodat <- genodat[diploid.sub.samp ,]
-					pop.size <- num.inds.sampled	# the theta, mutation,  & fitness code know this is diploid inds & multiplies by 2 to get num. genomes
+					temp.pop.size <- num.inds.sampled	# the theta, mutation,  & fitness code know this is diploid inds & multiplies by 2 to get num. genomes
 				}
 	
-				theta <- calc.theta(genome.dat=genodat, pop.size, sequence.length)
-				pi.stats <- calc.pi.stats(mut.id.dat=polydat, genome.dat=genodat, pop.size, use.manual.sample=TRUE)
-				mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled=pop.size)
-				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=pop.size)
+				theta <- calc.theta(genome.dat=genodat, temp.pop.size, sequence.length)
+				pi.stats <- calc.pi.stats(mut.id.dat=polydat, genome.dat=genodat, temp.pop.size, use.manual.sample=TRUE)
+				mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled=temp.pop.size)
+				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=temp.pop.size)
 				
 				temp.results <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
 				write.table(t(temp.results), append=TRUE, file=summ.stats.output.file, sep=",", col.names=FALSE)
