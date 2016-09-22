@@ -42,7 +42,7 @@ mean.var.muts <- function(poly.mut.dat, genome.dat, generation, fixed.mut.dat, n
 	for(i in seq(1, (2* num.inds.sampled), by=2)){
 		muts.chrom1 <- unlist(strsplit(as.character(genomes[i]), split=" "))[-1]
 		muts.chrom2 <- unlist(strsplit(as.character(genomes[i+1]), split=" "))[-1]
-		total.muts.ind <- unique(c(delet.muts.chrom1, delet.muts.chrom2))
+		total.muts.ind <- unique(c(muts.chrom1, muts.chrom2))
 
 		num.delet.muts.ind <- table(as.integer(total.muts.ind) %in% delet.mut.IDs)[2]	# take only TRUEs
 		num.neut.muts.ind <- table(as.integer(total.muts.ind) %in% neut.mut.IDs)[2]	# take only TRUEs

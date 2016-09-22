@@ -62,11 +62,11 @@ source('~/Documents/My_Documents/UofToronto/SLiM/SlimSimCode/MeanFitness.R', chd
 
 
 
-summ.stats <- function(sampled.output.files, final.full.output.files, fixed.output.files, summ.stats.output.file, num.gens.sampled, num.inds.sampled, seq.length, pop.size, sub.sample.final=TRUE){
+summ.stats <- function(sample.output.files, full.output.files, fixed.output.files, summ.stats.output.file, num.gens.sampled, num.inds.sampled, sequence.length, pop.size, sub.sample.final=TRUE){
 	
 	results <- data.frame(matrix(nrow=0, ncol=26))
 	names(results) <- c("ignore", "file", "generation", "theta", "pi", "pi_n", "pi_s", "pi_n.pi_s", "mean.delet.muts.per.ind.poly", "var.delet.muts.per.ind.poly", "mean.neut.muts.per.ind.poly", "var.neut.muts.per.ind.poly", "mean.total.muts.per.ind.poly", "var.total.muts.per.ind.poly", "mean.delet.muts.per.ind.all", "var.delet.muts.per.ind.all", "mean.neut.muts.per.ind.all", "var.neut.muts.per.ind.all", "mean.total.muts.per.ind.all", "var.total.muts.per.ind.all", "num.delet.muts.fixed", "num.neut.muts.fixed", "mean.fitness.poly", "var.fitness.poly", "mean.fitness.total", "var.fitness.total")
-	write.table(results, append=FALSE, file=output.file, sep=",", col.names=TRUE)
+	write.table(results, append=FALSE, file=summ.stats.output.file, sep=",", col.names=TRUE)
 	
 	
 	iterate <- 1
