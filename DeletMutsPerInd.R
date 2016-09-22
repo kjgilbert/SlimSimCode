@@ -39,14 +39,16 @@ mean.var.muts <- function(poly.mut.dat, genome.dat, generation, fixed.mut.dat, n
 	##	}
 	
 	## NOW FOR DIPLOIDS - need to get per IND, so over the two chromosomes
-	for(i in seq(1, (2* num.inds.sampled), by=2)){
-		muts.chrom1 <- unlist(strsplit(as.character(genomes[i]), split=" "))[-1]
-		muts.chrom2 <- unlist(strsplit(as.character(genomes[i+1]), split=" "))[-1]
+	iterate <- 1
+	for(k in seq(1, (2* num.inds.sampled), by=2)){
+		muts.chrom1 <- unlist(strsplit(as.character(genomes[k]), split=" "))[-1]
+		muts.chrom2 <- unlist(strsplit(as.character(genomes[k+1]), split=" "))[-1]
 		total.muts.ind <- unique(c(muts.chrom1, muts.chrom2))
 
 		num.delet.muts.ind <- table(as.integer(total.muts.ind) %in% delet.mut.IDs)[2]	# take only TRUEs
 		num.neut.muts.ind <- table(as.integer(total.muts.ind) %in% neut.mut.IDs)[2]	# take only TRUEs
-		muts.per.ind[i,] <- c(i, num.delet.muts.ind, num.neut.muts.ind, (num.delet.muts.ind + num.neut.muts.ind))
+		muts.per.ind[iterate,] <- c(iterate, num.delet.muts.ind, num.neut.muts.ind, (num.delet.muts.ind + num.neut.muts.ind))
+		iterate <- iterate + 1
 	}
 
 
