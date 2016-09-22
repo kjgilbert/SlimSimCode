@@ -5,7 +5,7 @@
 # do from each a file of sampled inds and their muts, then tack on data from fixed muts because that gives time mutation took to fix
 
 
-mean.var.muts <- function(poly.mut.dat, ind.dat, generation, fixed.mut.dat, num.inds.sampled){
+mean.var.muts <- function(poly.mut.dat, genome.dat, generation, fixed.mut.dat, num.inds.sampled){
 	
 	# from sample data at a single generation and fixed data from one file for all generations
 	
@@ -26,16 +26,29 @@ mean.var.muts <- function(poly.mut.dat, ind.dat, generation, fixed.mut.dat, num.
 	neut.mut.IDs <- poly.mut.dat$mut.ID[neut.muts]
 
 	# then go through the genomes file and count how many of those mutations at that time point are in a given ind, do for all inds, then get mean and var
-	genomes <- ind.dat[,2]
+	genomes <- genome.dat[,2]
 	
 	muts.per.ind <- data.frame(matrix(NA, ncol=4))
 	names(muts.per.ind) <- c("ind.ID", "num.delet.muts.poly", "num.neut.muts.poly", "total.muts.poly")
 
-	for(i in 1:num.inds.sampled){
-		num.delet.muts.ind <- table(as.integer(unlist(strsplit(as.character(genomes[i]), split=" "))) %in% delet.mut.IDs)[2]	# take only TRUEs
-		num.neu.muts.ind <- table(as.integer(unlist(strsplit(as.character(genomes[i]), split=" "))) %in% neut.mut.IDs)[2]	# take only TRUEs
-		muts.per.ind[i,] <- c(i, num.delet.muts.ind, num.neu.muts.ind, (num.delet.muts.ind + num.neu.muts.ind))
+	## THIS WAS FOR HAPLOIDS
+	##	for(i in 1:num.inds.sampled){
+	##		num.delet.muts.ind <- table(as.integer(unlist(strsplit(as.character(genomes[i]), split=" "))) %in% delet.mut.IDs)[2]	# take only TRUEs
+	##		num.neu.muts.ind <- table(as.integer(unlist(strsplit(as.character(genomes[i]), split=" "))) %in% neut.mut.IDs)[2]	# take only TRUEs
+	##		muts.per.ind[i,] <- c(i, num.delet.muts.ind, num.neu.muts.ind, (num.delet.muts.ind + num.neu.muts.ind))
+	##	}
+	
+	## NOW FOR DIPLOIDS - need to get per IND, so over the two chromosomes
+	for(i in seq(1, (2* num.inds.sampled), by=2)){
+		muts.chrom1 <- unlist(strsplit(as.character(genomes[i]), split=" "))[-1]
+		muts.chrom2 <- unlist(strsplit(as.character(genomes[i+1]), split=" "))[-1]
+		total.muts.ind <- unique(c(delet.muts.chrom1, delet.muts.chrom2))
+
+		num.delet.muts.ind <- table(as.integer(total.muts.ind) %in% delet.mut.IDs)[2]	# take only TRUEs
+		num.neut.muts.ind <- table(as.integer(total.muts.ind) %in% neut.mut.IDs)[2]	# take only TRUEs
+		muts.per.ind[i,] <- c(i, num.delet.muts.ind, num.neut.muts.ind, (num.delet.muts.ind + num.neut.muts.ind))
 	}
+
 
 	# the above is only for polymorphic mutations
 	
@@ -91,7 +104,7 @@ mean.var.muts <- function(poly.mut.dat, ind.dat, generation, fixed.mut.dat, num.
 ##	generation <- 20000
 ##	num.inds.sampled <- 100
 ##	poly.mut.dat <- read.table("test_polymuts_20000.dat")
-##	ind.dat <- read.table("test_genomes_20000.dat", sep="A")
+##	genome.dat <- read.table("test_genomes_20000.dat", sep="A")
 ##	fixed.mut.dat <- read.table("test_fixedmuts_allgens.dat")
 
 ##	names(poly.mut.dat) <- c("mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")

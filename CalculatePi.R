@@ -19,7 +19,7 @@
 
 
 
-calc.pi.stats <- function(mut.id.dat, muts.occurring.dat, num.inds.sampled, sequence.length){
+calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, sequence.length){
 	## WITH INFO ON NONSYNONYMOUS AND SYNONYMOUS MUTATIONS can also calculate pi_n/pi_s
 	
 	
@@ -54,7 +54,7 @@ calc.pi.stats <- function(mut.id.dat, muts.occurring.dat, num.inds.sampled, sequ
 	neutral.mut.IDs <- c(neut.muts$mut.ID)
 	
 	
-	## WHERE muts.occurring.dat IS A FILE OF MUTATIONS PER CHROMOSOME IN A SINGLE FILE LINE (IN SLIM, AFTER p1:532 A 1 2 3 4 5 ...)
+	## WHERE genome.dat IS A FILE OF MUTATIONS PER CHROMOSOME IN A SINGLE FILE LINE (IN SLIM, AFTER p1:532 A 1 2 3 4 5 ...)
 	##		dat <- read.table(paste(c("genomes.out.", gens.sampled[gen], i), collapse=""), sep="A")
 	##		column 1 = pop ID, then colon, then the ID of the individual, then A for Autosome and then the number of mutations with the identifiers 0 through ...
 	
@@ -65,15 +65,15 @@ calc.pi.stats <- function(mut.id.dat, muts.occurring.dat, num.inds.sampled, sequ
 	# divide by num genomes * length genome
 	
 	# get all possible line number pairs
-	pairs <- combn(1:length(muts.occurring.dat[,1]), 2)
+	pairs <- combn(1:length(genome.dat[,1]), 2)
 	total.poly <- 0
 	nonsyn.total.poly <- 0
 	syn.total.poly <- 0
 	
 	for(k in 1:dim(pairs)[2]){
 		# take corresponding row for the pairs, and take second column of data file which has the mutation info
-		pair1 <- muts.occurring.dat[pairs[1,k], 2]
-		pair2 <- muts.occurring.dat[pairs[2,k], 2]
+		pair1 <- genome.dat[pairs[1,k], 2]
+		pair2 <- genome.dat[pairs[2,k], 2]
 		
 		total.muts1 <- unlist(strsplit(as.character(pair1), split=" "))[-1]	# must remove 1 b/c splitting the data makes a leading space that comes up as a shared mutation
 		total.muts2 <- unlist(strsplit(as.character(pair2), split=" "))[-1]	# must remove 1 b/c splitting the data makes a leading space that comes up as a shared mutation

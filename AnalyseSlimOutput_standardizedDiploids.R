@@ -64,21 +64,22 @@ num.inds.sampled <- 100
 sequence.length <- 100000000 * (2/10)	# because coding regions are only 200 out of every 1000
 pop.size <- 10000
 output.file <- "SummStats_filename.csv"
+sub.sample.final <- TRUE
 # __________
 
 
 setwd("~/Documents/My_Documents/UofToronto/SLiM/Outputs")
 
 sample.output.files <- c(
-	"SampleOutput_Sep19_N10000_del_self99_rep5.txt"
+	"SampleOutput_Sep19_N10000_del_self0.99_rep5.txt"
 	)
 	
 full.output.files <- c(
-	"FullOutput_Sep19_N10000_del_self99_rep5.txt"
+	"FullOutput_Sep19_N10000_del_self0.99_rep5.txt"
 	)
 	
 fixed.output.files <- c(
-	"FixedOutput_Sep19_N10000_del_self99_rep5.txt"
+	"FixedOutput_Sep19_N10000_del_self0.99_rep5.txt"
 )
 
 
@@ -127,9 +128,9 @@ for(i in 1:length(sample.output.files)){
 	
 			gen <- generations[j]
 
-			theta <- calc.theta(dat=genodat, num.inds.sampled, sequence.length)
-			pi.stats <- calc.pi.stats(mut.id.dat=polydat, muts.occurring.dat=genodat, num.inds.sampled, sequence.length)
-			mut.stats <- mean.var.muts(poly.mut.dat=polydat, ind.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled)
+			theta <- calc.theta(genome.dat=genodat, num.inds.sampled, sequence.length)
+			pi.stats <- calc.pi.stats(mut.id.dat=polydat, genome.dat=genodat, num.inds.sampled, sequence.length)
+			mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled)
 			fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=num.inds.sampled)
 
 			temp.results <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
@@ -140,15 +141,25 @@ for(i in 1:length(sample.output.files)){
 		# for last, full time point
 		if(j == num.gens.sampled){
 			polydat <- read.table(full.file, skip=full.samp.muts.start, nrow=((full.samp.inds.start-1) - full.samp.muts.start), sep=" ")
-			names(polydat) <- c("mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
+			names(polydat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
 	
 			genodat <- read.table(full.file, skip=full.samp.genomes.start, nrow=(pop.size*2), sep="A")
 
 			gen <- j * pop.size
+			
+			if(sub.sample.final == TRUE){
+				# sample from a vector of odd numbers since all inds have 2 paired genomes (diploid) and they start on an odd line and end on an even line
+				odd.nums <- seq(1, (pop.size * 2), by=2)
+				sub.samp <- sample(odd.nums, size=num.inds.sampled, replace=FALSE)
+				diploid.sub.samp <- sort(c(sub.samp, (sub.samp + 1)))
+				
+				genodat <- genodat[diploid.sub.samp ,]
+				pop.size <- num.inds.sampled	# the mutation & fitness code know this is diploid inds & multiplies by 2 to get num. genomes
+			}
 
-			theta <- calc.theta(dat=genodat, num.inds.sampled, sequence.length)
-			pi.stats <- calc.pi.stats(mut.id.dat=polydat, muts.occurring.dat=genodat, num.inds.sampled, sequence.length)
-			mut.stats <- mean.var.muts(poly.mut.dat=polydat, ind.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled=(2*pop.size))
+			theta <- calc.theta(genome.dat=genodat, pop.size, sequence.length)
+			pi.stats <- calc.pi.stats(mut.id.dat=polydat, genome.dat=genodat, pop.size, sequence.length)
+			mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled=pop.size)
 			fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=pop.size)
 			
 			temp.results <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)

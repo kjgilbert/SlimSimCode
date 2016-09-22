@@ -32,35 +32,35 @@ sum.a_k <- function(k){
 }
 
 
-## WHERE DAT IS A FILE OF MUTATIONS PER CHROMOSOME IN A SINGLE FILE LINE (IN SLIM, AFTER p1:532 A 1 2 3 4 5 ...)
-##		dat <- read.table(paste(c("genomes.out.", gens.sampled[gen], i), collapse=""), sep="A")
+## WHERE genome.dat IS A FILE OF MUTATIONS PER CHROMOSOME IN A SINGLE FILE LINE (IN SLIM, AFTER p1:532 A 1 2 3 4 5 ...)
+##		genome.dat <- read.table(paste(c("genomes.out.", gens.sampled[gen], i), collapse=""), sep="A")
 ##		column 1 = pop ID, then colon, then the ID of the individual, then A for Autosome and then the number of mutations with the identifiers 0 through ...
 
-calc.theta <- function(dat, num.inds.sampled, sequence.length){
+calc.theta <- function(genome.dat, num.inds.sampled, sequence.length){
 	# get total num poly sites across all samples = S_k; i.e., how many muts are not fixed in the sample?
 	
 	# first pair shared mutations:
-	matched.sites <- intersect(unlist(strsplit(as.character(dat[1,2]), split=" ")), unlist(strsplit(as.character(dat[2,2]), split=" ")))
+	matched.sites <- intersect(unlist(strsplit(as.character(genome.dat[1,2]), split=" ")), unlist(strsplit(as.character(genome.dat[2,2]), split=" ")))
 	
 	# those shared mutations with 3rd individual and onward:
 	for(k in 3:num.inds.sampled){
-		temp.matched.sites <- intersect(unlist(strsplit(as.character(dat[k,2]), split=" ")), matched.sites)
+		temp.matched.sites <- intersect(unlist(strsplit(as.character(genome.dat[k,2]), split=" ")), matched.sites)
 		matched.sites <- temp.matched.sites
 	}
 	
-	num.matched.sites <- length(matched.sites) - 1	# must subtract 1 because when I split the data into the second part, there is a leading space, so when it's split again, the space comes up as a shared mutation
+	num.matched.sites <- length(matched.sites) - 1	# must subtract 1 because when I split the genome.data into the second part, there is a leading space, so when it's split again, the space comes up as a shared mutation
 	
 	# that many ARE fixed in the SAMPLE, so total number muts in sample minus this should be number polymorphic sites in the sample
 	
 	# to get S_k, the total number of polymorphic sites, count all mutations and subtract the number matched across all
 	all.muts <- 0
 	for(k in 1:num.inds.sampled){
-		temp.all.muts <- unlist(strsplit(as.character(dat[k,2]), split=" "))
+		temp.all.muts <- unlist(strsplit(as.character(genome.dat[k,2]), split=" "))
 		all.muts <- c(all.muts, temp.all.muts)
 	}
 	
 	num.all.muts <- length(unique(all.muts)) - 1
-		# must remove 1 b/c splitting the data makes a leading space that comes up as a shared mutation
+		# must remove 1 b/c splitting the genome.data makes a leading space that comes up as a shared mutation
 	
 	num.poly.muts <- num.all.muts - num.matched.sites
 		
