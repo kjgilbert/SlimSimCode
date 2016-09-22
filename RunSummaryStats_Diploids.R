@@ -126,7 +126,7 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 		
 				genodat <- read.table(full.file, skip=full.samp.genomes.start, nrow=(pop.size*2), sep="A")
 	
-				gen <- j * pop.size
+				gen <- format(j * pop.size, scientific=FALSE)
 				
 				if(sub.sample.final == TRUE){
 					# sample from a vector of odd numbers since all inds have 2 paired genomes (diploid) and they start on an odd line and end on an even line
