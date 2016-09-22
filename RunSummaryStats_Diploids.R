@@ -135,7 +135,7 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 					diploid.sub.samp <- sort(c(sub.samp, (sub.samp + 1)))
 					
 					genodat <- genodat[diploid.sub.samp ,]
-					pop.size <- num.inds.sampled	# the mutation & fitness code know this is diploid inds & multiplies by 2 to get num. genomes
+					pop.size <- num.inds.sampled	# the theta, mutation,  & fitness code know this is diploid inds & multiplies by 2 to get num. genomes
 				}
 	
 				theta <- calc.theta(genome.dat=genodat, pop.size, sequence.length)

@@ -32,18 +32,21 @@ sum.a_k <- function(k){
 }
 
 
-## WHERE genome.dat IS A FILE OF MUTATIONS PER CHROMOSOME IN A SINGLE FILE LINE (IN SLIM, AFTER p1:532 A 1 2 3 4 5 ...)
+## WHERE genome.dat IS A FILE OF MUTATIONS PER CHROMOSOME IN A SINGLE LINE (IN SLIM, AFTER p1:532 A 1 2 3 4 5 ...)
 ##		genome.dat <- read.table(paste(c("genomes.out.", gens.sampled[gen], i), collapse=""), sep="A")
 ##		column 1 = pop ID, then colon, then the ID of the individual, then A for Autosome and then the number of mutations with the identifiers 0 through ...
 
 calc.theta <- function(genome.dat, num.inds.sampled, sequence.length){
 	# get total num poly sites across all samples = S_k; i.e., how many muts are not fixed in the sample?
 	
+	# because it's diploids, sampling 100 inds gives 200 sequences, so:
+	sample.size <- 2 * num.inds.sampled
+	
 	# first pair shared mutations:
 	matched.sites <- intersect(unlist(strsplit(as.character(genome.dat[1,2]), split=" ")), unlist(strsplit(as.character(genome.dat[2,2]), split=" ")))
 	
 	# those shared mutations with 3rd individual and onward:
-	for(k in 3:num.inds.sampled){
+	for(k in 3:sample.size){
 		temp.matched.sites <- intersect(unlist(strsplit(as.character(genome.dat[k,2]), split=" ")), matched.sites)
 		matched.sites <- temp.matched.sites
 	}
@@ -54,7 +57,7 @@ calc.theta <- function(genome.dat, num.inds.sampled, sequence.length){
 	
 	# to get S_k, the total number of polymorphic sites, count all mutations and subtract the number matched across all
 	all.muts <- 0
-	for(k in 1:num.inds.sampled){
+	for(k in 1:sample.size){
 		temp.all.muts <- unlist(strsplit(as.character(genome.dat[k,2]), split=" "))
 		all.muts <- c(all.muts, temp.all.muts)
 	}
@@ -64,7 +67,7 @@ calc.theta <- function(genome.dat, num.inds.sampled, sequence.length){
 	
 	num.poly.muts <- num.all.muts - num.matched.sites
 		
-	theta <- num.poly.muts / (sum.a_k(num.inds.sampled) * sequence.length)
+	theta <- num.poly.muts / (sum.a_k(sample.size) * sequence.length)
 	
 	return(theta)
 }

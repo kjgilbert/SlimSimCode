@@ -19,9 +19,11 @@
 
 
 
-calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, sequence.length){
+calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, sequence.length, do.by.freq=TRUE){
 	## WITH INFO ON NONSYNONYMOUS AND SYNONYMOUS MUTATIONS can also calculate pi_n/pi_s
 	
+	# because diploid:
+	sample.size <- 2 * num.inds.sampled
 	
 	# make data frames of all possible neutral and deleterious mutations at all time points recorded
 	neut.muts <- NULL
@@ -47,6 +49,22 @@ calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, sequence.len
 	
 	neut.muts <- mut.id.dat[mut.id.dat$mut.type == "m1" ,]
 	seln.muts <- mut.id.dat[mut.id.dat$mut.type != "m1" ,]
+			
+	if(do.by.freq == TRUE){
+		sfs.neut <- table(neut.muts$mut.prev)
+		to.sum <- NULL
+		for(i in as.numeric(names(sfs.neut))){
+			p <- i/sample.size
+			q <- 1-p
+			count <- sfs.neut[i]
+			temp.to.sum <- (2 * p * q) * count
+			print(temp.to.sum)
+			to.sum <- c(to.sum, temp.to.sum)
+		}
+		p.neut <- 
+		sfs.delet <- table(seln.muts$mut.prev)
+	}
+			
 			
 	# all possible mut IDs of any type (need for later calcs):
 	
@@ -105,9 +123,9 @@ calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, sequence.len
 		syn.total.poly <- syn.total.poly + syn.temp.total.poly
 	}
 	
-	pi <- total.poly / (num.inds.sampled * sequence.length)
-	pi_n <- nonsyn.total.poly / (num.inds.sampled * sequence.length)
-	pi_s <- syn.total.poly / (num.inds.sampled * sequence.length)
+	pi <- total.poly / (sample.size * sequence.length)
+	pi_n <- nonsyn.total.poly / (sample.size * sequence.length)
+	pi_s <- syn.total.poly / (sample.size * sequence.length)
 
 	return(c(pi, pi_n, pi_s))	
 }
