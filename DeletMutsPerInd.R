@@ -46,7 +46,7 @@ mean.var.muts <- function(poly.mut.dat, genome.dat, generation, fixed.mut.dat, n
 		total.muts.ind <- unique(c(muts.chrom1, muts.chrom2))
 
 		num.delet.muts.ind <- table(as.integer(total.muts.ind) %in% delet.mut.IDs)[2]	# take only TRUEs
-		num.neut.muts.ind <- table(as.integer(total.muts.ind) %in% neut.mut.IDs)[2]	# take only TRUEs
+		num.neut.muts.ind <- table(as.integer(total.muts.ind) %in% neut.mut.IDs)[2]		# take only TRUEs
 		muts.per.ind[iterate,] <- c(iterate, num.delet.muts.ind, num.neut.muts.ind, (num.delet.muts.ind + num.neut.muts.ind))
 		iterate <- iterate + 1
 	}
@@ -58,7 +58,7 @@ mean.var.muts <- function(poly.mut.dat, genome.dat, generation, fixed.mut.dat, n
 
 	# only want at current generation or previous:
 		
-	fixed.mut.dat <- fixed.mut.dat[fixed.mut.dat$gen.fixed <= generation ,]
+	fixed.mut.dat <- fixed.mut.dat[fixed.mut.dat$gen.fixed <= as.numeric(generation) ,]
 		# this gives only mutations that have fixed PRIOR to and INCLUDING WITHIN the current generation time point sampled
 	fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
 	fixed.delet.mut.IDs <- fixed.mut.dat$mut.ID[-fixed.neut.muts]
