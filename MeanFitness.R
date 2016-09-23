@@ -7,7 +7,7 @@
 # so use full output at end
 
 
-calc.fitness <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.mut.dat, pop.size){
+calc.fitness <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.mut.dat, pop.size, generation){
 
 	fitness.results <- data.frame(matrix(NA, ncol=2))
 	names(fitness.results) <- c("individual", "poly.mut.fitness")	
@@ -41,6 +41,8 @@ calc.fitness <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.mut.dat,
 	
 	# now need to include in individual fitness the effect of all fixed mutations
 	#	(all fixed muts are always present at the last full generation time point sampled)
+	fixed.mut.dat <- fixed.mut.dat[fixed.mut.dat$gen.fixed <= as.numeric(generation) ,]
+
 	fixed.fitness <- prod(1 + fixed.mut.dat$seln_coeff[fixed.mut.dat$seln_coeff != 0])	# can't be right either because gives zero - so clearly all the realy neutral ones are the ones that are fixed, but they contribute nothing to fitness loss? Can't multiply them with the others because comes out to zero
 
 	fitness.results$ind.fitness <- fixed.fitness * fitness.results$poly.mut.fitness

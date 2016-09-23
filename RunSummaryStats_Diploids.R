@@ -112,7 +112,7 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 				theta <- calc.theta(genome.dat=genodat, num.inds.sampled, sequence.length)
 				pi.stats <- calc.pi.stats(mut.id.dat=polydat, genome.dat=genodat, num.inds.sampled, use.manual.sample=FALSE)
 				mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled)
-				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=num.inds.sampled)
+				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=num.inds.sampled, generation=gen)
 	
 				temp.results <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
 				write.table(t(temp.results), append=TRUE, file=summ.stats.output.file, sep=",", col.names=FALSE)
@@ -143,7 +143,7 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 				theta <- calc.theta(genome.dat=genodat, temp.pop.size, sequence.length)
 				pi.stats <- calc.pi.stats(mut.id.dat=polydat, genome.dat=genodat, temp.pop.size, use.manual.sample=TRUE)
 				mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled=temp.pop.size)
-				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=temp.pop.size)
+				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=temp.pop.size, generation=gen)
 				
 				temp.results <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
 				write.table(t(temp.results), append=TRUE, file=summ.stats.output.file, sep=",", col.names=FALSE)
