@@ -149,7 +149,12 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 				write.table(t(temp.results), append=TRUE, file=summ.stats.output.file, sep=",", col.names=FALSE)
 				iterate <- iterate + 1
 			}
+			
+			# clear previous data, see if this solves the weird plot results
+			polydat <- NULL
+			genodat <- NULL		
 		}
+		fixeddat <- NULL
 	}
 	print("Calculations complete :) ")
 }

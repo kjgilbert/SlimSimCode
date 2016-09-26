@@ -28,14 +28,29 @@ make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=100
 	initializeMutationType("m2", 0.3, "g", -0.01, 0.3);		// delet, mostly small effect
 	initializeMutationType("m3", 0.05, "g", -0.5, 10);		// delet, few large effect
 
+// if want 75% of mutations to be deleterious:
 	initializeGenomicElementType("g1", c(m1,m2,m3), c(0.25, 0.7125, 0.0375 ));
+// otherwise do:
+//	initializeGenomicElementType("g1", c(m1,m2,m3), c(1, 0.95, 0.05 ));
 
-	for (index in 0:99999){
-		initializeGenomicElement(g1, index*1000, index*1000 + 199);
-	}
+
+//	for (index in 0:99999){
+//		initializeGenomicElement(g1, index*1000, index*1000 + 199);
+//	}
 '
-	sect5 <- paste(c("
-	initializeRecombinationRate(", recomb.rate, ");"), collapse="")
+#	sect5 <- paste(c("
+#	initializeRecombinationRate(", recomb.rate, ");"), collapse="")
+
+sect5 <- paste(c("
+        // one chromosome with coding elements over 200 bp then replace 800 bp noncoding by 800x recombination rate, up to a total of 20Mbp in size
+        initializeGenomicElement(g1, 0, 19999999);
+
+        for (index in 0:99999){
+                initializeRecombinationRate(", recomb.rate, ", index*200);
+                initializeRecombinationRate((800*(", recomb.rate, ")), index*200 + 1);
+        }
+        initializeRecombinationRate(", recomb.rate, ", 19999999);", collapse=""))
+
 	sect6 <- '
 }
 
