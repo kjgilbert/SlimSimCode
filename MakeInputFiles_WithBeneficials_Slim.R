@@ -30,7 +30,7 @@ make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=100
 	initializeMutationType("m4", 0.4, "g", 0.01, 0.3);		// beneficial, same gamma as m2, but diff dominance (check on the h value we want!)
 
 	// if want 75% of mutations to be deleterious:
-	initializeGenomicElementType("g1", c(m1,m2,m3), c(0.25, 0.7125, 0.0375, 4.061165e-08 ));
+	initializeGenomicElementType("g1", c(m1,m2,m3,m4), c(0.25, 0.7125, 0.0375, 4.061165e-08 ));
 		// otherwise do the relative probabilities different
 
 '

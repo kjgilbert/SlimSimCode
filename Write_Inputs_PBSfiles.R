@@ -1,6 +1,7 @@
 source('~/Documents/My_Documents/UofToronto/SLiM/SlimSimCode/MakePBSfiles_WestgridSlim.R', chdir = TRUE)
 source('~/Documents/My_Documents/UofToronto/SLiM/SlimSimCode/MakeInputFiles_Slim.R', chdir = TRUE)
-
+# to instead make it with beneficial mutations as well:
+#source('~/Documents/My_Documents/UofToronto/SLiM/SlimSimCode/MakeInputFiles_WithBeneficials_Slim.R', chdir = TRUE)
 
 dir <- "~/Documents/My_Documents/UofToronto/SLiM/InputScripts/Sep19_Inputs"
 
