@@ -53,7 +53,7 @@ calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, use.manual.s
 	if(use.manual.sample == FALSE){
 		sfs.total <- table(mut.id.dat$mut.prev)
 		sfs.neut <- table(neut.muts$mut.prev)
-		sfs.delet <- table(seln.muts$mut.prev)
+		sfs.seln <- table(seln.muts$mut.prev)
 	}
 	if(use.manual.sample == TRUE){
 		## would have to use this section of code when manually subsampling a full sample output, because don't have the allele frequencies in the sample...
@@ -66,17 +66,17 @@ calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, use.manual.s
 		
 		all.mutations <- unlist(lapply(as.character(genome.dat[,2]), FUN=strsplit, split=" "))
 		just.neut.muts <- all.mutations[which(all.mutations %in% neutral.mut.IDs)]
-		just.delet.muts <- all.mutations[which(all.mutations %in% selected.mut.IDs)]
+		just.seln.muts <- all.mutations[which(all.mutations %in% selected.mut.IDs)]
 		
 		# get the allele frequencies:
 		freqs.total <- table(all.mutations)
 		freqs.neut <- table(just.neut.muts)
-		freqs.delet <- table(just.delet.muts)
+		freqs.seln <- table(just.seln.muts)
 
 		# get the frequency spectra
 		sfs.total <- table(freqs.total)
 		sfs.neut <- table(freqs.neut)
-		sfs.delet <- table(freqs.delet)
+		sfs.seln <- table(freqs.seln)
 	}
 
 	counts.sfs.total <- as.numeric(names(sfs.total))
@@ -91,11 +91,11 @@ calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, use.manual.s
 	numerator.neut <- 2*p.neut*q.neut*sfs.neut
 	pi.synonymous <- sum(numerator.neut)/sum(sfs.neut)
 
-	counts.sfs.delet <- as.numeric(names(sfs.delet))
-	p.delet <- counts.sfs.delet/sample.size
-	q.delet <- 1-p.delet
-	numerator.delet <- 2*p.delet*q.delet*sfs.delet
-	pi.nonsynonymous <- sum(numerator.delet)/sum(sfs.delet)
+	counts.sfs.seln <- as.numeric(names(sfs.seln))
+	p.seln <- counts.sfs.seln/sample.size
+	q.seln <- 1-p.seln
+	numerator.seln <- 2*p.seln*q.seln*sfs.seln
+	pi.nonsynonymous <- sum(numerator.seln)/sum(sfs.seln)
 	
 	pi <- pi.all
 	pi_n <- pi.nonsynonymous

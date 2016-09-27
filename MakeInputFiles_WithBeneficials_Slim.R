@@ -89,9 +89,9 @@ sect5 <- paste(c("
 	
 	sect10 <- "\n" 
 	
-	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFull("FullOutput_', filename.start, "_N", pop.size, "_del_", mate.sys, prop.mate.type, "_rep", rep,'.txt"); }
+	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFull("FullOutput_', filename.start, "_N", pop.size, "_ben-del_", mate.sys, prop.mate.type, "_rep", rep,'.txt"); }
 ',
-	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, "_N", pop.size, "_del_", mate.sys, prop.mate.type, "_rep", rep,'.txt"); }'), collapse="")
+	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, "_N", pop.size, "_ben-del_", mate.sys, prop.mate.type, "_rep", rep,'.txt"); }'), collapse="")
 	
 	
 
