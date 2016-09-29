@@ -19,7 +19,7 @@
 
 
 
-calc.pi.stats <- function(poly.dat, genome.dat, num.inds.sampled, use.manual.sample=FALSE){
+calc.pi.stats <- function(poly.dat, genome.dat, fixed.dat, generation, num.inds.sampled, use.manual.sample=FALSE){
 	## WITH INFO ON NONSYNONYMOUS AND SYNONYMOUS MUTATIONS can also calculate pi_n/pi_s
 	
 	# because diploid:
@@ -28,6 +28,17 @@ calc.pi.stats <- function(poly.dat, genome.dat, num.inds.sampled, use.manual.sam
 	# make data frames of all possible neutral and deleterious mutations at all time points recorded
 	neut.muts <- NULL
 	seln.muts <- NULL
+
+	# tack on fixed data for the counts of fixed alleles not just in the sample but across the whole pop
+	fixed.mut.dat <- fixed.dat[fixed.dat$gen.fixed <= as.numeric(generation) ,]
+		# this gives only mutations that have fixed PRIOR to and INCLUDING WITHIN the current generation time point sampled
+	fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
+	fixed.seln.mut.IDs <- fixed.mut.dat$mut.ID[-fixed.neut.muts]
+	fixed.neut.mut.IDs <- fixed.mut.dat$mut.ID[fixed.neut.muts]
+	
+	num.neut.muts.fixed <- length(fixed.neut.mut.IDs)
+	num.seln.muts.fixed <- length(fixed.seln.mut.IDs)
+
 			
 	## WHERE poly.dat IS A FILE OF ROWS OF MUTATIONS OCCURRING
 	#	m1 = neutral site in coding
@@ -78,6 +89,24 @@ calc.pi.stats <- function(poly.dat, genome.dat, num.inds.sampled, use.manual.sam
 		sfs.neut <- table(freqs.neut)
 		sfs.seln <- table(freqs.seln)
 	}
+	
+	# add on fixed things to the fixed section of the table
+	if(is.na(sfs.total[as.character(sample.size)])){
+		sfs.total[as.character(sample.size)] <- num.neut.muts.fixed + num.seln.muts.fixed
+	}else{
+		sfs.total[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed + num.seln.muts.fixed
+	}
+	if(is.na(sfs.neut[as.character(sample.size)])){
+		sfs.neut[as.character(sample.size)] <- num.neut.muts.fixed
+	}else{
+		sfs.neut[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed
+	}
+	if(is.na(sfs.seln[as.character(sample.size)])){
+		sfs.seln[as.character(sample.size)] <- num.seln.muts.fixed
+	}else{
+		sfs.seln[as.character(sample.size)] <- sfs.seln[as.character(sample.size)] + num.seln.muts.fixed
+	}
+
 
 	counts.sfs.total <- as.numeric(names(sfs.total))
 	p.all <- counts.sfs.total/sample.size
