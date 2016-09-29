@@ -163,5 +163,10 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 ", paste(c(final.sfs.neut), collapse=" ")
 	), collapse="")
 	
-	write(dfe.input, file=filename)
+	if(fold == FALSE){
+		write(dfe.input, file=paste(c("Unfolded", filename), collapse=""))
+	}
+	if(fold == TRUE){
+		write(dfe.input, file=paste(c("Folded", filename), collapse=""))	
+	}
 }
