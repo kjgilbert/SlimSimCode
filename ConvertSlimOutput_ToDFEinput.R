@@ -23,7 +23,7 @@
 
 
 
-setwd("~/Documents/My_Documents/UofToronto/DFE_alpha/TestData")
+##setwd("~/Documents/My_Documents/UofToronto/DFE_alpha/TestData")
 
 
 ##generation <- 20000

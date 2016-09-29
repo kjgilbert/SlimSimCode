@@ -19,7 +19,7 @@
 
 
 
-calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, use.manual.sample=FALSE){
+calc.pi.stats <- function(poly.dat, genome.dat, num.inds.sampled, use.manual.sample=FALSE){
 	## WITH INFO ON NONSYNONYMOUS AND SYNONYMOUS MUTATIONS can also calculate pi_n/pi_s
 	
 	# because diploid:
@@ -29,7 +29,7 @@ calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, use.manual.s
 	neut.muts <- NULL
 	seln.muts <- NULL
 			
-	## WHERE mut.id.dat IS A FILE OF ROWS OF MUTATIONS OCCURRING
+	## WHERE poly.dat IS A FILE OF ROWS OF MUTATIONS OCCURRING
 	#	m1 = neutral site in coding
 	#	m2, 3 = selected site in coding
 	
@@ -47,11 +47,11 @@ calc.pi.stats <- function(mut.id.dat, genome.dat, num.inds.sampled, use.manual.s
 	##	names(dat) <- c("mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
 	
 	
-	neut.muts <- mut.id.dat[mut.id.dat$mut.type == "m1" ,]
-	seln.muts <- mut.id.dat[mut.id.dat$mut.type != "m1" ,]
+	neut.muts <- poly.dat[poly.dat$mut.type == "m1" ,]
+	seln.muts <- poly.dat[poly.dat$mut.type != "m1" ,]
 			
 	if(use.manual.sample == FALSE){
-		sfs.total <- table(mut.id.dat$mut.prev)
+		sfs.total <- table(poly.dat$mut.prev)
 		sfs.neut <- table(neut.muts$mut.prev)
 		sfs.seln <- table(seln.muts$mut.prev)
 	}

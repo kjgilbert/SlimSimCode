@@ -21,10 +21,10 @@ source('~/Documents/My_Documents/UofToronto/SLiM/SlimSimCode/CalculateTheta.R', 
 
 # calculate pi, pi_n, pi_s, pi_n/pi_s
 source('~/Documents/My_Documents/UofToronto/SLiM/SlimSimCode/CalculatePi.R', chdir = TRUE)
-## where mut.id.dat is the poly muts output
-## where names(mut.id.dat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
+## where poly.dat is the poly muts output
+## where names(poly.dat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
 ## where muts.occurring.dat is the genomes output with sep="A"
-#	calc.pi.stats(mut.id.dat, muts.occurring.dat, num.inds.sampled, sequence.length)
+#	calc.pi.stats(poly.dat, muts.occurring.dat, num.inds.sampled, sequence.length)
 #	return(c(pi, pi_n, pi_s))	
 
 
@@ -110,7 +110,7 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 				gen <- generations[j]
 	
 				theta <- calc.theta(genome.dat=genodat, num.inds.sampled, sequence.length)
-				pi.stats <- calc.pi.stats(mut.id.dat=polydat, genome.dat=genodat, num.inds.sampled, use.manual.sample=FALSE)
+				pi.stats <- calc.pi.stats(poly.dat=polydat, genome.dat=genodat, num.inds.sampled, use.manual.sample=FALSE)
 				mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled)
 				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=num.inds.sampled, generation=gen)
 	
@@ -141,7 +141,7 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 				}
 	
 				theta <- calc.theta(genome.dat=genodat, temp.pop.size, sequence.length)
-				pi.stats <- calc.pi.stats(mut.id.dat=polydat, genome.dat=genodat, temp.pop.size, use.manual.sample=TRUE)
+				pi.stats <- calc.pi.stats(poly.dat=polydat, genome.dat=genodat, temp.pop.size, use.manual.sample=TRUE)
 				mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled=temp.pop.size)
 				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=temp.pop.size, generation=gen)
 				
