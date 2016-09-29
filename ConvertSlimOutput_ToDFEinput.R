@@ -40,7 +40,7 @@
 
 
 
-make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.inds.sampled, genome.size, filename){
+make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.inds.sampled, genome.size, filename, fold=FALSE){
 
 	# because diploid:
 	sample.size <- 2 * num.inds.sampled
@@ -148,6 +148,13 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 	temp.seln <- data.frame(cbind(sfs.seln.labels, sfs.seln.contents))
 	ordered.seln <- temp.seln[order(temp.seln[,1]), c(1,2)]
 	final.sfs.seln <- ordered.seln[,2]
+	
+	if(fold == TRUE){
+		# fold the site frequency table back on itself
+		# take freqs 0-99 and bin with freqs 200-101, then 100 stays on its own at the end (but it's actually 101 because R starts counting at 1, not 0)
+		final.sfs.seln <- c(final.sfs.seln[1:num.inds.sampled] + final.sfs.seln[(sample.size+1):(num.inds.sampled+2)], final.sfs.seln[(num.inds.sampled + 1)])
+		final.sfs.neut <- c(final.sfs.neut[1:num.inds.sampled] + final.sfs.neut[(sample.size+1):(num.inds.sampled+2)], final.sfs.neut[(num.inds.sampled + 1)])
+	}
 
 	dfe.input <- paste(c(
 	"1

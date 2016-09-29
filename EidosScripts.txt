@@ -50,6 +50,7 @@
 		initializeGenomicElement(g1, index*1000, index*1000 + 199);
 	}
 
+# NB something goes wrong if you end at bp ...01 instead of bp ...99 not sure why, maybe because that gives it an extra spot to do more recombination at the end, but either way have changed input scripts to not have that option
 
 ###############
 ##  OUTPUTS  ##
