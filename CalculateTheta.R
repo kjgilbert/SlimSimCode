@@ -14,7 +14,7 @@
 # k = 3, so a_k = 1.5
 # S_k = 7 because 7 total sites differ mong any of the 3 sequences
 # length = 5022
-# so theta_w = 7 / (5022*1.5) = 0.00093			(same as pi, which is expected if pop is at equil)
+# so theta_w = 7 / (5022*1.5) = 0.00093			(same as pi, which is expected if pop is at equil and no sites are under seln)
 
 
 
