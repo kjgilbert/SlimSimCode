@@ -26,19 +26,21 @@
 setwd("~/Documents/My_Documents/UofToronto/DFE_alpha/TestData")
 
 
-generation <- 20000
-polydat <- read.table("PolyMuts_Gen20000_outc_rep9.txt")
-names(polydat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
+##generation <- 20000
+##poly.dat <- read.table("PolyMuts_Gen20000_outc_rep9.txt")
+##names(poly.dat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
 
-genome.dat <- read.table("Genomes_Gen20000_outc_rep9.txt", sep="A")
+##genome.dat <- read.table("Genomes_Gen20000_outc_rep9.txt", sep="A")
 
-fixed.dat <- read.table("FixedData_outc_rep9.txt")
-names(fixed.dat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
+##fixed.dat <- read.table("FixedData_outc_rep9.txt")
+##names(fixed.dat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
+
+##num.inds.sampled <- 100
+##genome.size <- 2*10^7
 
 
-num.inds.sampled <- 100
 
-
+make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.inds.sampled, genome.size, filename){
 
 	# because diploid:
 	sample.size <- 2 * num.inds.sampled
@@ -47,7 +49,7 @@ num.inds.sampled <- 100
 	neut.muts <- NULL
 	seln.muts <- NULL
 			
-	## WHERE polydat IS A FILE OF ROWS OF MUTATIONS OCCURRING
+	## WHERE poly.dat IS A FILE OF ROWS OF MUTATIONS OCCURRING
 	#	m1 = neutral site in coding
 	#	m2, 3 = deleterious selected site in coding
 	#	m4 = beneficial selected site in coding
@@ -63,23 +65,28 @@ num.inds.sampled <- 100
 	num.seln.muts.fixed <- length(fixed.seln.mut.IDs)
 	
 	
-	neut.muts <- polydat[polydat$mut.type == "m1" ,]
-	seln.muts <- polydat[polydat$mut.type != "m1" ,]
+	neut.muts <- poly.dat[poly.dat$mut.type == "m1" ,]
+	seln.muts <- poly.dat[poly.dat$mut.type != "m1" ,]
 			
 	if(use.manual.sample == FALSE){
-		sfs.total <- table(polydat$mut.prev)
+		sfs.total <- table(poly.dat$mut.prev)
 		sfs.neut <- table(neut.muts$mut.prev)
 		sfs.seln <- table(seln.muts$mut.prev)
 		
 		# add on fixed things to the fixed section of the table
-		sfs.total[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed + num.seln.muts.fixed
-		sfs.neut[as.character(sample.size)] <- sfs.neut[as.character(sample.size)] + num.neut.muts.fixed
-		sfs.seln[as.character(sample.size)] <- sfs.seln[as.character(sample.size)] + num.seln.muts.fixed
+		if(is.na(sfs.total[as.character(sample.size)])){
+			sfs.total[as.character(sample.size)] <- num.neut.muts.fixed + num.seln.muts.fixed
+		}else{sfs.total[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed + num.seln.muts.fixed}
+		if(is.na(sfs.neut[as.character(sample.size)])){
+			sfs.neut[as.character(sample.size)] <- num.neut.muts.fixed
+		}else{sfs.neut[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed}
+		if(is.na(sfs.seln[as.character(sample.size)])){
+			sfs.seln[as.character(sample.size)] <- num.seln.muts.fixed
+		}else{sfs.seln[as.character(sample.size)] <- sfs.seln[as.character(sample.size)] + num.seln.muts.fixed}
 		
-		sfs.total["0"] <-
-		sfs.total["0"] <-
-		sfs.total["0"] <-
-	
+		sfs.total["0"] <- genome.size - sum(sfs.total)
+		sfs.neut["0"] <- genome.size - sum(sfs.neut)
+		sfs.seln["0"] <- genome.size - sum(sfs.seln)	
 	}
 	if(use.manual.sample == TRUE){
 		## would have to use this section of code when manually subsampling a full sample output, because don't have the allele frequencies in the sample...
@@ -103,9 +110,51 @@ num.inds.sampled <- 100
 		sfs.total <- table(freqs.total)
 		sfs.neut <- table(freqs.neut)
 		sfs.seln <- table(freqs.seln)
+
+
+		# add on fixed things to the fixed section of the table
+		if(is.na(sfs.total[as.character(sample.size)])){
+			sfs.total[as.character(sample.size)] <- num.neut.muts.fixed + num.seln.muts.fixed
+		}else{sfs.total[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed + num.seln.muts.fixed}
+		if(is.na(sfs.neut[as.character(sample.size)])){
+			sfs.neut[as.character(sample.size)] <- num.neut.muts.fixed
+		}else{sfs.neut[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed}
+		if(is.na(sfs.seln[as.character(sample.size)])){
+			sfs.seln[as.character(sample.size)] <- num.seln.muts.fixed
+		}else{sfs.seln[as.character(sample.size)] <- sfs.seln[as.character(sample.size)] + num.seln.muts.fixed}
+		
+		sfs.total["0"] <- genome.size - sum(sfs.total)
+		sfs.neut["0"] <- genome.size - sum(sfs.neut)
+		sfs.seln["0"] <- genome.size - sum(sfs.seln)
 	}
+	
+	# each SFS (for DFE) must have the counts for 0 and for fixation
+	# if 100 inds sampled, that makes lenght of sfs 201 (0 - 200)
+	full.list <- as.character(0:sample.size)
+	
+	# have to fill in any missing ones with zero to make the neutral match the selected SFS
+	neut.missing <- setdiff(full.list, names(sfs.neut))
+	sfs.neut[neut.missing] <- 0
+	sfs.neut.contents <- as.numeric(paste(sfs.neut))
+	sfs.neut.labels <- as.numeric(names(sfs.neut))
+	temp.neut <- data.frame(cbind(sfs.neut.labels, sfs.neut.contents))
+	ordered.neut <- temp.neut[order(temp.neut[,1]), c(1,2)]
+	final.sfs.neut <- ordered.neut[,2]
 
+	seln.missing <- setdiff(full.list, names(sfs.seln))
+	sfs.seln[seln.missing] <- 0
+	sfs.seln.contents <- as.numeric(paste(sfs.seln))
+	sfs.seln.labels <- as.numeric(names(sfs.seln))
+	temp.seln <- data.frame(cbind(sfs.seln.labels, sfs.seln.contents))
+	ordered.seln <- temp.seln[order(temp.seln[,1]), c(1,2)]
+	final.sfs.seln <- ordered.seln[,2]
 
-
-
-
+	dfe.input <- paste(c(
+	"1
+", sample.size,"
+", paste(c(final.sfs.seln), collapse=" "),"
+", paste(c(final.sfs.neut), collapse=" ")
+	), collapse="")
+	
+	write(dfe.input, file=filename)
+}

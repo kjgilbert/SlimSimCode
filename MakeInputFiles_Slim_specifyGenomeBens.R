@@ -51,32 +51,35 @@ if(ben.muts == TRUE){
 if(genome.size == "20mbp"){
 	sect5 <- paste(c("
         // one chromosome with coding elements over 200 bp then replace 800 bp noncoding by 800x recombination rate, up to a total of 20Mbp in size
-        initializeGenomicElement(g1, 0, 20000001);
+        initializeGenomicElement(g1, 0, 19999999);
 
-        for (index in 0:100000){
+        for (index in 0:99999){
                 initializeRecombinationRate(", recomb.rate, ", index*200);
                 initializeRecombinationRate((800*(", recomb.rate, ")), index*200 + 1);
-        }"), collapse="")
+        }
+        initializeRecombinationRate(", recomb.rate, ", 19999999);"), collapse="")
 }  
 if(genome.size == "24mbp"){
 	sect5 <- paste(c("
         // one chromosome with coding elements over 200 bp then replace 800 bp noncoding by 800x recombination rate, up to a total of 20Mbp in size
-        initializeGenomicElement(g1, 0, 24000001);
+        initializeGenomicElement(g1, 0, 23999999);
 
-        for (index in 0:120000){
+        for (index in 0:119999){
                 initializeRecombinationRate(", recomb.rate, ", index*200);
                 initializeRecombinationRate((800*(", recomb.rate, ")), index*200 + 1);
-        }"), collapse="")
+        }
+        initializeRecombinationRate(", recomb.rate, ", 23999999);"), collapse="")
 }      
 if(genome.size == "26mbp"){
 	sect5 <- paste(c("
         // one chromosome with coding elements over 200 bp then replace 800 bp noncoding by 800x recombination rate, up to a total of 20Mbp in size
-        initializeGenomicElement(g1, 0, 26000001);
+        initializeGenomicElement(g1, 0, 25999999);
 
-        for (index in 0:130000){
+        for (index in 0:129999){
                 initializeRecombinationRate(", recomb.rate, ", index*200);
                 initializeRecombinationRate((800*(", recomb.rate, ")), index*200 + 1);
-        }"), collapse="")
+        }
+        initializeRecombinationRate(", recomb.rate, ", 25999999);"), collapse="")
 }
 	sect6 <- '
 }
@@ -121,17 +124,18 @@ if(genome.size == "26mbp"){
 	sect10 <- "\n" 
 	
 if(ben.muts == FALSE){
-	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFull("FullOutput_', filename.start, "_N", pop.size, "_", genome.size, "_del_", mate.sys, prop.mate.type, "_rep", rep,'.txt"); }
+	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFull("FullOutput_', filename.start, '_N', pop.size, '_', genome.size, '_del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }
 ',
-	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, "_N", pop.size, "_", genome.size, "_del_", mate.sys, prop.mate.type, "_rep", rep,'.txt"); }'), collapse="")
+	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 
 	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect8, sect9, sect10, sect11), collapse="")
 	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_del_", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
-}	
+}
+	
 if(ben.muts == TRUE){
-	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFull("FullOutput_', filename.start, "_N", pop.size, "_", genome.size, "_ben-del_", mate.sys, prop.mate.type, "_rep", rep,'.txt"); }
+	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFull("FullOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }
 ',
-	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, "_N", pop.size, "_", genome.size, "_ben-del_", mate.sys, prop.mate.type, "_rep", rep,'.txt"); }'), collapse="")
+	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 
 	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect8, sect9, sect10, sect11), collapse="")
 	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_ben-del_", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
