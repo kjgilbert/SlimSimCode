@@ -16,11 +16,11 @@ class0.output <- paste(c("est_dfe_results_dir OutputClass0_", unlist(strsplit(as
 
 line1 <- "data_path_1 /cap1/kgilbert/DFE_alpha/ProgramData
 "
-line4-end <- "site_class 0
+line4.end <- "site_class 0
 fold 1
 epochs 1"
 
-file.text <- paste(c(line1, sfs.input, class0.output, line4-end), collapse="")
+file.text <- paste(c(line1, sfs.input, class0.output, line4.end), collapse="")
 write(file.text, file=paste("config_class0.txt"))
 
 
