@@ -1,3 +1,4 @@
 *.csv
 *.Rout
 .RData
+.Rapp.history

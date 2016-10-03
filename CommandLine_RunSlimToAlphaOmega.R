@@ -118,8 +118,8 @@ make.est_alpha_omega.input <- function(poly.dat, genome.dat, fixed.dat, generati
 	final.sfs.seln <- ordered.seln[,2]
 	
 	# take just the number of fixations (last number in the sfs) as the "selected" and "neutral" "differences" because it's supposed to be a species level thing
-	seln.fixed.sites <- final.sfs.seln[(num.inds.sampled + 1)]
-	neut.fixed.sites <- final.sfs.neut[(num.inds.sampled + 1)]
+	seln.fixed.sites <- final.sfs.seln[(sample.size + 1)]
+	neut.fixed.sites <- final.sfs.neut[(sample.size + 1)]
 
 
 	seln.line <- paste(c("1", as.character(format(0.75*genome.size, scientific=FALSE)), seln.fixed.sites), collapse=" ")

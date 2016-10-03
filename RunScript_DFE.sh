@@ -54,15 +54,25 @@ if echo $dir/$input | grep ben
 then
 	do_beneficial=TRUE
 fi
+# make the directories for the outputs from this analysis
+basedir=$( echo $input | sed "s/.txt//g" )
+basedir0="Outputs/OutputClass0_"
+basedir1="Outputs/OutputClass1_"
+dir0=${basedir0}${basedir}
+dir1=${basedir1}${basedir}
+mkdir $dir0
+mkdir $dir1
 # make a config file
 Rscript MakeConfigFiles_DFE.R $do_beneficial $dir $input -0.1 0.5
 # run DFE
 	# run class 0
-./est_dfe -c $dir/config_class0.txt
+./est_dfe -c ${dir}config_class0.txt
 	# run class 1
-./est_dfe -c $dir/config_class1.txt
+./est_dfe -c ${dir}config_class1.txt
 	# run Nes ranges
-./prop_muts_in_s_ranges -c  results_dir_sel_class1/est_dfe.out -o output_file
+results_file_sel_class1=${basedir1}${basedir}"/est_dfe.out"
+output_file="prop_muts_out_"${input}
+./prop_muts_in_s_ranges -c $results_file_sel_class1 -o output_file
 # run DEF alpha_omega if doing that analysis
 if test "$do_beneficial" = "true"
 then
