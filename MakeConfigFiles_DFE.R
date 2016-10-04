@@ -44,7 +44,9 @@ write(file.text, file=paste(c(args[2],"config_class1.txt"), collapse=""))
 
 
 # make an omega_alpha config file
-if(args[1] == TRUE){
+##	if(args[1] == TRUE){
+##	always make alpha omega file for now - just see what it estimates in the ones with delet muts only
+
 	divergence.data.line <-	paste(c("divergence_file ", args[2], args[3],"
 "), collapse="")
 	new.results.line <- paste(c("est_alpha_omega_results_file est_alpha_omega", unlist(strsplit(as.character(args[3]), split=".txt"))[1], ".out
@@ -61,4 +63,4 @@ remove_poly             1"
 	file.text <- paste(c(line1, divergence.data.line, new.results.line, prev.dfe.results, prev.neut.results, prev.sel.results, options), collapse="")
 	write(file.text, file=paste(c(args[2],"config_alpha_omega.txt"), collapse=""))
 
-}
+##	}
