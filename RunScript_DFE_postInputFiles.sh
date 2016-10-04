@@ -49,12 +49,12 @@ Rscript MakeConfigFiles_DFE.R $do_beneficial $dir $input -0.1 0.5
 ./est_dfe -c ${dir}config_class1.txt
 	# run Nes ranges
 results_file_sel_class1=${basedir1}${basedir}"/est_dfe.out"
-output_file="prop_muts_out_"${input}
+output_file="output_prop_muts_"${input}
 ./prop_muts_in_s_ranges -c $results_file_sel_class1 -o $output_file
 # run DEF alpha_omega if doing that analysis
-if test "$do_beneficial" = "true"
-then
+##	if test "$do_beneficial" = "true"
+##	then
 	# run dfe_alpha_omega
-	./est_alpha_omega -c $dir/config_alpha_omega.txt
-fi
+./est_alpha_omega -c $dir/config_alpha_omega.txt
+##	fi
 done

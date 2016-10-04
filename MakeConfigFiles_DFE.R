@@ -46,10 +46,12 @@ write(file.text, file=paste(c(args[2],"config_class1.txt"), collapse=""))
 # make an omega_alpha config file
 ##	if(args[1] == TRUE){
 ##	always make alpha omega file for now - just see what it estimates in the ones with delet muts only
-
-	divergence.data.line <-	paste(c("divergence_file ", args[2], args[3],"
+line1 <- "data_path_1 /cap1/kgilbert/DFE_alpha/ProgramData/
+"
+	name.of.div.file <- unlist(strsplit(as.character(args[3]), split="SFS"))[2]
+	divergence.data.line <-	paste(c("divergence_file ", args[2], "Divergence_alphaOmega", name.of.div.file,"
 "), collapse="")
-	new.results.line <- paste(c("est_alpha_omega_results_file est_alpha_omega", unlist(strsplit(as.character(args[3]), split=".txt"))[1], ".out
+	new.results.line <- paste(c("est_alpha_omega_results_file output_est_alpha_omega", name.of.div.file, ".out
 "), collapse="")
 	prev.dfe.results <- paste(c("est_dfe_results_file Outputs/OutputClass1_", unlist(strsplit(as.character(args[3]), split=".txt"))[1], "/est_dfe.out
 "), collapse="")
