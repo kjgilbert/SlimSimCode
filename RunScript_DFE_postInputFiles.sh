@@ -16,29 +16,7 @@
 echo "Provide the path to the directory containing the SLiM outputs to be analysed."
 read dir
 
-# put all those file names in a list
-ls $dir | grep Fixed | sed "s/FixedOutput_//g" > base_InputNames.txt
 
-# loop through the list and do each one at a time
-for base_name in `cat base_InputNames.txt`
-do
-if echo $base_name | grep 20mbp
-then
-	genosize=20000000
-fi
-if echo $base_name | grep 24mbp
-then
-	genosize=24000000
-fi
-if echo $base_name | grep 26mbp
-then
-	genosize=26000000
-fi
-Rscript CommandLine_RunSlimToDFEconversion.R $base_name subsample $dir $genosize
-Rscript CommandLine_RunSlimToDFEconversion.R $base_name full $dir $genosize
-# create divergence file (for all of them because easier to do in this loop anyway
-Rscript CommandLine_RunSlimToAlphaOmega.R $base_name subsample $dir $genosize
-done
 
 # now all the SFS inputs for DFE are ready
 # go through each and do the DFE analyses
