@@ -90,22 +90,23 @@ calc.pi.stats <- function(poly.dat, genome.dat, fixed.dat, generation, num.inds.
 		sfs.seln <- table(freqs.seln)
 	}
 	
-	# add on fixed things to the fixed section of the table
-	if(is.na(sfs.total[as.character(sample.size)])){
-		sfs.total[as.character(sample.size)] <- num.neut.muts.fixed + num.seln.muts.fixed
-	}else{
-		sfs.total[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed + num.seln.muts.fixed
-	}
-	if(is.na(sfs.neut[as.character(sample.size)])){
-		sfs.neut[as.character(sample.size)] <- num.neut.muts.fixed
-	}else{
-		sfs.neut[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed
-	}
-	if(is.na(sfs.seln[as.character(sample.size)])){
-		sfs.seln[as.character(sample.size)] <- num.seln.muts.fixed
-	}else{
-		sfs.seln[as.character(sample.size)] <- sfs.seln[as.character(sample.size)] + num.seln.muts.fixed
-	}
+## NO don't add fixed stuff because it's supposed to measure POLYMORPHISM and polymorphic sites! does end up mattering b/c I divide by all counts (the 2pq calcs go to zero though)
+##	# add on fixed things to the fixed section of the table
+##	if(is.na(sfs.total[as.character(sample.size)])){
+##		sfs.total[as.character(sample.size)] <- num.neut.muts.fixed + num.seln.muts.fixed
+##	}else{
+##		sfs.total[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed + num.seln.muts.fixed
+##	}
+##	if(is.na(sfs.neut[as.character(sample.size)])){
+##		sfs.neut[as.character(sample.size)] <- num.neut.muts.fixed
+##	}else{
+##		sfs.neut[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed
+##	}
+##	if(is.na(sfs.seln[as.character(sample.size)])){
+##		sfs.seln[as.character(sample.size)] <- num.seln.muts.fixed
+##	}else{
+##		sfs.seln[as.character(sample.size)] <- sfs.seln[as.character(sample.size)] + num.seln.muts.fixed
+##	}
 
 
 	counts.sfs.total <- as.numeric(names(sfs.total))
