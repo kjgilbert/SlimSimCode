@@ -48,7 +48,7 @@ if(args[1] == TRUE){
 	divergence.data.line <-	paste(c("divergence_file ", args[2], args[3],"
 "), collapse="")
 	new.results.line <- paste(c("est_alpha_omega_results_file est_alpha_omega", unlist(strsplit(as.character(args[3]), split=".txt"))[1], ".out
-	"), collapse="")
+"), collapse="")
 	prev.dfe.results <- paste(c("est_dfe_results_file Outputs/OutputClass1_", unlist(strsplit(as.character(args[3]), split=".txt"))[1], "/est_dfe.out
 "), collapse="")
 	prev.neut.results <- paste(c("neut_egf_file Outputs/OutputClass0_", unlist(strsplit(as.character(args[3]), split=".txt"))[1], "/neut_egf.out
@@ -59,6 +59,6 @@ if(args[1] == TRUE){
 remove_poly             1"
 
 	file.text <- paste(c(line1, divergence.data.line, new.results.line, prev.dfe.results, prev.neut.results, prev.sel.results, options), collapse="")
-	write(file.text, file=paste("config_alpha_omega.txt"))
+	write(file.text, file=paste(c(args[2],"config_alpha_omega.txt"), collapse=""))
 
 }
