@@ -44,7 +44,7 @@ done
 # go through each and do the DFE analyses
 
 # put all those file names in a list
-ls $dir | grep DFE_SFS > DFE_InputNames.txt
+ls $dir | grep DFE_SFS_sub > DFE_InputNames.txt
 
 
 for input in `cat DFE_InputNames.txt`
