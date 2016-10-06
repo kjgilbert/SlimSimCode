@@ -41,7 +41,7 @@ dir1=${basedir1}${basedir}
 mkdir $dir0
 mkdir $dir1
 # make a config file
-Rscript MakeConfigFiles_DFE.R $do_beneficial $dir $input -0.1 0.5
+Rscript MakeConfigFiles_DFE_2epochs.R $do_beneficial $dir $input -0.1 0.5
 # run DFE
 	# run class 0
 ./est_dfe -c ${dir}config_class0.txt

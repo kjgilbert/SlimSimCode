@@ -16,7 +16,29 @@
 echo "Provide the path to the directory containing the SLiM outputs to be analysed."
 read dir
 
+# put all those file names in a list
+ls $dir | grep Fixed | sed "s/FixedOutput_//g" > base_InputNames.txt
 
+# loop through the list and do each one at a time
+for base_name in `cat base_InputNames.txt`
+do
+if echo $base_name | grep 20mbp
+then
+	genosize=20000000
+fi
+if echo $base_name | grep 24mbp
+then
+	genosize=24000000
+fi
+if echo $base_name | grep 26mbp
+then
+	genosize=26000000
+fi
+Rscript CommandLine_RunSlimToDFEconversion.R $base_name subsample $dir $genosize
+Rscript CommandLine_RunSlimToDFEconversion.R $base_name full $dir $genosize
+# create divergence file (for all of them because easier to do in this loop anyway
+Rscript CommandLine_RunSlimToAlphaOmega.R $base_name subsample $dir $genosize
+done
 
 # now all the SFS inputs for DFE are ready
 # go through each and do the DFE analyses
@@ -28,10 +50,11 @@ ls $dir | grep DFE_SFS_sub > DFE_InputNames.txt
 for input in `cat DFE_InputNames.txt`
 do
 # is the file we're on containing beneficials? if so, make the right type of config file
-##if echo $dir/$input | grep ben
-##then
+##	just do beneficial estimation the whole time
+##	if echo $dir/$input | grep ben
+##	then
 	do_beneficial=TRUE
-##fi
+##	fi
 # make the directories for the outputs from this analysis
 basedir=$( echo $input | sed "s/.txt//g" )
 basedir0="Outputs/OutputClass0_"
@@ -41,7 +64,7 @@ dir1=${basedir1}${basedir}
 mkdir $dir0
 mkdir $dir1
 # make a config file
-Rscript MakeConfigFiles_DFE.R $do_beneficial $dir $input -0.1 0.5
+Rscript MakeConfigFiles_DFE_2epochs.R $do_beneficial $dir $input -0.1 0.5
 # run DFE
 	# run class 0
 ./est_dfe -c ${dir}config_class0.txt

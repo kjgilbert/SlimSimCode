@@ -85,6 +85,10 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 		}else{sfs.seln[as.character(sample.size)] <- sfs.seln[as.character(sample.size)] + num.seln.muts.fixed}
 		
 		sfs.total["0"] <- genome.size - sum(sfs.total)
+
+		genome.size.neut <- 0.25*genome.size
+		genome.size.seln <- 0.75*genome.size
+
 		sfs.neut["0"] <- genome.size - sum(sfs.neut)
 		sfs.seln["0"] <- genome.size - sum(sfs.seln)	
 	}
