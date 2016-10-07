@@ -139,6 +139,14 @@ if(ben.muts == FALSE){
 ',
 	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 
+if(dontSampleFull==TRUE & samp.type == "diploid"){
+sect11 <- paste(c(sampling.points[last.sample.point], " late() { 	subsampDiploids = sim.subpopulations.individuals;
+	sampledIndividuals = sample(subsampDiploids, ", samp.size*10, ");
+	sampledIndividuals.genomes.output();
+}",
+	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
+}
+
 	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect8, sect9, sect10, sect11), collapse="")
 	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_del_", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
 }
@@ -147,6 +155,14 @@ if(ben.muts == TRUE){
 	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFull("FullOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }
 ',
 	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
+
+if(dontSampleFull==TRUE & samp.type == "diploid"){
+sect11 <- paste(c(sampling.points[last.sample.point], " late() { 	subsampDiploids = sim.subpopulations.individuals;
+	sampledIndividuals = sample(subsampDiploids, ", samp.size*10, ");
+	sampledIndividuals.genomes.output();
+}",
+	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
+}
 
 	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect8, sect9, sect10, sect11), collapse="")
 	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_ben-del_", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
