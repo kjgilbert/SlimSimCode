@@ -81,6 +81,17 @@ if(genome.size == "26mbp"){
         }
         initializeRecombinationRate(", recomb.rate, ", 25999999);"), collapse="")
 }
+if(genome.size == "30mbp"){
+	sect5 <- paste(c("
+        // one chromosome with coding elements over 200 bp then replace 800 bp noncoding by 800x recombination rate, up to a total of 20Mbp in size
+        initializeGenomicElement(g1, 0, 29999999);
+
+        for (index in 0:149999){
+                initializeRecombinationRate(", recomb.rate, ", index*200);
+                initializeRecombinationRate((800*(", recomb.rate, ")), index*200 + 1);
+        }
+        initializeRecombinationRate(", recomb.rate, ", 29999999);"), collapse="")
+}      
 	sect6 <- '
 }
 
