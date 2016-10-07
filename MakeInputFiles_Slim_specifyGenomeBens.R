@@ -143,7 +143,8 @@ if(dontSampleFull==TRUE & samp.type == "diploid"){
 sect11 <- paste(c(sampling.points[last.sample.point], " late() { 	subsampDiploids = sim.subpopulations.individuals;
 	sampledIndividuals = sample(subsampDiploids, ", samp.size*10, ");
 	sampledIndividuals.genomes.output();
-}",
+}
+",
 	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 }
 
@@ -160,7 +161,8 @@ if(dontSampleFull==TRUE & samp.type == "diploid"){
 sect11 <- paste(c(sampling.points[last.sample.point], " late() { 	subsampDiploids = sim.subpopulations.individuals;
 	sampledIndividuals = sample(subsampDiploids, ", samp.size*10, ");
 	sampledIndividuals.genomes.output();
-}",
+}
+",
 	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 }
 
