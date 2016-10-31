@@ -34,6 +34,10 @@ if echo $base_name | grep 26mbp
 then
 	genosize=26000000
 fi
+if echo $base_name | grep 30mbp
+then
+	genosize=30000000
+fi
 Rscript CommandLine_RunSlimToDFEconversion.R $base_name subsample $dir $genosize
 Rscript CommandLine_RunSlimToDFEconversion.R $base_name full $dir $genosize
 # create divergence file (for all of them because easier to do in this loop anyway

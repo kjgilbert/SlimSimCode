@@ -2,7 +2,7 @@
 # make PBS scripts for specific westgrid servers given Slim input scripts
 
 
-make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=10000, genome.size, mut.rate, ben.muts=FALSE, recomb.rate, mate.sys, prop.mate.type="", total.N.gens=10, samp.size=100, samp.type, rep, dontSampleFull=FALSE){
+make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=10000, genome.size, mut.rate, ben.muts=FALSE, recomb.rate, mate.sys, prop.mate.type="", total.N.gens=10, samp.size=100, samp.type, rep, dontSampleFull=FALSE, newS=FALSE){
 
 	# options:
 	#	random seed
@@ -35,6 +35,17 @@ if(ben.muts == FALSE){
 	initializeGenomicElementType("g1", c(m1,m2,m3), c(0.25, 0.7125, 0.0375 ));
 
 '
+	if(newS == TRUE){
+			sect4 <- '
+	initializeMutationType("m1", 0.5, "f", 0.0);			// neutral 
+	initializeMutationType("m2", 0.3, "g", -0.1, 0.3);		// delet, mostly small effect
+	initializeMutationType("m3", 0.05, "g", -5, 10);		// delet, few large effect
+
+// if want 75% of mutations to be deleterious:
+	initializeGenomicElementType("g1", c(m1,m2,m3), c(0.25, 0.7125, 0.0375 ));
+
+'
+	}
 }
 if(ben.muts == TRUE){
 	sect4 <- '
@@ -47,6 +58,18 @@ if(ben.muts == TRUE){
 	initializeGenomicElementType("g1", c(m1,m2,m3,m4), c(0.25, 0.7125, 0.0375, 0.00071 ));
 
 '
+	if(newS == TRUE){
+	sect4 <- '
+	initializeMutationType("m1", 0.5, "f", 0.0);			// neutral 
+	initializeMutationType("m2", 0.3, "g", -0.1, 0.3);		// delet, mostly small effect
+	initializeMutationType("m3", 0.05, "g", -5, 10);		// delet, few large effect
+	initializeMutationType("m4", 0.5, "g", 0.1, 0.3);		// beneficial
+
+// if want 75% of mutations to be deleterious:
+	initializeGenomicElementType("g1", c(m1,m2,m3,m4), c(0.25, 0.7125, 0.0375, 0.00071 ));
+
+'
+	}
 }
 if(genome.size == "20mbp"){
 	sect5 <- paste(c("
