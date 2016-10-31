@@ -38,6 +38,9 @@ if echo $base_name | grep 30mbp
 then
 	genosize=30000000
 fi
+# turn the sample files into a format suitable for a "FullOutput..." file
+Rscript CommandLine_MakeModifiedFullSampleFile_ForDFEinput.R $base_name $dir
+# then analyze like normal:
 Rscript CommandLine_RunSlimToDFEconversion_N1e5.R $base_name subsample $dir $genosize
 # create divergence file (for all of them because easier to do in this loop anyway
 Rscript CommandLine_RunSlimToAlphaOmega.R $base_name subsample $dir $genosize
