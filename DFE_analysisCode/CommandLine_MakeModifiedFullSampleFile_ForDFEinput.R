@@ -21,7 +21,7 @@ start.line <- as.numeric(unlist(strsplit(start.line, split=":"))[1])
 
 
 # make the file:
-system(paste(c("tail -n+", start.line, " ", taking.in.file, " > test_", spitting.out.file.name), collapse=""))
+system(paste(c("tail -n+", start.line, " ", taking.in.file, " > ", spitting.out.file.name), collapse=""))
 
 
 
