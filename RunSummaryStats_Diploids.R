@@ -92,9 +92,13 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 		
 	
 		## fixed data output
-		fixed.mut.id.start <- 2
-		fixeddat <- read.table(fixed.file, skip=fixed.mut.id.start)
-		names(fixeddat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
+		if(length(readLines(fixed.file)) == 2){	# then no mutations fixed
+			fixeddat <- NULL
+		}else{	# otherwise read in fixed mutations as normal
+			fixed.mut.id.start <- 2
+			fixeddat <- read.table(fixed.file, skip=fixed.mut.id.start)
+			names(fixeddat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
+		}
 	
 	
 		for(j in 1:num.gens.sampled){
