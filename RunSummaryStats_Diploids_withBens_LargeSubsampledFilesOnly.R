@@ -101,9 +101,15 @@ summ.stats <- function(sample.output.files, fixed.output.files, summ.stats.outpu
 			genodat <- read.table(sample.file, skip=genomes.starts[j], nrow=(num.inds.sampled * 2), sep="A")
 	
 			gen <- generations[j]
+			
+			if(j == 10){
+				man.samp <- TRUE
+			}else{
+				man.samp <- FALSE
+			}
 
 			theta <- calc.theta(genome.dat=genodat, num.inds.sampled, sequence.length)
-			pi.stats <- calc.pi.stats(poly.dat=polydat, genome.dat=genodat, fixed.dat=fixeddat, generation=gen, num.inds.sampled, use.manual.sample=FALSE)
+			pi.stats <- calc.pi.stats(poly.dat=polydat, genome.dat=genodat, fixed.dat=fixeddat, generation=gen, num.inds.sampled, use.manual.sample= man.samp)
 			mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled)
 			fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=num.inds.sampled, generation=gen)
 
