@@ -87,9 +87,9 @@ mean.var.muts <- function(poly.mut.dat, genome.dat, generation, fixed.mut.dat, n
 		var.neut.muts.per.ind.all <- var.neut.muts.per.ind.poly
 		var.total.muts.per.ind.all <- var.total.muts.per.ind.poly
 
-
-
-
+		num.neut.muts.fixed <- 0
+		num.ben.muts.fixed <- 0
+		num.delet.muts.fixed <- 0
 	}else{
 		# only want at current generation or previous:
 			
