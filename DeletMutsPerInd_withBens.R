@@ -60,44 +60,75 @@ mean.var.muts <- function(poly.mut.dat, genome.dat, generation, fixed.mut.dat, n
 	
 	# now tack on numbers of fixed mutations	
 
-	# only want at current generation or previous:
+	if(is.null(fixed.mut.dat)){	# unless nothing has fixed
+		# only want at current generation or previous:
+			
+		# get the means and variances for polymorphic mutations of either type
 		
-	fixed.mut.dat <- fixed.mut.dat[fixed.mut.dat$gen.fixed <= as.numeric(generation) ,]
-		# this gives only mutations that have fixed PRIOR to and INCLUDING WITHIN the current generation time point sampled
-	fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
-	fixed.ben.muts <- c(which(fixed.mut.dat$mut.type == "m4"))
-	fixed.delet.mut.IDs <- fixed.mut.dat$mut.ID[-c(fixed.neut.muts, fixed.ben.muts)]
-	fixed.neut.mut.IDs <- fixed.mut.dat$mut.ID[fixed.neut.muts]
-	fixed.ben.mut.IDs <- fixed.mut.dat$mut.ID[fixed.ben.muts]
+		mean.delet.muts.per.ind.poly <- mean(muts.per.ind$num.delet.muts.poly)
+		mean.ben.muts.per.ind.poly <- mean(muts.per.ind$num.ben.muts.poly)
+		mean.neut.muts.per.ind.poly <- mean(muts.per.ind$num.neut.muts.poly)
+		mean.total.muts.per.ind.poly <- mean(muts.per.ind$total.muts.poly)
 	
-	num.neut.muts.fixed <- length(fixed.neut.mut.IDs)
-	num.ben.muts.fixed <- length(fixed.ben.mut.IDs)
-	num.delet.muts.fixed <- length(fixed.delet.mut.IDs)
-
-	# get the means and variances for polymorphic mutations of either type
+		var.delet.muts.per.ind.poly <- var(muts.per.ind$num.delet.muts.poly)
+		var.ben.muts.per.ind.poly <- var(muts.per.ind$num.ben.muts.poly)
+		var.neut.muts.per.ind.poly <- var(muts.per.ind$num.neut.muts.poly)
+		var.total.muts.per.ind.poly <- var(muts.per.ind$total.muts.poly)
 	
-	mean.delet.muts.per.ind.poly <- mean(muts.per.ind$num.delet.muts.poly)
-	mean.ben.muts.per.ind.poly <- mean(muts.per.ind$num.ben.muts.poly)
-	mean.neut.muts.per.ind.poly <- mean(muts.per.ind$num.neut.muts.poly)
-	mean.total.muts.per.ind.poly <- mean(muts.per.ind$total.muts.poly)
-
-	var.delet.muts.per.ind.poly <- var(muts.per.ind$num.delet.muts.poly)
-	var.ben.muts.per.ind.poly <- var(muts.per.ind$num.ben.muts.poly)
-	var.neut.muts.per.ind.poly <- var(muts.per.ind$num.neut.muts.poly)
-	var.total.muts.per.ind.poly <- var(muts.per.ind$total.muts.poly)
-
-	# include fixed mutations now:
+		# include fixed mutations now:
+		
+		mean.delet.muts.per.ind.all <- mean.delet.muts.per.ind.poly
+		mean.ben.muts.per.ind.all <- mean.ben.muts.per.ind.poly
+		mean.neut.muts.per.ind.all <- mean.neut.muts.per.ind.poly
+		mean.total.muts.per.ind.all <- mean.total.muts.per.ind.poly
 	
-	mean.delet.muts.per.ind.all <- mean((muts.per.ind$num.delet.muts.poly + num.delet.muts.fixed))
-	mean.ben.muts.per.ind.all <- mean((muts.per.ind$num.ben.muts.poly + num.ben.muts.fixed))
-	mean.neut.muts.per.ind.all <- mean((muts.per.ind$num.neut.muts.poly + num.neut.muts.fixed))
-	mean.total.muts.per.ind.all <- mean((muts.per.ind$total.muts.poly + num.delet.muts.fixed + num.neut.muts.fixed))
+		var.delet.muts.per.ind.all <- var.delet.muts.per.ind.poly
+		var.ben.muts.per.ind.all <- var.ben.muts.per.ind.poly
+		var.neut.muts.per.ind.all <- var.neut.muts.per.ind.poly
+		var.total.muts.per.ind.all <- var.total.muts.per.ind.poly
 
-	var.delet.muts.per.ind.all <- var((muts.per.ind$num.delet.muts.poly + num.delet.muts.fixed))
-	var.ben.muts.per.ind.all <- var((muts.per.ind$num.ben.muts.poly + num.ben.muts.fixed))
-	var.neut.muts.per.ind.all <- var((muts.per.ind$num.neut.muts.poly + num.neut.muts.fixed))
-	var.total.muts.per.ind.all <- var((muts.per.ind$total.muts.poly + num.delet.muts.fixed + num.neut.muts.fixed))
 
+
+
+	}else{
+		# only want at current generation or previous:
+			
+		fixed.mut.dat <- fixed.mut.dat[fixed.mut.dat$gen.fixed <= as.numeric(generation) ,]
+			# this gives only mutations that have fixed PRIOR to and INCLUDING WITHIN the current generation time point sampled
+		fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
+		fixed.ben.muts <- c(which(fixed.mut.dat$mut.type == "m4"))
+		fixed.delet.mut.IDs <- fixed.mut.dat$mut.ID[-c(fixed.neut.muts, fixed.ben.muts)]
+		fixed.neut.mut.IDs <- fixed.mut.dat$mut.ID[fixed.neut.muts]
+		fixed.ben.mut.IDs <- fixed.mut.dat$mut.ID[fixed.ben.muts]
+		
+		num.neut.muts.fixed <- length(fixed.neut.mut.IDs)
+		num.ben.muts.fixed <- length(fixed.ben.mut.IDs)
+		num.delet.muts.fixed <- length(fixed.delet.mut.IDs)
+
+		# get the means and variances for polymorphic mutations of either type
+		
+		mean.delet.muts.per.ind.poly <- mean(muts.per.ind$num.delet.muts.poly)
+		mean.ben.muts.per.ind.poly <- mean(muts.per.ind$num.ben.muts.poly)
+		mean.neut.muts.per.ind.poly <- mean(muts.per.ind$num.neut.muts.poly)
+		mean.total.muts.per.ind.poly <- mean(muts.per.ind$total.muts.poly)
+	
+		var.delet.muts.per.ind.poly <- var(muts.per.ind$num.delet.muts.poly)
+		var.ben.muts.per.ind.poly <- var(muts.per.ind$num.ben.muts.poly)
+		var.neut.muts.per.ind.poly <- var(muts.per.ind$num.neut.muts.poly)
+		var.total.muts.per.ind.poly <- var(muts.per.ind$total.muts.poly)
+	
+		# include fixed mutations now:
+		
+		mean.delet.muts.per.ind.all <- mean((muts.per.ind$num.delet.muts.poly + num.delet.muts.fixed))
+		mean.ben.muts.per.ind.all <- mean((muts.per.ind$num.ben.muts.poly + num.ben.muts.fixed))
+		mean.neut.muts.per.ind.all <- mean((muts.per.ind$num.neut.muts.poly + num.neut.muts.fixed))
+		mean.total.muts.per.ind.all <- mean((muts.per.ind$total.muts.poly + num.delet.muts.fixed + mean.neut.muts.per.ind.poly + num.neut.muts.fixed))
+	
+		var.delet.muts.per.ind.all <- var((muts.per.ind$num.delet.muts.poly + num.delet.muts.fixed))
+		var.ben.muts.per.ind.all <- var((muts.per.ind$num.ben.muts.poly + num.ben.muts.fixed))
+		var.neut.muts.per.ind.all <- var((muts.per.ind$num.neut.muts.poly + num.neut.muts.fixed))
+		var.total.muts.per.ind.all <- var((muts.per.ind$total.muts.poly + num.delet.muts.fixed + num.ben.muts.fixed + num.neut.muts.fixed))
+	}
 	
 	
 	return(c(

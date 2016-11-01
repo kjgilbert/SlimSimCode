@@ -40,12 +40,17 @@ calc.fitness <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.mut.dat,
 	# the above is all for polymorphic mutations
 	
 	# now need to include in individual fitness the effect of all fixed mutations
-	#	(all fixed muts are always present at the last full generation time point sampled)
-	fixed.mut.dat <- fixed.mut.dat[fixed.mut.dat$gen.fixed <= as.numeric(generation) ,]
-
-	fixed.fitness <- prod(1 + fixed.mut.dat$seln_coeff[fixed.mut.dat$seln_coeff != 0])	# can't be right either because gives zero - so clearly all the realy neutral ones are the ones that are fixed, but they contribute nothing to fitness loss? Can't multiply them with the others because comes out to zero
-
-	fitness.results$ind.fitness <- fixed.fitness * fitness.results$poly.mut.fitness
+		# but if nothing fixes:
+	if(is.null(fixed.mut.dat)){
+		fitness.results$ind.fitness <- fitness.results$poly.mut.fitness		
+	}else{
+		#	(all fixed muts are always present at the last full generation time point sampled)
+		fixed.mut.dat <- fixed.mut.dat[fixed.mut.dat$gen.fixed <= as.numeric(generation) ,]
+	
+		fixed.fitness <- prod(1 + fixed.mut.dat$seln_coeff[fixed.mut.dat$seln_coeff != 0])	# can't be right either because gives zero - so clearly all the realy neutral ones are the ones that are fixed, but they contribute nothing to fitness loss? Can't multiply them with the others because comes out to zero
+	
+		fitness.results$ind.fitness <- fixed.fitness * fitness.results$poly.mut.fitness		
+	}
 	
 	
 	mean.fitness.poly <- mean(fitness.results$poly.mut.fitness)
