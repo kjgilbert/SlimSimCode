@@ -14,16 +14,20 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 	#	m2, 3 = deleterious selected site in coding
 	#	m4 = beneficial selected site in coding
 		
-# tack on fixed data and then can include counts for 0's
-	fixed.mut.dat <- fixed.dat[fixed.dat$gen.fixed <= as.numeric(generation) ,]
-		# this gives only mutations that have fixed PRIOR to and INCLUDING WITHIN the current generation time point sampled
-	fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
-	fixed.seln.mut.IDs <- fixed.mut.dat$mut.ID[-fixed.neut.muts]
-	fixed.neut.mut.IDs <- fixed.mut.dat$mut.ID[fixed.neut.muts]
-	
-	num.neut.muts.fixed <- length(fixed.neut.mut.IDs)
-	num.seln.muts.fixed <- length(fixed.seln.mut.IDs)
-	
+	if(is.null(fixed.dat)){
+		num.neut.muts.fixed <- 0
+		num.seln.muts.fixed <- 0	
+	}else{
+		# tack on fixed data and then can include counts for 0's
+		fixed.mut.dat <- fixed.dat[fixed.dat$gen.fixed <= as.numeric(generation) ,]
+			# this gives only mutations that have fixed PRIOR to and INCLUDING WITHIN the current generation time point sampled
+		fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
+		fixed.seln.mut.IDs <- fixed.mut.dat$mut.ID[-fixed.neut.muts]
+		fixed.neut.mut.IDs <- fixed.mut.dat$mut.ID[fixed.neut.muts]
+		
+		num.neut.muts.fixed <- length(fixed.neut.mut.IDs)
+		num.seln.muts.fixed <- length(fixed.seln.mut.IDs)
+	}
 	
 	neut.muts <- poly.dat[poly.dat$mut.type == "m1" ,]
 	seln.muts <- poly.dat[poly.dat$mut.type != "m1" ,]
@@ -184,9 +188,13 @@ if(args[2] == "subsample"){
 }		
 
 ## fixed data output
-fixed.mut.id.start <- 2
-fdat <- read.table(paste(c("FixedOutput_", as.character(args[1])), collapse=""), skip=fixed.mut.id.start)
-names(fdat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
+if(length(readLines(paste(c("FixedOutput_", as.character(args[1])), collapse=""))) == 2){	# then no mutations fixed
+	fdat <- NULL
+}else{	# otherwise read in fixed mutations as normal
+	fixed.mut.id.start <- 2
+	fdat <- read.table(paste(c("FixedOutput_", as.character(args[1])), collapse=""), skip=fixed.mut.id.start)
+	names(fdat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
+}
 
 #____________________________________________________________________________________________________#
 
