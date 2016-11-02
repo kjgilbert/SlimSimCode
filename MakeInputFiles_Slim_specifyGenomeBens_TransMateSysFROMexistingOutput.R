@@ -125,7 +125,7 @@ if(genome.size == "30mbp"){
 	sect7p25 <- paste(c('
 }
 
-', format((pop.size*10)+1, scientific=FALSE), ' {
+', format(pop.size*10, scientific=FALSE), ' {
 '), collapse="")	
 
 	if(mate.sys == "outc"){
