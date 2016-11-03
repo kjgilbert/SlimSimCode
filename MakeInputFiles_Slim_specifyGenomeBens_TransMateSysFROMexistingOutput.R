@@ -2,7 +2,7 @@
 # make PBS scripts for specific westgrid servers given Slim input scripts
 
 
-make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=10000, genome.size, mut.rate, ben.muts=FALSE, recomb.rate, mate.sys, prop.mate.type="", total.N.gens=10, samp.size=100, samp.type, rep, dontSampleFull=FALSE, newS=FALSE){
+make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=10000, genome.size, mut.rate, ben.muts=FALSE, recomb.rate, mate.sys, prop.mate.type="", total.N.gens=10, samp.size=100, samp.type, rep, dontSampleFull=FALSE, newS=FALSE, input.file){
 
 	# options:
 	#	random seed
@@ -115,17 +115,16 @@ if(genome.size == "30mbp"){
         }
         initializeRecombinationRate(', recomb.rate, ', 29999999);'), collapse="")
 }      
-	sect6 <- '
+	sect6 <- paste(c('
 }
 
-1 {
-'
-	sect7 <- paste(c('	sim.addSubpop("p1", ', pop.size, ');'), collapse="")
+', format(pop.size*10, scientific=FALSE), ' late() {
+	sim.readFromPopulationFile("', input.file, '");'), collapse="")
 	
-	sect7p25 <- paste(c('
+	sect7 <- paste(c('
 }
 
-', format(pop.size*10, scientific=FALSE), ' {
+', format((pop.size*10)+1, scientific=FALSE), ' {
 '), collapse="")	
 
 	if(mate.sys == "outc"){
@@ -177,7 +176,7 @@ sect11 <- paste(c(sampling.points[last.sample.point], " late() {
 	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 }
 
-	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect7p25, sect7p5, sect8, sect9, sect10, sect11), collapse="")
+	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect7p5, sect8, sect9, sect10, sect11), collapse="")
 	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_del_TransTo", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
 }
 	
@@ -196,7 +195,7 @@ sect11 <- paste(c(sampling.points[last.sample.point], " late() {
 	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 }
 
-	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect7p25, sect7p5, sect8, sect9, sect10, sect11), collapse="")
+	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect7p5, sect8, sect9, sect10, sect11), collapse="")
 	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_ben-del_TransTo", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
 }		
 	
