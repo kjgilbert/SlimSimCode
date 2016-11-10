@@ -36,7 +36,7 @@ sum.a_k <- function(k){
 ##		genome.dat <- read.table(paste(c("genomes.out.", gens.sampled[gen], i), collapse=""), sep="A")
 ##		column 1 = pop ID, then colon, then the ID of the individual, then A for Autosome and then the number of mutations with the identifiers 0 through ...
 
-calc.theta <- function(genome.dat, fixed.dat, generation, num.inds.sampled, sequence.length){
+calc.theta <- function(genome.dat, poly.dat, fixed.dat, generation, num.inds.sampled, sequence.length){
 	# get total num poly sites across all samples = S_k; i.e., how many muts are not fixed in the sample?
 	
 	# because it's diploids, sampling 100 inds gives 200 sequences, so:

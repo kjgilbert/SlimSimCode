@@ -107,7 +107,7 @@ summ.stats <- function(sample.output.files, fixed.output.files, summ.stats.outpu
 				man.samp <- FALSE
 			}
 			
-			theta <- calc.theta(genome.dat=genodat, fixed.dat=fixeddat, generation=gen, num.inds.sampled, sequence.length)
+			theta <- calc.theta(genome.dat=genodat, poly.dat=polydat, fixed.dat=fixeddat, generation=gen, num.inds.sampled, sequence.length)
 			pi.stats <- calc.pi.stats(poly.dat=polydat, genome.dat=genodat, fixed.dat=fixeddat, generation=gen, num.inds.sampled, genome.size=sequence.length, use.manual.sample=man.samp)
 			mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled)
 			fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=num.inds.sampled, generation=gen)
