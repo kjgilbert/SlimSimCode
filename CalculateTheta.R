@@ -36,22 +36,36 @@ sum.a_k <- function(k){
 ##		genome.dat <- read.table(paste(c("genomes.out.", gens.sampled[gen], i), collapse=""), sep="A")
 ##		column 1 = pop ID, then colon, then the ID of the individual, then A for Autosome and then the number of mutations with the identifiers 0 through ...
 
-calc.theta <- function(genome.dat, num.inds.sampled, sequence.length){
+calc.theta <- function(genome.dat, fixed.dat, generation, num.inds.sampled, sequence.length){
 	# get total num poly sites across all samples = S_k; i.e., how many muts are not fixed in the sample?
 	
 	# because it's diploids, sampling 100 inds gives 200 sequences, so:
 	sample.size <- 2 * num.inds.sampled
 	
 	# first pair shared mutations:
-	matched.sites <- intersect(unlist(strsplit(as.character(genome.dat[1,2]), split=" ")), unlist(strsplit(as.character(genome.dat[2,2]), split=" ")))
+	geno1muts <- unlist(strsplit(as.character(genome.dat[1,2]), split=" "))
+	geno2muts <- unlist(strsplit(as.character(genome.dat[2,2]), split=" "))
+	matched.sites <- intersect(geno1muts, geno2muts)
+	
+	# get neutral muts only and just compare those:
+	fixed.mut.dat <- fixed.dat[fixed.dat$gen.fixed <= as.numeric(generation) ,]
+	fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
+	neut.muts <- c(poly.dat$unique.mut.ID[poly.dat$mut.type == "m1"], fixed.neut.muts)
+##	matched.sites.neut <- intersect(geno1muts[geno1muts %in% as.character(neut.muts)], geno2muts[geno2muts %in% as.character(neut.muts)])
 	
 	# those shared mutations with 3rd individual and onward:
 	for(k in 3:sample.size){
-		temp.matched.sites <- intersect(unlist(strsplit(as.character(genome.dat[k,2]), split=" ")), matched.sites)
+		next.geno.muts <- unlist(strsplit(as.character(genome.dat[k,2]), split=" "))
+		temp.matched.sites <- intersect(next.geno.muts, matched.sites)
+##		temp.matched.sites.neut <- intersect(next.geno.muts[next.geno.muts %in% as.character(neut.muts)], matched.sites.neut)
+
 		matched.sites <- temp.matched.sites
+##		matched.sites.neut <- temp.matched.sites.neut
 	}
+	matched.sites.neut <- matched.sites[matched.sites %in% as.character(neut.muts)]
 	
 	num.matched.sites <- length(matched.sites) - 1	# must subtract 1 because when I split the genome.data into the second part, there is a leading space, so when it's split again, the space comes up as a shared mutation
+	num.matched.sites.neut <- length(matched.sites.neut)	# no subtraction because this is generated in a way to remove the empty slot in the vector
 	
 	# that many ARE fixed in the SAMPLE, so total number muts in sample minus this should be number polymorphic sites in the sample
 	
@@ -61,13 +75,17 @@ calc.theta <- function(genome.dat, num.inds.sampled, sequence.length){
 		temp.all.muts <- unlist(strsplit(as.character(genome.dat[k,2]), split=" "))
 		all.muts <- c(all.muts, temp.all.muts)
 	}
+	all.muts.neut <- all.muts[all.muts %in% as.character(neut.muts)]
 	
 	num.all.muts <- length(unique(all.muts)) - 1
 		# must remove 1 b/c splitting the genome.data makes a leading space that comes up as a shared mutation
+	num.all.muts.neut <- length(unique(all.muts.neut))	# no - 1 b/c generated in a way to remove the empty slot in the vector
 	
 	num.poly.muts <- num.all.muts - num.matched.sites
+	num.poly.muts.neut <- num.all.muts.neut - num.matched.sites.neut
 		
 	theta <- num.poly.muts / (sum.a_k(sample.size) * sequence.length)
+	theta.neut <- num.poly.muts.neut / (sum.a_k(sample.size) * (sequence.length*0.25))
 	
-	return(theta)
+	return(c(theta, theta.neut))
 }

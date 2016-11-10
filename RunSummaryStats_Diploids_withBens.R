@@ -64,8 +64,8 @@ source('~/Documents/My_Documents/UofToronto/SLiM/SlimSimCode/MeanFitness.R', chd
 
 summ.stats <- function(sample.output.files, full.output.files, fixed.output.files, summ.stats.output.file, num.gens.sampled, num.inds.sampled, sequence.length, pop.size, sub.sample.final=TRUE){
 	
-	results <- data.frame(matrix(nrow=0, ncol=31))
-	names(results) <- c("ignore", "file", "generation", "theta", "pi", "pi_n", "pi_s", "pi_n.pi_s", "mean.delet.muts.per.ind.poly", "var.delet.muts.per.ind.poly", "mean.ben.muts.per.ind.poly", "var.ben.muts.per.ind.poly", "mean.neut.muts.per.ind.poly", "var.neut.muts.per.ind.poly", "mean.total.muts.per.ind.poly", "var.total.muts.per.ind.poly", "mean.delet.muts.per.ind.all", "var.delet.muts.per.ind.all", "mean.ben.muts.per.ind.all", "var.ben.muts.per.ind.all", "mean.neut.muts.per.ind.all", "var.neut.muts.per.ind.all", "mean.total.muts.per.ind.all", "var.total.muts.per.ind.all", "num.delet.muts.fixed", "num.ben.muts.fixed", "num.neut.muts.fixed", "mean.fitness.poly", "var.fitness.poly", "mean.fitness.total", "var.fitness.total")
+	results <- data.frame(matrix(nrow=0, ncol=32))
+	names(results) <- c("ignore", "file", "generation", "theta", "theta.neut", "pi", "pi_n", "pi_s", "pi_n.pi_s", "mean.delet.muts.per.ind.poly", "var.delet.muts.per.ind.poly", "mean.ben.muts.per.ind.poly", "var.ben.muts.per.ind.poly", "mean.neut.muts.per.ind.poly", "var.neut.muts.per.ind.poly", "mean.total.muts.per.ind.poly", "var.total.muts.per.ind.poly", "mean.delet.muts.per.ind.all", "var.delet.muts.per.ind.all", "mean.ben.muts.per.ind.all", "var.ben.muts.per.ind.all", "mean.neut.muts.per.ind.all", "var.neut.muts.per.ind.all", "mean.total.muts.per.ind.all", "var.total.muts.per.ind.all", "num.delet.muts.fixed", "num.ben.muts.fixed", "num.neut.muts.fixed", "mean.fitness.poly", "var.fitness.poly", "mean.fitness.total", "var.fitness.total")
 	write.table(results, append=FALSE, file=summ.stats.output.file, sep=",", col.names=TRUE)
 	
 	
@@ -112,7 +112,7 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 		
 				gen <- generations[j]
 	
-				theta <- calc.theta(genome.dat=genodat, num.inds.sampled, sequence.length)
+				theta <- calc.theta(genome.dat=genodat, fixed.dat=fixeddat, generation=gen, num.inds.sampled, sequence.length)
 				pi.stats <- calc.pi.stats(poly.dat=polydat, genome.dat=genodat, fixed.dat=fixeddat, generation=gen, num.inds.sampled, genome.size=sequence.length, use.manual.sample=FALSE)
 				mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled)
 				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=num.inds.sampled, generation=gen)
@@ -143,7 +143,7 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 					temp.pop.size <- num.inds.sampled	# the theta, mutation,  & fitness code know this is diploid inds & multiplies by 2 to get num. genomes
 				}
 	
-				theta <- calc.theta(genome.dat=genodat, temp.pop.size, sequence.length)
+				theta <- calc.theta(genome.dat=genodat, fixed.dat=fixeddat, generation=gen, temp.pop.size, sequence.length)
 				pi.stats <- calc.pi.stats(poly.dat=polydat, genome.dat=genodat, fixed.dat=fixeddat, generation=gen, temp.pop.size, genome.size=sequence.length, use.manual.sample=TRUE)
 				mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled=temp.pop.size)
 				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=temp.pop.size, generation=gen)
