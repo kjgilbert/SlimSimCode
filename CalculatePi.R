@@ -19,7 +19,7 @@
 
 
 
-calc.pi.stats <- function(poly.dat, genome.dat, fixed.dat, generation, num.inds.sampled, use.manual.sample=FALSE){
+calc.pi.stats <- function(poly.dat, genome.dat, fixed.dat, generation, num.inds.sampled, genome.size, use.manual.sample=FALSE){
 	## WITH INFO ON NONSYNONYMOUS AND SYNONYMOUS MUTATIONS can also calculate pi_n/pi_s
 	
 	# because diploid:
@@ -117,19 +117,19 @@ calc.pi.stats <- function(poly.dat, genome.dat, fixed.dat, generation, num.inds.
 	p.all <- counts.sfs.total/sample.size
 	q.all <- 1-p.all
 	numerator.all <- 2*p.all*q.all*sfs.total
-	pi.all <- sum(numerator.all)/sum(sfs.total)
+	pi.all <- sum(numerator.all)/genome.size				#	sum(sfs.total)		want to divide by all possible sites, not just where SNPs are
 
 	counts.sfs.neut <- as.numeric(names(sfs.neut))
 	p.neut <- counts.sfs.neut/sample.size
 	q.neut <- 1-p.neut
 	numerator.neut <- 2*p.neut*q.neut*sfs.neut
-	pi.synonymous <- sum(numerator.neut)/sum(sfs.neut)
+	pi.synonymous <- sum(numerator.neut)/(genome.size*0.25)		#	sum(sfs.neut)
 
 	counts.sfs.seln <- as.numeric(names(sfs.seln))
 	p.seln <- counts.sfs.seln/sample.size
 	q.seln <- 1-p.seln
 	numerator.seln <- 2*p.seln*q.seln*sfs.seln
-	pi.nonsynonymous <- sum(numerator.seln)/sum(sfs.seln)
+	pi.nonsynonymous <- sum(numerator.seln)/(genome.size*0.75)		#	sum(sfs.seln)
 	
 	pi <- pi.all
 	pi_n <- pi.nonsynonymous
