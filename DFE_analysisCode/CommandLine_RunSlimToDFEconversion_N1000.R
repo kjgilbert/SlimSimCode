@@ -43,7 +43,7 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 		}else{sfs.total[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed + num.seln.muts.fixed}
 		if(is.na(sfs.neut[as.character(sample.size)])){
 			sfs.neut[as.character(sample.size)] <- num.neut.muts.fixed
-		}else{sfs.neut[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed}
+		}else{sfs.neut[as.character(sample.size)] <- sfs.neut[as.character(sample.size)] + num.neut.muts.fixed}
 		if(is.na(sfs.seln[as.character(sample.size)])){
 			sfs.seln[as.character(sample.size)] <- num.seln.muts.fixed
 		}else{sfs.seln[as.character(sample.size)] <- sfs.seln[as.character(sample.size)] + num.seln.muts.fixed}
@@ -86,7 +86,7 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 		}else{sfs.total[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed + num.seln.muts.fixed}
 		if(is.na(sfs.neut[as.character(sample.size)])){
 			sfs.neut[as.character(sample.size)] <- num.neut.muts.fixed
-		}else{sfs.neut[as.character(sample.size)] <- sfs.total[as.character(sample.size)] + num.neut.muts.fixed}
+		}else{sfs.neut[as.character(sample.size)] <- sfs.neut[as.character(sample.size)] + num.neut.muts.fixed}
 		if(is.na(sfs.seln[as.character(sample.size)])){
 			sfs.seln[as.character(sample.size)] <- num.seln.muts.fixed
 		}else{sfs.seln[as.character(sample.size)] <- sfs.seln[as.character(sample.size)] + num.seln.muts.fixed}
