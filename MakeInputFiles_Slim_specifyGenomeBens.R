@@ -169,7 +169,7 @@ sect11 <- paste(c(sampling.points[last.sample.point], " late() {
 	sampledIndividuals.genomes.output();
 }
 ",
-	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
+	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_del_', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 }
 
 	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect8, sect9, sect10, sect11), collapse="")

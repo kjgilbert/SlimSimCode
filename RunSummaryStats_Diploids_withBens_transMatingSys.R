@@ -62,7 +62,7 @@ source('~/Documents/My_Documents/UofToronto/SLiM/SlimSimCode/MeanFitness.R', chd
 
 
 
-summ.stats <- function(sample.output.files, full.output.files, fixed.output.files, summ.stats.output.file, num.gens.sampled, num.inds.sampled, sequence.length, pop.size, sub.sample.final=TRUE){
+summ.stats <- function(sample.output.files, fixed.output.files, summ.stats.output.file, num.gens.sampled, num.inds.sampled, sequence.length, pop.size, sub.sample.final=TRUE){
 	
 	results <- data.frame(matrix(nrow=0, ncol=32))
 	names(results) <- c("ignore", "file", "generation", "theta", "theta.neut", "pi", "pi_n", "pi_s", "pi_n.pi_s", "mean.delet.muts.per.ind.poly", "var.delet.muts.per.ind.poly", "mean.ben.muts.per.ind.poly", "var.ben.muts.per.ind.poly", "mean.neut.muts.per.ind.poly", "var.neut.muts.per.ind.poly", "mean.total.muts.per.ind.poly", "var.total.muts.per.ind.poly", "mean.delet.muts.per.ind.all", "var.delet.muts.per.ind.all", "mean.ben.muts.per.ind.all", "var.ben.muts.per.ind.all", "mean.neut.muts.per.ind.all", "var.neut.muts.per.ind.all", "mean.total.muts.per.ind.all", "var.total.muts.per.ind.all", "num.delet.muts.fixed", "num.ben.muts.fixed", "num.neut.muts.fixed", "mean.fitness.poly", "var.fitness.poly", "mean.fitness.total", "var.fitness.total")
@@ -74,7 +74,6 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 		# go through each file
 		
 		sample.file <- sample.output.files[i]
-		full.file <- full.output.files[i]
 		fixed.file <- fixed.output.files[i]
 	
 	
@@ -82,14 +81,7 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 		poly.mut.id.starts <- as.numeric(unlist(strsplit(system(paste(c("grep -n Mutations ", sample.file), collapse=""), intern=TRUE), split=":"))[seq(1, (2*(num.gens.sampled-1)), by=2)])
 		generations <- as.numeric(matrix(unlist(strsplit(system(paste(c("grep -n ' GS ' ", sample.file), collapse=""), intern=TRUE), split=" ")), ncol=4, byrow=TRUE)[,2])
 		genomes.starts <- as.numeric(unlist(strsplit(system(paste(c("grep -n Genomes ", sample.file), collapse=""), intern=TRUE), split=":"))[seq(1, (2*(num.gens.sampled-1)), by=2)])
-	
-	
-		## full data output
-		full.samp.muts.start <- as.numeric(unlist(strsplit(system(paste(c("grep -n Mutations ", full.file), collapse=""), intern=TRUE), split=":"))[1])
-		full.samp.inds.start <- as.numeric(strsplit(system(paste(c("grep -n Individuals ", full.file), collapse=""), intern=TRUE), split=":")[[1]][1])
-		full.samp.genomes.start <- as.numeric(strsplit(system(paste(c("grep -n Genomes ", full.file), collapse=""), intern=TRUE), split=":")[[1]][1])
-		full.samp.file.end <- as.numeric(head(tail(unlist(strsplit(system(paste(c("wc -l ", full.file), collapse=""), intern=TRUE), split=" ")), n=2), n=1))
-		
+			
 	
 		## fixed data output
 		if(length(readLines(fixed.file)) == 2){	# then no mutations fixed
@@ -104,54 +96,21 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 			# go through each time point of a given file
 			
 			# for sample time points:
-			if(j < num.gens.sampled){
-				polydat <- read.table(sample.file, skip=poly.mut.id.starts[j], nrow=((genomes.starts[j]-1) - poly.mut.id.starts[j]), sep=" ")
-				names(polydat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
-		
-				genodat <- read.table(sample.file, skip=genomes.starts[j], nrow=(num.inds.sampled * 2), sep="A")
-		
-				gen <- generations[j]
+			polydat <- read.table(sample.file, skip=poly.mut.id.starts[j], nrow=((genomes.starts[j]-1) - poly.mut.id.starts[j]), sep=" ")
+			names(polydat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
 	
-				theta <- calc.theta(genome.dat=genodat, poly.dat=polydat, fixed.dat=fixeddat, generation=gen, num.inds.sampled, sequence.length)
-				pi.stats <- calc.pi.stats(poly.dat=polydat, genome.dat=genodat, fixed.dat=fixeddat, generation=gen, num.inds.sampled, genome.size=sequence.length, use.manual.sample=FALSE)
-				mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled)
-				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=num.inds.sampled, generation=gen)
+			genodat <- read.table(sample.file, skip=genomes.starts[j], nrow=(num.inds.sampled * 2), sep="A")
 	
-				temp.results <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
-				write.table(t(temp.results), append=TRUE, file=summ.stats.output.file, sep=",", col.names=FALSE)
-				iterate <- iterate + 1
-			}
-	
-			# for last, full time point
-			if(j == num.gens.sampled){
-				polydat <- read.table(full.file, skip=full.samp.muts.start, nrow=((full.samp.inds.start-1) - full.samp.muts.start), sep=" ")
-				names(polydat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
-		
-				genodat <- read.table(full.file, skip=full.samp.genomes.start, nrow=(pop.size*2), sep="A")
-				
-				temp.pop.size <- pop.size
-	
-				gen <- format((2 * j * pop.size), scientific=FALSE)
-				
-				if(sub.sample.final == TRUE){
-					# sample from a vector of odd numbers since all inds have 2 paired genomes (diploid) and they start on an odd line and end on an even line
-					odd.nums <- seq(1, (pop.size * 2), by=2)
-					sub.samp <- sample(odd.nums, size=num.inds.sampled, replace=FALSE)
-					diploid.sub.samp <- sort(c(sub.samp, (sub.samp + 1)))
-					
-					genodat <- genodat[diploid.sub.samp ,]
-					temp.pop.size <- num.inds.sampled	# the theta, mutation,  & fitness code know this is diploid inds & multiplies by 2 to get num. genomes
-				}
-	
-				theta <- calc.theta(genome.dat=genodat, poly.dat=polydat, fixed.dat=fixeddat, generation=gen, temp.pop.size, sequence.length)
-				pi.stats <- calc.pi.stats(poly.dat=polydat, genome.dat=genodat, fixed.dat=fixeddat, generation=gen, temp.pop.size, genome.size=sequence.length, use.manual.sample=TRUE)
-				mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled=temp.pop.size)
-				fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=temp.pop.size, generation=gen)
-				
-				temp.results <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
-				write.table(t(temp.results), append=TRUE, file=summ.stats.output.file, sep=",", col.names=FALSE)
-				iterate <- iterate + 1
-			}
+			gen <- generations[j]
+
+			theta <- calc.theta(genome.dat=genodat, poly.dat=polydat, fixed.dat=fixeddat, generation=gen, num.inds.sampled, sequence.length)
+			pi.stats <- calc.pi.stats(poly.dat=polydat, genome.dat=genodat, fixed.dat=fixeddat, generation=gen, num.inds.sampled, genome.size=sequence.length, use.manual.sample=FALSE)
+			mut.stats <- mean.var.muts(poly.mut.dat=polydat, genome.dat=genodat, generation=gen, fixed.mut.dat=fixeddat, num.inds.sampled)
+			fitness.stats <- calc.fitness(diploid.poly.muts.dat=polydat, full.genomes.dat=genodat, fixed.mut.dat=fixeddat, pop.size=num.inds.sampled, generation=gen)
+
+			temp.results <- c(sample.file, gen, theta, pi.stats, pi.stats[2]/pi.stats[3], mut.stats, fitness.stats)
+			write.table(t(temp.results), append=TRUE, file=summ.stats.output.file, sep=",", col.names=FALSE)
+			iterate <- iterate + 1
 			
 			# clear previous data, see if this solves the weird plot results
 			polydat <- NULL

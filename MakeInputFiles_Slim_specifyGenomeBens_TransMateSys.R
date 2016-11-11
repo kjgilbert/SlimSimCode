@@ -2,7 +2,7 @@
 # make PBS scripts for specific westgrid servers given Slim input scripts
 
 
-make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=10000, genome.size, mut.rate, ben.muts=FALSE, recomb.rate, mate.sys, prop.mate.type="", total.N.gens=10, samp.size=100, samp.type, rep, dontSampleFull=FALSE, newS=FALSE){
+make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=10000, genome.size, mut.rate, ben.muts=FALSE, recomb.rate, mate.sys, prop.mate.type="", total.N.gens=10, sampling.points, samp.size=100, samp.type, rep, dontSampleFull=FALSE, newS=FALSE){
 
 	# options:
 	#	random seed
@@ -143,10 +143,10 @@ if(genome.size == "30mbp"){
 }
 
 "
-	sampling.points <- format(seq(((total.N.gens+1)*pop.size), (2*total.N.gens*pop.size), by= pop.size), scientific=FALSE)
+##	sampling.points <- format(seq(((total.N.gens+1)*pop.size), (2*total.N.gens*pop.size), by= pop.size), scientific=FALSE)
 	last.sample.point <- length(sampling.points)
 	sect9 <- NULL
-	for(i in 1:(last.sample.point-1)){
+	for(i in 1:last.sample.point){
 		if(samp.type == "haploid"){
 			temp.sect <- paste(c(sampling.points[i], " late() { p1.outputSample(", samp.size, "); }"), collapse="")
 		}
@@ -163,38 +163,14 @@ if(genome.size == "30mbp"){
 	sect10 <- "\n" 
 	
 if(ben.muts == FALSE){
-	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFull("FullOutput_', filename.start, '_N', pop.size, '_', genome.size, '_del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }
-',
-	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
-
-if(dontSampleFull==TRUE & samp.type == "diploid"){
-sect11 <- paste(c(sampling.points[last.sample.point], " late() { 
-	subsampDiploids = sim.subpopulations.individuals;
-	sampledIndividuals = sample(subsampDiploids, ", samp.size*10, ");
-	sampledIndividuals.genomes.output();
-}
-",
-	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
-}
+	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 
 	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect7p25, sect7p5, sect8, sect9, sect10, sect11), collapse="")
 	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_del_TransTo", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
 }
 	
 if(ben.muts == TRUE){
-	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFull("FullOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }
-',
-	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
-
-if(dontSampleFull==TRUE & samp.type == "diploid"){
-sect11 <- paste(c(sampling.points[last.sample.point], " late() {
- 	subsampDiploids = sim.subpopulations.individuals;
-	sampledIndividuals = sample(subsampDiploids, ", samp.size*10, ");
-	sampledIndividuals.genomes.output();
-}
-",
-	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
-}
+	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 
 	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect7p25, sect7p5, sect8, sect9, sect10, sect11), collapse="")
 	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_ben-del_TransTo", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
