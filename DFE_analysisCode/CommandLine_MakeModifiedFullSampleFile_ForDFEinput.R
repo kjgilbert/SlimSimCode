@@ -16,7 +16,7 @@ spitting.out.file.name <- paste(c("ModifiedSampleOutput_", as.character(args[1])
 # remove everything up to just before the last sample point "Mutations" line
 # should start on line: "#OUT: 1000000 GS 2000"
 
-start.line <- system(paste(c("grep -n '#OUT: 1000000 GS 2000' ", taking.in.file), collapse=""), intern=TRUE)
+start.line <- system(paste(c("grep -n '#OUT: ' ", taking.in.file, " | tail -n 1"), collapse=""), intern=TRUE)
 start.line <- as.numeric(unlist(strsplit(start.line, split=":"))[1])
 
 
