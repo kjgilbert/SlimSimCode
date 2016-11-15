@@ -39,7 +39,12 @@ then
 	genosize=30000000
 fi
 # turn the sample files into a format suitable for a "FullOutput..." file
-Rscript CommandLine_MakeModifiedFullSampleFile_ForDFEinput.R $base_name $dir
+## do this one if only doing last generation of sample file:
+##Rscript CommandLine_MakeModifiedFullSampleFile_ForDFEinput.R $base_name $dir
+
+## do this one if doing all generations sampled:
+Rscript CommandLine_MakeModifiedFullSampleFile_ForDFEinput_throughTime.R $base_name $dir
+
 # then analyze like normal:
 Rscript CommandLine_RunSlimToDFEconversion_transMateSys.R $base_name subsample $dir $genosize
 # create divergence file (for all of them because easier to do in this loop anyway
