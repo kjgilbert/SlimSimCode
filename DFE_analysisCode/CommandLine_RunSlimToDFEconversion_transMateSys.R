@@ -145,7 +145,8 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 
 
 
-gen <- 100000
+gen <- unlist(strsplit(as.character(args[1]), split="_"))[1]
+
 inds.sampled <- 100
 pop.size <- 10000
 
