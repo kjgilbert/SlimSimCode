@@ -26,7 +26,7 @@ for(i in 1:length(gens)){
 		system(paste(c("tail -n+", start.line, " ", taking.in.file, " > ", spitting.out.file.name), collapse=""))
 	}else{					# otherwise we're still in the middle of the file
 		end.line <- as.numeric(unlist(strsplit(system(paste(c("grep -n '#OUT: ", gens[i+1], " ' ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
-		system(paste(c("sed -n '", start.line, ",", end.line, " p'", taking.in.file, " > ", spitting.out.file.name), collapse=""))
+		system(paste(c("sed -n '", start.line, ",", (end.line-1), " p' ", taking.in.file, " > ", spitting.out.file.name), collapse=""))
 	}
 }
 

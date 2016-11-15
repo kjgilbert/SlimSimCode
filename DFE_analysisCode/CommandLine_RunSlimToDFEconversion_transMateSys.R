@@ -145,7 +145,6 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 
 
 
-gen <- unlist(strsplit(as.character(args[1]), split="_"))[1]
 
 inds.sampled <- 100
 pop.size <- 10000
@@ -153,6 +152,7 @@ pop.size <- 10000
 
 args <- commandArgs(trailingOnly=TRUE)
 
+gen <- as.numeric(unlist(strsplit(as.character(args[1]), split="_"))[1])
 
 gsize <- as.numeric(args[4])
 
@@ -177,18 +177,18 @@ gdat <- read.table(full.file, skip=full.samp.genomes.start, nrow=(full.samp.file
 
 ## fixed data output
 fixed.mut.id.start <- 2
-fdat <- read.table(paste(c("FixedOutput_", as.character(args[1])), collapse=""), skip=fixed.mut.id.start)
+fdat <- read.table(paste(c("FixedOutput_", paste(unlist(strsplit(as.character(args[1]), split="_"))[-1], collapse="_")), collapse=""), skip=fixed.mut.id.start)
 names(fdat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
 
 #____________________________________________________________________________________________________#
 
 if(args[2] == "subsample"){
-	outfile <- paste(c("DFE_SFS_subsamp_", as.character(args[1])), collapse="")
+	outfile <- paste(c("DFE_SFS_subsamp_gen", as.character(args[1])), collapse="")
 	make.est_dfe.input(poly.dat=pdat, genome.dat=gdat, fixed.dat=fdat, 
 	generation=gen, num.inds.sampled=inds.sampled, genome.size=gsize, 
 	filename=outfile, fold=TRUE, use.manual.sample=TRUE)
 }else{
-	outfile <- paste(c("DFE_SFS_full_", as.character(args[1])), collapse="")
+	outfile <- paste(c("DFE_SFS_full_gen", as.character(args[1])), collapse="")
 	make.est_dfe.input(poly.dat=pdat, genome.dat=gdat, fixed.dat=fdat, 
 	generation=gen, num.inds.sampled=pop.size, genome.size=gsize, 
 	filename=outfile, fold=TRUE, use.manual.sample=FALSE)

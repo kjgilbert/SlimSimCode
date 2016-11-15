@@ -47,10 +47,10 @@ Rscript CommandLine_MakeModifiedFullSampleFile_ForDFEinput_throughTime.R $base_n
 done
 
 # because there are multiple generations for the same file, make new list of base names:
-ls $dir | grep Modified | sed "s/ModifiedSampleOutput_//g" > base_InputNames.txt
+ls $dir | grep Modified | sed "s/ModifiedSampleOutput_//g" > base_InputNames2.txt
 
 # loop through the list and do each one at a time
-for base_name in `cat base_InputNames.txt`
+for base_name in `cat base_InputNames2.txt`
 do
 # then analyze like normal:
 Rscript CommandLine_RunSlimToDFEconversion_transMateSys.R $base_name subsample $dir $genosize
