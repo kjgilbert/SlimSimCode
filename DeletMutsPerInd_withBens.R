@@ -65,15 +65,15 @@ mean.var.muts <- function(poly.mut.dat, genome.dat, generation, fixed.mut.dat, n
 			
 		# get the means and variances for polymorphic mutations of either type
 		
-		mean.delet.muts.per.ind.poly <- mean(muts.per.ind$num.delet.muts.poly)
-		mean.ben.muts.per.ind.poly <- mean(muts.per.ind$num.ben.muts.poly)
-		mean.neut.muts.per.ind.poly <- mean(muts.per.ind$num.neut.muts.poly)
-		mean.total.muts.per.ind.poly <- mean(muts.per.ind$total.muts.poly)
+		mean.delet.muts.per.ind.poly <- mean(muts.per.ind$num.delet.muts.poly, na.rm=TRUE)
+		mean.ben.muts.per.ind.poly <- mean(muts.per.ind$num.ben.muts.poly, na.rm=TRUE)
+		mean.neut.muts.per.ind.poly <- mean(muts.per.ind$num.neut.muts.poly, na.rm=TRUE)
+		mean.total.muts.per.ind.poly <- mean(muts.per.ind$total.muts.poly, na.rm=TRUE)
 	
-		var.delet.muts.per.ind.poly <- var(muts.per.ind$num.delet.muts.poly)
-		var.ben.muts.per.ind.poly <- var(muts.per.ind$num.ben.muts.poly)
-		var.neut.muts.per.ind.poly <- var(muts.per.ind$num.neut.muts.poly)
-		var.total.muts.per.ind.poly <- var(muts.per.ind$total.muts.poly)
+		var.delet.muts.per.ind.poly <- var(muts.per.ind$num.delet.muts.poly, na.rm=TRUE)
+		var.ben.muts.per.ind.poly <- var(muts.per.ind$num.ben.muts.poly, na.rm=TRUE)
+		var.neut.muts.per.ind.poly <- var(muts.per.ind$num.neut.muts.poly, na.rm=TRUE)
+		var.total.muts.per.ind.poly <- var(muts.per.ind$total.muts.poly, na.rm=TRUE)
 	
 		# include fixed mutations now:
 		
@@ -107,27 +107,27 @@ mean.var.muts <- function(poly.mut.dat, genome.dat, generation, fixed.mut.dat, n
 
 		# get the means and variances for polymorphic mutations of either type
 		
-		mean.delet.muts.per.ind.poly <- mean(muts.per.ind$num.delet.muts.poly)
-		mean.ben.muts.per.ind.poly <- mean(muts.per.ind$num.ben.muts.poly)
-		mean.neut.muts.per.ind.poly <- mean(muts.per.ind$num.neut.muts.poly)
-		mean.total.muts.per.ind.poly <- mean(muts.per.ind$total.muts.poly)
+		mean.delet.muts.per.ind.poly <- mean(muts.per.ind$num.delet.muts.poly, na.rm=TRUE)
+		mean.ben.muts.per.ind.poly <- mean(muts.per.ind$num.ben.muts.poly, na.rm=TRUE)
+		mean.neut.muts.per.ind.poly <- mean(muts.per.ind$num.neut.muts.poly, na.rm=TRUE)
+		mean.total.muts.per.ind.poly <- mean(muts.per.ind$total.muts.poly, na.rm=TRUE)
 	
-		var.delet.muts.per.ind.poly <- var(muts.per.ind$num.delet.muts.poly)
-		var.ben.muts.per.ind.poly <- var(muts.per.ind$num.ben.muts.poly)
-		var.neut.muts.per.ind.poly <- var(muts.per.ind$num.neut.muts.poly)
-		var.total.muts.per.ind.poly <- var(muts.per.ind$total.muts.poly)
+		var.delet.muts.per.ind.poly <- var(muts.per.ind$num.delet.muts.poly, na.rm=TRUE)
+		var.ben.muts.per.ind.poly <- var(muts.per.ind$num.ben.muts.poly, na.rm=TRUE)
+		var.neut.muts.per.ind.poly <- var(muts.per.ind$num.neut.muts.poly, na.rm=TRUE)
+		var.total.muts.per.ind.poly <- var(muts.per.ind$total.muts.poly, na.rm=TRUE)
 	
 		# include fixed mutations now:
 		
-		mean.delet.muts.per.ind.all <- mean((muts.per.ind$num.delet.muts.poly + num.delet.muts.fixed))
-		mean.ben.muts.per.ind.all <- mean((muts.per.ind$num.ben.muts.poly + num.ben.muts.fixed))
-		mean.neut.muts.per.ind.all <- mean((muts.per.ind$num.neut.muts.poly + num.neut.muts.fixed))
-		mean.total.muts.per.ind.all <- mean((muts.per.ind$total.muts.poly + num.delet.muts.fixed + mean.neut.muts.per.ind.poly + num.neut.muts.fixed))
+		mean.delet.muts.per.ind.all <- mean((muts.per.ind$num.delet.muts.poly + num.delet.muts.fixed), na.rm=TRUE)
+		mean.ben.muts.per.ind.all <- mean((muts.per.ind$num.ben.muts.poly + num.ben.muts.fixed), na.rm=TRUE)
+		mean.neut.muts.per.ind.all <- mean((muts.per.ind$num.neut.muts.poly + num.neut.muts.fixed), na.rm=TRUE)
+		mean.total.muts.per.ind.all <- mean((muts.per.ind$total.muts.poly + num.delet.muts.fixed + mean.neut.muts.per.ind.poly + num.neut.muts.fixed), na.rm=TRUE)
 	
-		var.delet.muts.per.ind.all <- var((muts.per.ind$num.delet.muts.poly + num.delet.muts.fixed))
-		var.ben.muts.per.ind.all <- var((muts.per.ind$num.ben.muts.poly + num.ben.muts.fixed))
-		var.neut.muts.per.ind.all <- var((muts.per.ind$num.neut.muts.poly + num.neut.muts.fixed))
-		var.total.muts.per.ind.all <- var((muts.per.ind$total.muts.poly + num.delet.muts.fixed + num.ben.muts.fixed + num.neut.muts.fixed))
+		var.delet.muts.per.ind.all <- var((muts.per.ind$num.delet.muts.poly + num.delet.muts.fixed), na.rm=TRUE)
+		var.ben.muts.per.ind.all <- var((muts.per.ind$num.ben.muts.poly + num.ben.muts.fixed), na.rm=TRUE)
+		var.neut.muts.per.ind.all <- var((muts.per.ind$num.neut.muts.poly + num.neut.muts.fixed), na.rm=TRUE)
+		var.total.muts.per.ind.all <- var((muts.per.ind$total.muts.poly + num.delet.muts.fixed + num.ben.muts.fixed + num.neut.muts.fixed), na.rm=TRUE)
 	}
 	
 	
