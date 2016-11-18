@@ -17,7 +17,7 @@ calc.fitness <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.mut.dat,
 	# go through every two haploid genomes to get every diploid inds fitness
 	iterate.inds <- 1
 	for(i in seq(1, (pop.size*2), by=2)){
-		genome.1.muts <- unlist(genome.data[[1]])[-1]
+		genome.1.muts <- unlist(genome.data[[i]])[-1]
 		genome.2.muts <- unlist(genome.data[[i+1]])[-1]
 	
 		# mutations both chromosomes have make them homozygotes for that mutation
