@@ -13,7 +13,7 @@ calc.fitness.window <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.m
 
 	# get fitness in s windows
 	window.fitnesses <- data.frame(matrix(NA, ncol=(1+length(min.s))))
-	names(window.fitnesses) <- c("individual", paste("s.window", min.s, max.s, sep="_"))
+	names(window.fitnesses) <- c("individual", paste("s.window.fitness", min.s, max.s, sep="_"))
 	
 	iterate.inds <- 1
 	for(i in seq(1, (pop.size*2), by=2)){
@@ -65,11 +65,13 @@ calc.fitness.window <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.m
 	}
 	
 	mean.fitness.poly <- colMeans(window.fitnesses[, -which(names(window.fitnesses) == "individual")])
-	var.fitness.poly <- apply(window.fitnesses[, -which(names(window.fitnesses) == "individual")], FUN=var, MARGIN=2)
+#	var.fitness.poly <- apply(window.fitnesses[, -which(names(window.fitnesses) == "individual")], FUN=var, MARGIN=2)
 	mean.fitness.total <- colMeans(fitness.results.polyANDfixed[, -which(names(fitness.results.polyANDfixed) == "individual")])
-	var.fitness.total <- apply(fitness.results.polyANDfixed[, -which(names(fitness.results.polyANDfixed) == "individual")], FUN=var, MARGIN=2)
+#	var.fitness.total <- apply(fitness.results.polyANDfixed[, -which(names(fitness.results.polyANDfixed) == "individual")], FUN=var, MARGIN=2)
 	
-	return(c(mean.fitness.poly, var.fitness.poly, mean.fitness.total, var.fitness.total))
+	
+#	return(c(mean.fitness.poly, var.fitness.poly, mean.fitness.total, var.fitness.total))
+	return(c(mean.fitness.poly, mean.fitness.total))
 }
 
 
