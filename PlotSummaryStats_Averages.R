@@ -67,7 +67,7 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25){
 	points(bens.self.dat90$generation + (jitter*5), bens.self.dat90$mean.ben.muts.per.ind.poly, type="o", pch=2, col="orange")
 	points(bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$mean.ben.muts.per.ind.poly, type="o", pch=2, col="blue")
 	points(bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$mean.ben.muts.per.ind.poly, type="o", pch=2, col="darkorchid2")
-	legend("topright", pch=c(16,2), col=c("black", "black"), c("Deleterious", "Beneficial"), cex=1, bg="white", ncol=1)
+	legend("topright", pch=c(2,16), col=c("black", "black"), c("Deleterious", "Beneficial"), cex=1, bg="white", ncol=1)
 	
 	
 	
