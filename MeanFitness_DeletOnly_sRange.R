@@ -7,13 +7,13 @@
 # so use full output at end
 
 
-calc.fitness.window <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.mut.dat, pop.size, generation, min.s=-1, max.s=0){	# default window is all the negative s values
+calc.fitness.window <- function(poly.mut.dat, full.genomes.dat, fixed.mut.dat, pop.size, generation, min.s=-1, max.s=0){	# default window is all the negative s values
 
 	genome.data <- lapply(as.character(full.genomes.dat[,2]), FUN=strsplit, split=" ")
 
 	# get fitness in s windows
 	window.fitnesses <- data.frame(matrix(NA, ncol=(1+length(min.s))))
-	names(window.fitnesses) <- c("individual", paste("s.window.fitness", min.s, max.s, sep="_"))
+	names(window.fitnesses) <- c("individual", paste("s.window.fitness.poly", min.s, max.s, sep="_"))
 	
 	iterate.inds <- 1
 	for(i in seq(1, (pop.size*2), by=2)){
@@ -29,9 +29,9 @@ calc.fitness.window <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.m
 		# length(unique(het.muts))
 		
 		# take only the ones under seln, i.e. exclude s=0
-		hom.muts.effect.sizes <- diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% hom.muts) ,]$seln_coeff[diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% hom.muts) ,]$seln_coeff !=0]
-		het.muts.effect.sizes <- diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% het.muts) ,]$seln_coeff[diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% het.muts) ,]$seln_coeff !=0]
-		het.muts.dominance <- diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% het.muts) ,]$dom_coeff[diploid.poly.muts.dat[which(diploid.poly.muts.dat$mut.ID %in% het.muts) ,]$seln_coeff !=0]
+		hom.muts.effect.sizes <- poly.mut.dat[which(poly.mut.dat$mut.ID %in% hom.muts) ,]$seln_coeff[poly.mut.dat[which(poly.mut.dat$mut.ID %in% hom.muts) ,]$seln_coeff !=0]
+		het.muts.effect.sizes <- poly.mut.dat[which(poly.mut.dat$mut.ID %in% het.muts) ,]$seln_coeff[poly.mut.dat[which(poly.mut.dat$mut.ID %in% het.muts) ,]$seln_coeff !=0]
+		het.muts.dominance <- poly.mut.dat[which(poly.mut.dat$mut.ID %in% het.muts) ,]$dom_coeff[poly.mut.dat[which(poly.mut.dat$mut.ID %in% het.muts) ,]$seln_coeff !=0]
 				
 		window.fitnesses.per.ind <- NULL
 		for(j in 1:length(min.s)){
@@ -62,6 +62,7 @@ calc.fitness.window <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.m
 		}
 		# total fitness is still multiplicative
 		fitness.results.polyANDfixed <- window.fitnesses.fixed * window.fitnesses
+		names(fitness.results.polyANDfixed) <- c("individual", paste("s.window.fitness.total", min.s, max.s, sep="_"))
 	}
 	
 	mean.fitness.poly <- colMeans(window.fitnesses[, -which(names(window.fitnesses) == "individual")])
