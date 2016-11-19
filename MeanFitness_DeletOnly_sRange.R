@@ -50,7 +50,7 @@ calc.fitness.window <- function(poly.mut.dat, full.genomes.dat, fixed.mut.dat, p
 	# now need to include in individual fitness the effect of all fixed mutations
 		# but if nothing fixes:
 	if(is.null(fixed.mut.dat)){
-		fitness.results$ind.fitness <- fitness.results$poly.mut.fitness		
+		fitness.results.polyANDfixed <- window.fitnesses		
 	}else{
 		#	(all fixed muts are always present at the last full generation time point sampled)
 		fixed.mut.dat <- fixed.mut.dat[fixed.mut.dat$gen.fixed <= as.numeric(generation) ,]
@@ -65,9 +65,9 @@ calc.fitness.window <- function(poly.mut.dat, full.genomes.dat, fixed.mut.dat, p
 		names(fitness.results.polyANDfixed) <- c("individual", paste("s.window.fitness.total", min.s, max.s, sep="_"))
 	}
 	
-	mean.fitness.poly <- colMeans(window.fitnesses[, -which(names(window.fitnesses) == "individual")])
+	mean.fitness.poly <- apply(window.fitnesses[, -which(names(window.fitnesses) == "individual")], FUN=mean, MARGIN=2)
 #	var.fitness.poly <- apply(window.fitnesses[, -which(names(window.fitnesses) == "individual")], FUN=var, MARGIN=2)
-	mean.fitness.total <- colMeans(fitness.results.polyANDfixed[, -which(names(fitness.results.polyANDfixed) == "individual")])
+	mean.fitness.total <- apply(fitness.results.polyANDfixed[, -which(names(fitness.results.polyANDfixed) == "individual")], FUN=mean, MARGIN=2)
 #	var.fitness.total <- apply(fitness.results.polyANDfixed[, -which(names(fitness.results.polyANDfixed) == "individual")], FUN=var, MARGIN=2)
 	
 	
