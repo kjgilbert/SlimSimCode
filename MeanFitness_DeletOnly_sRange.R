@@ -61,13 +61,14 @@ calc.fitness.window <- function(poly.mut.dat, full.genomes.dat, fixed.mut.dat, p
 			window.fitnesses.fixed <- c(window.fitnesses.fixed, fixed.fitness.window)
 		}
 		# total fitness is still multiplicative
-		fitness.results.polyANDfixed <- window.fitnesses.fixed * window.fitnesses
-		names(fitness.results.polyANDfixed) <- c("individual", paste("s.window.fitness.total", min.s, max.s, sep="_"))
+		poly.fitness <- window.fitnesses[, -which(names(window.fitnesses) == "individual")]
+		fitness.results.polyANDfixed <- t(window.fitnesses.fixed * t(poly.fitness))
+		names(fitness.results.polyANDfixed) <- paste("s.window.fitness.total", min.s, max.s, sep="_")
 	}
 	
 	mean.fitness.poly <- apply(window.fitnesses[, -which(names(window.fitnesses) == "individual")], FUN=mean, MARGIN=2)
 #	var.fitness.poly <- apply(window.fitnesses[, -which(names(window.fitnesses) == "individual")], FUN=var, MARGIN=2)
-	mean.fitness.total <- apply(fitness.results.polyANDfixed[, -which(names(fitness.results.polyANDfixed) == "individual")], FUN=mean, MARGIN=2)
+	mean.fitness.total <- apply(fitness.results.polyANDfixed, FUN=mean, MARGIN=2)
 #	var.fitness.total <- apply(fitness.results.polyANDfixed[, -which(names(fitness.results.polyANDfixed) == "individual")], FUN=var, MARGIN=2)
 	
 	
