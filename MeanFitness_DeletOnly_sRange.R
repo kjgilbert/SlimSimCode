@@ -62,7 +62,7 @@ calc.fitness.window <- function(poly.mut.dat, full.genomes.dat, fixed.mut.dat, p
 		}
 		# total fitness is still multiplicative
 		poly.fitness <- window.fitnesses[, -which(names(window.fitnesses) == "individual")]
-		fitness.results.polyANDfixed <- t(window.fitnesses.fixed * t(poly.fitness))
+		fitness.results.polyANDfixed <- data.frame(t(window.fitnesses.fixed * t(poly.fitness)))
 		names(fitness.results.polyANDfixed) <- paste("s.window.fitness.total", min.s, max.s, sep="_")
 	}
 	
