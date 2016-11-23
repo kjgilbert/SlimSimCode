@@ -39,7 +39,7 @@ then
 	genosize=30000000
 fi
 Rscript CommandLine_RunSlimToDFEconversion_N1000.R $base_name subsample $dir $genosize
-# 100 is still too large - don't bother trying DFE on full outputs: Rscript CommandLine_RunSlimToDFEconversion_N1000.R $base_name full $dir $genosize
+#Rscript CommandLine_RunSlimToDFEconversion_N1000.R $base_name full $dir $genosize
 # create divergence file (for all of them because easier to do in this loop anyway
 Rscript CommandLine_RunSlimToAlphaOmega_N1000.R $base_name subsample $dir $genosize
 done
@@ -49,8 +49,9 @@ done
 
 # put all those file names in a list
 ## IF ONLY DOING SUBSAMPS: ls $dir | grep DFE_SFS_sub > DFE_InputNames.txt
-## TRY WITH FULL SAMPS AS WELL AT N1000:
 ls $dir | grep DFE_SFS_sub > DFE_InputNames.txt
+## TRY WITH FULL SAMPS AS WELL AT N1000:
+## ls $dir | grep DFE_SFS_ > DFE_InputNames.txt
 
 for input in `cat DFE_InputNames.txt`
 do
