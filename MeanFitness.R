@@ -23,7 +23,7 @@ calc.fitness <- function(diploid.poly.muts.dat, full.genomes.dat, fixed.mut.dat,
 		# mutations both chromosomes have make them homozygotes for that mutation
 		hom.muts <- genome.1.muts[which(genome.1.muts %in% genome.2.muts)]
 		# mutations only one chromosome has make them heterozygotes for that mutation
-		het.muts <- genome.1.muts[c(which(!(genome.1.muts %in% genome.2.muts)), which(!(genome.2.muts %in% genome.1.muts)))]
+		het.muts <- c(genome.1.muts[which(!(genome.1.muts %in% genome.2.muts))], genome.2.muts[which(!(genome.2.muts %in% genome.1.muts))])
 		# no need/no way to detect wild type homozygotes, so don't need to worry about for fitness
 	
 		
