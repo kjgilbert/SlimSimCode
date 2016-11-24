@@ -30,12 +30,20 @@ if echo $base_name | grep 24mbp
 then
 	genosize=24000000
 fi
+if echo $base_name | grep 25mbp
+then
+	genosize=25000000
+fi
 if echo $base_name | grep 26mbp
 then
 	genosize=26000000
 fi
+if echo $base_name | grep 30mbp
+then
+    	genosize=30000000
+fi
 Rscript CommandLine_RunSlimToDFEconversion.R $base_name subsample $dir $genosize
-Rscript CommandLine_RunSlimToDFEconversion.R $base_name full $dir $genosize
+#Rscript CommandLine_RunSlimToDFEconversion.R $base_name full $dir $genosize
 # create divergence file (for all of them because easier to do in this loop anyway
 Rscript CommandLine_RunSlimToAlphaOmega.R $base_name subsample $dir $genosize
 done
@@ -50,10 +58,10 @@ ls $dir | grep DFE_SFS_sub > DFE_InputNames.txt
 for input in `cat DFE_InputNames.txt`
 do
 # is the file we're on containing beneficials? if so, make the right type of config file
-if echo $dir/$input | grep ben
-then
+#if echo $dir/$input | grep ben
+#then
 	do_beneficial=TRUE
-fi
+#fi
 # make the directories for the outputs from this analysis
 basedir=$( echo $input | sed "s/.txt//g" )
 basedir0="Outputs/OutputClass0_"

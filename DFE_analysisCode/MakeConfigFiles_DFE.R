@@ -32,7 +32,7 @@ class0output.class1input <- paste(c("est_dfe_demography_results_file Outputs/Out
 "), collapse="")
 line5.end <- paste(c("site_class 1
 fold 1
-epochs 1
+epochs 2
 mean_s_variable 1
 mean_s ", args[4], "
 beta_variable 1
