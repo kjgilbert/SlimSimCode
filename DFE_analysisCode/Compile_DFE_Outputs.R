@@ -4,8 +4,9 @@
 # RESET WD EACH TIME TO SUIT!!!!
 
 
-setwd("/cap1/kgilbert/DFE_alpha/Sep29_DFE_Results")
+setwd("/cap1/kgilbert/DFE_alpha/Outputs")
 
+#setwd("/cap1/kgilbert/DFE_alpha/Sep29_DFE_Results")
 # setwd("~/Documents/My_Documents/UofToronto/SLiM/Running_SLiM/Sep28_NewRuns_LargerGenome_compareBens/Outputs_Sep29/test")
 
 
@@ -27,6 +28,6 @@ for(i in 1:length(class0folders)){
 	results[i,] <- row
 }
 
-write.table(results, file="est_dfe_results_Sep29.csv", sep=",", col.names=TRUE)
+write.table(results, file="est_dfe_results_1epoch_Oct8.csv", sep=",", col.names=TRUE)
 
 
