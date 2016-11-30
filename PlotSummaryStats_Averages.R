@@ -36,17 +36,17 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25){
 	par(mar=c(4,4,1,0.5))	# mfrow=c(1,2), 
 	layout(matrix(c(1,2,3,3), nrow=2, ncol=2))
 	
-	plot(0, type="n", xlim=xlimits, ylim=c(0, 0.00025), xlab="Generation", ylab="Theta_W")
-	points(outc.dat$generation, outc.dat$theta, type="o", col="green3", lty=2, pch=2)
-	points(bens.outc.dat$generation + jitter, bens.outc.dat$theta, type="o", pch=16, col="green3")
-	points(self.dat99$generation + (jitter*2), self.dat99$theta, type="o", col="red", lty=2, pch=2)
-	points(bens.self.dat99$generation + (jitter*3), bens.self.dat99$theta, type="o", pch=16, col="red")
-	points(self.dat90$generation + (jitter*4), self.dat90$theta, type="o", col="orange", lty=2, pch=2)
-	points(bens.self.dat90$generation + (jitter*5), bens.self.dat90$theta, type="o", pch=16, col="orange")
-	points(asex.dat99$generation + (jitter*6), asex.dat99$theta, type="o", col="blue", lty=2, pch=2)
-	points(bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$theta, type="o", pch=16, col="blue")
-	points(asex.dat90$generation + (jitter*8), asex.dat90$theta, type="o", col="darkorchid2", lty=2, pch=2)
-	points(bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$theta, type="o", pch=16, col="darkorchid2")
+	plot(0, type="n", xlim=xlimits, ylim=c(0, 0.00035), xlab="Generation", ylab="Theta_W")
+	points(outc.dat$generation, outc.dat$theta.neut, type="o", col="green3", lty=2, pch=2)
+	points(bens.outc.dat$generation + jitter, bens.outc.dat$theta.neut, type="o", pch=16, col="green3")
+	points(self.dat99$generation + (jitter*2), self.dat99$theta.neut, type="o", col="red", lty=2, pch=2)
+	points(bens.self.dat99$generation + (jitter*3), bens.self.dat99$theta.neut, type="o", pch=16, col="red")
+	points(self.dat90$generation + (jitter*4), self.dat90$theta.neut, type="o", col="orange", lty=2, pch=2)
+	points(bens.self.dat90$generation + (jitter*5), bens.self.dat90$theta.neut, type="o", pch=16, col="orange")
+	points(asex.dat99$generation + (jitter*6), asex.dat99$theta.neut, type="o", col="blue", lty=2, pch=2)
+	points(bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$theta.neut, type="o", pch=16, col="blue")
+	points(asex.dat90$generation + (jitter*8), asex.dat90$theta.neut, type="o", col="darkorchid2", lty=2, pch=2)
+	points(bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$theta.neut, type="o", pch=16, col="darkorchid2")
 	legend("topright", pch=rep(c(2,16), 5), lty=rep(c(2,1), 5), col=c("green3", "green3", "darkorchid2", "darkorchid2", "blue", "blue", "orange", "orange", "red", "red"), c("Outc del", "Outc ben-del", "90% asex del", "90% asex ben-del", "99% asex del", "99% asex ben-del", "90% self del", "90% self ben-del", "99% self del", "99% self ben-del"), bg="white", ncol=2, cex=0.95)
 	
 	
