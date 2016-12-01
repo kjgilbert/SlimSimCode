@@ -62,8 +62,8 @@ line1 <- "data_path_1 /cap1/kgilbert/DFE_alpha/ProgramData/
 "), collapse="")
 	prev.sel.results <- paste(c("sel_egf_file Outputs/OutputClass1_", unlist(strsplit(as.character(args[3]), split=".txt"))[1], "/sel_egf.out
 "), collapse="")
-	options <- "do_jukes_cantor         1
-remove_poly             1"
+	options <- "do_jukes_cantor         0
+remove_poly             0"
 
 	file.text <- paste(c(line1, divergence.data.line, new.results.line, prev.dfe.results, prev.neut.results, prev.sel.results, options), collapse="")
 	write(file.text, file=paste(c(args[2],"config_alpha_omega.txt"), collapse=""))
