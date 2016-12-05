@@ -2,7 +2,7 @@
 # make PBS scripts for specific westgrid servers given Slim input scripts
 
 
-make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=10000, genome.size, mut.rate, ben.muts=FALSE, recomb.rate, mate.sys, prop.mate.type="", total.N.gens=10, sampling.points, samp.size=100, samp.type, rep, dontSampleFull=FALSE, newS=FALSE, input.file){
+make.slim.input <- function(filename.start, rand.seed="1234567890", pop.size=10000, genome.size, mut.rate, ben.muts=FALSE, recomb.rate, mate.sys, prop.mate.type="", total.N.gens=10, sampling.points, samp.size=100, samp.type, rep, dontSampleFull=FALSE, newS=FALSE, input.file, demog=NULL, bottleneck.size, bottleneck.duration){
 
 	# options:
 	#	random seed
@@ -115,37 +115,81 @@ if(genome.size == "30mbp"){
         }
         initializeRecombinationRate(', recomb.rate, ', 29999999);'), collapse="")
 }      
-	sect6 <- paste(c('
+
+	if(mate.sys == "outc"){
+		sect6 <- paste(c('
 }
 
 ', format(pop.size*10, scientific=FALSE), ' late() {
 	sim.readFromPopulationFile("', input.file, '");'), collapse="")
-	
-	sect7 <- paste(c('
+	}
+
+	if(mate.sys == "asex"){
+		sect6 <- paste(c('
 }
 
-', format((pop.size*10)+1, scientific=FALSE), ' {
-'), collapse="")	
-
-	if(mate.sys == "outc"){
-		sect7p5 <- ""
-	}
-	if(mate.sys == "asex"){
-		sect7p5 <- paste(c('
+', format(pop.size*10, scientific=FALSE), ' late() {
+	sim.readFromPopulationFile("', input.file, '");
 	p1.setCloningRate(', prop.mate.type, ");"), collapse="")
 	}
+
+
 	if(mate.sys == "self"){
-		sect7p5 <- paste(c('
-	p1.setSelfingRate(', prop.mate.type, ");"), collapse="")
-	}
-	sect8 <- "
+		sect6 <- paste(c('
 }
 
-"
-##	sampling.points <- format(seq(((total.N.gens+1)*pop.size), (2*total.N.gens*pop.size), by= pop.size), scientific=FALSE)
+', format(pop.size*10, scientific=FALSE), ' late() {
+	sim.readFromPopulationFile("', input.file, '");
+	p1.setSelfingRate(', prop.mate.type, ");"), collapse="")
+	}
+		
+	if(demog == "bottleneck"){
+		# do the bottlecking
+		sect7 <- paste(c('
+}
+
+', format((pop.size*10) + 1, scientific=FALSE), ' { 
+	p1.setSubpopulationSize(', bottleneck.size, '); 
+	}
+', format((pop.size*10) + 1, scientific=FALSE), " late() { 
+	subsampDiploids = sim.subpopulations.individuals;
+	sampledIndividuals = sample(subsampDiploids, ", samp.size, ");
+	sampledIndividuals.genomes.output();
+}
+"), collapse="")
+
+	# after specified generations, put pop size back up to original pop size, after doing all the sampling in between as well
 	last.sample.point <- length(sampling.points)
-	sect9 <- NULL
+	sect7p5 <- NULL
 	for(i in 1:last.sample.point){
+		# break out of loop and put in bottleneck resize, then leave a variable to pick up in next loop for remaining sample points
+		if(sampling.points[i] >= ((pop.size*10) + bottleneck.duration + 1)){
+			temp.sect <- paste(c('
+', format((pop.size*10) + bottleneck.duration + 1, scientific=FALSE), ' { p1.setSubpopulationSize(', pop.size, '); }
+'), collapse="")
+			sect7p5 <- paste(c(sect7p5, temp.sect), collapse="\n")
+			new.loop.start <- i
+			break	# leave the for loop because now we resized the bottleneck back up
+		}
+		if(samp.type == "haploid"){
+			temp.sect <- paste(c(sampling.points[i], " late() { p1.outputSample(", samp.size, "); }"), collapse="")
+		}
+		if(samp.type == "diploid"){
+			temp.sect <- paste(c(sampling.points[i], " late() { 
+	subsampDiploids = sim.subpopulations.individuals;
+	sampledIndividuals = sample(subsampDiploids, ", samp.size, ");
+	sampledIndividuals.genomes.output();
+}"), collapse="")
+		}
+		sect7p5 <- paste(c(sect7p5, temp.sect), collapse="\n")
+	}
+}	# end "if demog == bottleneck"	
+	sect8 <- "
+
+"
+
+	sect9 <- NULL
+	for(i in new.loop.start:last.sample.point){
 		if(samp.type == "haploid"){
 			temp.sect <- paste(c(sampling.points[i], " late() { p1.outputSample(", samp.size, "); }"), collapse="")
 		}
@@ -178,6 +222,9 @@ sect11 <- paste(c(sampling.points[last.sample.point], " late() {
 	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_del_TransTo", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
 }
 	
+
+
+
 if(ben.muts == TRUE){
 	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 

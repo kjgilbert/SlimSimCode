@@ -13,12 +13,20 @@ calc.fitness.window <- function(poly.mut.dat, full.genomes.dat, fixed.mut.dat, p
 	if(!is.null(fixed.mut.dat)) fixed.mut.dat <- fixed.mut.dat[fixed.mut.dat$gen.fixed <= as.numeric(generation) ,]
 	
 	# get fitness in s windows
-	window.fitnesses <- data.frame(matrix(NA, ncol=(1+length(min.s))))
-	names(window.fitnesses) <- c("individual", paste("s.window.fitness.poly", min.s, max.s, sep="_"))
+	window.fitnesses.poly <- data.frame(matrix(NA, ncol=(1+length(min.s))))
+	names(window.fitnesses.poly) <- c("individual", paste("s.window.delet.fitness.poly", min.s, max.s, sep="_"))
+	window.fitnesses.fixed <- data.frame(matrix(NA, ncol=(1+length(min.s))))
+	names(window.fitnesses.fixed) <- c("individual", paste("s.window.delet.fitness.fixed", min.s, max.s, sep="_"))
+	window.fitnesses.total <- data.frame(matrix(NA, ncol=(1+length(min.s))))
+	names(window.fitnesses.total) <- c("individual", paste("s.window.delet.fitness.total", min.s, max.s, sep="_"))
 
 	# get total fitness as well which includes beneficial mutations
-	window.fitnesses.wbens <- data.frame(matrix(NA, ncol=(1+length(min.s))))
-	names(window.fitnesses.wbens) <- c("individual", paste("s.window.fitnessAll.poly", min.s, max.s, sep="_"))
+	window.fitnesses.wbens.poly <- data.frame(matrix(NA, ncol=(1+length(min.s))))
+	names(window.fitnesses.wbens.poly) <- c("individual", paste("s.window.bendel.fitness.poly", min.s, max.s, sep="_"))
+	window.fitnesses.wbens.fixed <- data.frame(matrix(NA, ncol=(1+length(min.s))))
+	names(window.fitnesses.wbens.fixed) <- c("individual", paste("s.window.bendel.fitness.fixed", min.s, max.s, sep="_"))
+	window.fitnesses.wbens.total <- data.frame(matrix(NA, ncol=(1+length(min.s))))
+	names(window.fitnesses.wbens.total) <- c("individual", paste("s.window.bendel.fitness.total", min.s, max.s, sep="_"))
 	
 	# also get numbers of mutations:
 	window.poly.muts <- data.frame(matrix(NA, ncol=(1+length(min.s))))
@@ -79,9 +87,12 @@ calc.fitness.window <- function(poly.mut.dat, full.genomes.dat, fixed.mut.dat, p
 			total.delet.muts.per.ind <- c(total.delet.muts.per.ind, ind.num.total.delet.muts.in.window)
 		}
 
-		window.fitnesses[iterate.inds ,] <- c(iterate.inds, window.fitnesses.per.ind)
-		##	and take that value within this loop and save it, so that when getting decriment from fixed muts, can multiply together first then subtract from 1
-		window.fitnesses.wbens[iterate.inds ,] <- c(iterate.inds, window.fitnessesAll.per.ind)
+		# polymorphic muts only, delet, fitness in s window
+		window.fitnesses.poly[iterate.inds ,] <- c(iterate.inds, window.fitnesses.per.ind)
+			##	and take that value within this loop and save it, so that when getting decriment from fixed muts, can multiply together first then subtract from 1
+		# polymorphic muts only, ben & delet, fitness in s window
+		window.fitnesses.wbens.poly[iterate.inds ,] <- c(iterate.inds, window.fitnessesAll.per.ind)
+		# numbers of mutations
 		window.poly.muts[iterate.inds ,] <- c(iterate.inds, poly.delet.muts.per.ind)
 		window.fixed.muts[iterate.inds ,] <- c(iterate.inds, fixed.delet.muts.per.ind)
 		window.total.muts[iterate.inds ,] <- c(iterate.inds, total.delet.muts.per.ind)
@@ -93,8 +104,8 @@ calc.fitness.window <- function(poly.mut.dat, full.genomes.dat, fixed.mut.dat, p
 	# now need to include in individual fitness the effect of all fixed mutations
 		# but if nothing fixes:
 	if(is.null(fixed.mut.dat)){
-		fitness.results.polyANDfixed <- window.fitnesses		
-		fitness.wbens.results.polyANDfixed <- window.fitnesses.wbens		
+		fitness.results.polyANDfixed <- window.fitnesses.poly		
+		fitness.wbens.results.polyANDfixed <- window.fitnesses.wbens.poly		
 	}else{
 		#	(all fixed muts are always present at the last full generation time point sampled)
 		## already loaded it in at start of loop --- fixed.mut.dat <- fixed.mut.dat[fixed.mut.dat$gen.fixed <= as.numeric(generation) ,]
@@ -104,36 +115,44 @@ calc.fitness.window <- function(poly.mut.dat, full.genomes.dat, fixed.mut.dat, p
 		for(j in 1:length(min.s)){
 			fixed.fitness.window <- prod(1 + fixed.mut.dat$seln_coeff[fixed.mut.dat$seln_coeff > min.s[j] & fixed.mut.dat$seln_coeff < max.s[j]])
 			window.fitnesses.fixed <- c(window.fitnesses.fixed, fixed.fitness.window)
+			
 			# totals with bens:
-			fixed.fitness.wbens.window <- prod(1 + fixed.mut.dat$seln_coeff[fixed.mut.dat$seln_coeff > min.s[j] & fixed.mut.dat$seln_coeff < max.s[j] & fixed.mut.dat$seln_coeff > 0])
+			fixed.fitness.wbens.window <- prod(1+fixed.mut.dat$seln_coeff[fixed.mut.dat$seln_coeff > min.s[j] & fixed.mut.dat$seln_coeff < max.s[j] & fixed.mut.dat$seln_coeff > 0])
 			window.fitnesses.wbens.fixed <- c(window.fitnesses.wbens.fixed, fixed.fitness.wbens.window)
 		}
+		names(window.fitnesses.fixed) <- paste("s.window.delet.fitness.fixed", min.s, max.s, sep="_")
+		names(window.fitnesses.wbens.fixed) <- paste("s.window.bendel.fitness.fixed", min.s, max.s, sep="_")
+		
 		# total fitness is still multiplicative
-		poly.fitness <- window.fitnesses[, -which(names(window.fitnesses) == "individual")]
-		fitness.results.polyANDfixed <- data.frame(t(window.fitnesses.fixed * t(poly.fitness)))
-		names(fitness.results.polyANDfixed) <- paste("s.window.fitness.total", min.s, max.s, sep="_")
+		poly.fitness <- window.fitnesses.poly[, -which(names(window.fitnesses.poly) == "individual")]
+		delet.fitness.results.polyANDfixed <- data.frame(t(window.fitnesses.fixed * t(poly.fitness)))
+		names(delet.fitness.results.polyANDfixed) <- paste("s.window.delet.fitness.total", min.s, max.s, sep="_")
 
 		# total fitness w/ bens is still multiplicative
-		poly.fitness.wbens <- window.fitnesses.wbens[, -which(names(window.fitnesses.wbens) == "individual")]
-		fitness.wbens.results.polyANDfixed <- data.frame(t(window.fitnesses.wbens.fixed * t(poly.fitness.wbens)))
-		names(fitness.results.polyANDfixed) <- paste("s.window.fitness.wbens.total", min.s, max.s, sep="_")
+		poly.fitness.wbens <- window.fitnesses.wbens.poly[, -which(names(window.fitnesses.wbens.poly) == "individual")]
+		bendel.fitnessresults.polyANDfixed <- data.frame(t(window.fitnesses.wbens.fixed * t(poly.fitness.wbens)))
+		names(bendel.fitnessresults.polyANDfixed) <- paste("s.window.bendel.fitness.total", min.s, max.s, sep="_")
 	}
 	
-	mean.fitness.poly <- apply(window.fitnesses[, -which(names(window.fitnesses) == "individual")], FUN=mean, MARGIN=2)
-	mean.fitness.total <- apply(fitness.results.polyANDfixed, FUN=mean, MARGIN=2)
+	mean.delet.fitness.poly <- apply(poly.fitness, FUN=mean, MARGIN=2)
+	mean.delet.fitness.fixed <- window.fitnesses.fixed
+	mean.delet.fitness.total <- apply(delet.fitness.results.polyANDfixed, FUN=mean, MARGIN=2)
 	
-	mean.fitness.wbens.poly <- apply(window.fitnesses.wbens[, -which(names(window.fitnesses.wbens) == "individual")], FUN=mean, MARGIN=2)
-	mean.fitness.wbens.total <- apply(fitness.wbens.results.polyANDfixed, FUN=mean, MARGIN=2)
+	mean.bendel.fitness.poly <- apply(poly.fitness.wbens, FUN=mean, MARGIN=2)
+	mean.bendel.fitness.fixed <- window.fitnesses.wbens.fixed
+	mean.bendel.fitness.total <- apply(bendel.fitnessresults.polyANDfixed, FUN=mean, MARGIN=2)
 
 	mean.window.poly.muts <- apply(window.poly.muts[, - which(names(window.poly.muts) == "individual")], FUN=mean, MARGIN=2)
 	mean.window.fixed.muts <- apply(window.fixed.muts[, - which(names(window.fixed.muts) == "individual")], FUN=mean, MARGIN=2)
 	mean.window.total.muts <- apply(window.total.muts[, - which(names(window.total.muts) == "individual")], FUN=mean, MARGIN=2)
 	
 	return(c(
-		mean.fitness.poly, 
-		mean.fitness.total, 
-		mean.fitness.wbens.poly, 
-		mean.fitness.wbens.total,
+		mean.delet.fitness.poly, 
+		mean.delet.fitness.fixed,
+		mean.delet.fitness.total, 
+		mean.bendel.fitness.poly, 
+		mean.bendel.fitness.fixed,
+		mean.bendel.fitness.total,
 		mean.window.poly.muts,
 		mean.window.fixed.muts,
 		mean.window.total.muts
