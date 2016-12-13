@@ -206,7 +206,7 @@ if(genome.size == "30mbp"){
 	sect10 <- "\n" 
 	
 if(ben.muts == FALSE){
-	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
+	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_del_bottleneck', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 
 if(dontSampleFull==TRUE & samp.type == "diploid"){
 sect11 <- paste(c(sampling.points[last.sample.point], " late() { 
@@ -215,18 +215,18 @@ sect11 <- paste(c(sampling.points[last.sample.point], " late() {
 	sampledIndividuals.genomes.output();
 }
 ",
-	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
+	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_del_bottleneck', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 }
 
 	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect7p5, sect8, sect9, sect10, sect11), collapse="")
-	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_del_TransTo", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
+	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_del_bottleneck", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
 }
 	
 
 
 
 if(ben.muts == TRUE){
-	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
+	sect11 <- paste(c(sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_bottleneck', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 
 if(dontSampleFull==TRUE & samp.type == "diploid"){
 sect11 <- paste(c(sampling.points[last.sample.point], " late() {
@@ -235,11 +235,11 @@ sect11 <- paste(c(sampling.points[last.sample.point], " late() {
 	sampledIndividuals.genomes.output();
 }
 ",
-	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_TransTo', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
+	sampling.points[last.sample.point], ' late() { sim.outputFixedMutations("FixedOutput_', filename.start, '_N', pop.size, '_', genome.size, '_ben-del_bottleneck', mate.sys, prop.mate.type, '_rep', rep, '.txt"); }'), collapse="")
 }
 
 	file.text <- paste(c(sect1, sect2, sect3, sect4, sect5, sect6, sect7, sect7p5, sect8, sect9, sect10, sect11), collapse="")
-	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_ben-del_TransTo", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
+	write(file.text, file=paste(c(filename.start, "_N", pop.size, "_", genome.size, "_ben-del_bottleneck", mate.sys, prop.mate.type, "_rep", rep,".txt"), collapse=""))
 }		
 	
 

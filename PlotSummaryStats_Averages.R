@@ -3,7 +3,7 @@
 # BENDAT is the beneficial summ stats calculated (a .csv)
 
 
-plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25){
+plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, genome.size){
 	
 	cols.to.aggregate <- c("generation", "theta", "theta.neut", "pi", "pi_n", "pi_s", "pi_n.pi_s", "mean.delet.muts.per.ind.poly", "var.delet.muts.per.ind.poly", "mean.neut.muts.per.ind.poly", "var.neut.muts.per.ind.poly", "mean.total.muts.per.ind.poly", "var.total.muts.per.ind.poly", "mean.delet.muts.per.ind.all", "var.delet.muts.per.ind.all", "mean.neut.muts.per.ind.all", "var.neut.muts.per.ind.all", "mean.total.muts.per.ind.all", "var.total.muts.per.ind.all", "num.delet.muts.fixed", "num.neut.muts.fixed", "mean.fitness.poly", "var.fitness.poly", "mean.fitness.total", "var.fitness.total")
 	dat$split.ID <- matrix(unlist(strsplit(as.character(dat$file), split="rep")), ncol=2, byrow=TRUE)[,1]
@@ -159,7 +159,7 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25){
 	# Ka/Ks =  ratio of the number of nonsynonymous substitutions per non-synonymous site (Ka), in a given period of time, to the number of synonymous substitutions per synonymous site (Ks), in the same period. The latter are assumed to be neutral, so that the ratio indicates the net balance between deleterious and beneficial mutations. Values of Ka/Ks significantly above 1 are unlikely to occur without at least some of the mutations being advantageous. If beneficial mutations are assumed to make little contribution, then Ks estimates the degree of evolutionary constraint.
 	# The ratio is also known as ω or dN/dS
 	
-	geno.size <- 30000000	# 30 Mbp
+	geno.size <- genome.size	# 30 Mbp
 	
 	#dN/dS total
 	out.bendel.dnds <- ((bens.outc.dat$num.delet.muts.fixed + bens.outc.dat$num.ben.muts.fixed)/(geno.size*0.75)) / (bens.outc.dat$num.neut.muts.fixed/(geno.size*0.25))

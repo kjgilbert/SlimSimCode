@@ -104,8 +104,18 @@ calc.fitness.window <- function(poly.mut.dat, full.genomes.dat, fixed.mut.dat, p
 	# now need to include in individual fitness the effect of all fixed mutations
 		# but if nothing fixes:
 	if(is.null(fixed.mut.dat)){
-		fitness.results.polyANDfixed <- window.fitnesses.poly		
-		fitness.wbens.results.polyANDfixed <- window.fitnesses.wbens.poly		
+		window.fitnesses.fixed <- 1
+		window.fitnesses.wbens.fixed <- 1
+		
+		# total fitness is still multiplicative
+		poly.fitness <- window.fitnesses.poly[, -which(names(window.fitnesses.poly) == "individual")]
+		delet.fitness.results.polyANDfixed <- data.frame(t(window.fitnesses.fixed * t(poly.fitness)))
+		names(delet.fitness.results.polyANDfixed) <- paste("s.window.delet.fitness.total", min.s, max.s, sep="_")
+
+		# total fitness w/ bens is still multiplicative
+		poly.fitness.wbens <- window.fitnesses.wbens.poly[, -which(names(window.fitnesses.wbens.poly) == "individual")]
+		bendel.fitnessresults.polyANDfixed <- data.frame(t(window.fitnesses.wbens.fixed * t(poly.fitness.wbens)))
+		names(bendel.fitnessresults.polyANDfixed) <- paste("s.window.bendel.fitness.total", min.s, max.s, sep="_")			
 	}else{
 		#	(all fixed muts are always present at the last full generation time point sampled)
 		## already loaded it in at start of loop --- fixed.mut.dat <- fixed.mut.dat[fixed.mut.dat$gen.fixed <= as.numeric(generation) ,]
