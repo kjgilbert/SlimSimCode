@@ -79,6 +79,7 @@ calc.fitness.window <- function(poly.mut.dat, full.genomes.dat, fixed.mut.dat, p
 				# fixed muts are in every ind, so doesn't matter which individual we're iterating, the window does matter though, so should be here in code
 				# ** also, this is just using fixed info in fixed file, not if anything is fixed in the sample
 			ind.num.fixed.delet.muts.in.window <- length(fixed.mut.dat$mut.ID[fixed.mut.dat$seln_coeff > min.s[j] & fixed.mut.dat$seln_coeff < max.s[j]])
+			if(is.null(fixed.mut.dat)) ind.num.fixed.delet.muts.in.window <- 0
 				# just add for total:
 			ind.num.total.delet.muts.in.window <- ind.num.poly.delet.muts.in.window + ind.num.fixed.delet.muts.in.window			
 
