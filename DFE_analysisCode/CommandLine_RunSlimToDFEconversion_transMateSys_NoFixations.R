@@ -1,6 +1,6 @@
 # the function:
 
-make.est_alpha_omega.input <- function(poly.dat, genome.dat, generation, num.inds.sampled, genome.size, filename, use.manual.sample=FALSE){
+make.est_dfe.input <- function(poly.dat, genome.dat, generation, num.inds.sampled, genome.size, filename, fold=FALSE, use.manual.sample=FALSE){
 
 	# because diploid:
 	sample.size <- 2 * num.inds.sampled
@@ -112,17 +112,26 @@ make.est_alpha_omega.input <- function(poly.dat, genome.dat, generation, num.ind
 	ordered.seln <- temp.seln[order(temp.seln[,1]), c(1,2)]
 	final.sfs.seln <- ordered.seln[,2]
 	
-	# take just the number of fixations (last number in the sfs) as the "selected" and "neutral" "differences" because it's supposed to be a species level thing
-	seln.fixed.sites <- final.sfs.seln[(sample.size + 1)]
-	neut.fixed.sites <- final.sfs.neut[(sample.size + 1)]
+	if(fold == TRUE){
+		# fold the site frequency table back on itself
+		# take freqs 0-99 and bin with freqs 200-101, then 100 stays on its own at the end (but it's actually 101 because R starts counting at 1, not 0)
+		final.sfs.seln <- c(final.sfs.seln[1:num.inds.sampled] + final.sfs.seln[(sample.size+1):(num.inds.sampled+2)], final.sfs.seln[(num.inds.sampled + 1)], rep(0, num.inds.sampled))
+		final.sfs.neut <- c(final.sfs.neut[1:num.inds.sampled] + final.sfs.neut[(sample.size+1):(num.inds.sampled+2)], final.sfs.neut[(num.inds.sampled + 1)], rep(0, num.inds.sampled))
+	}
 
-
-	seln.line <- paste(c("1", as.character(format(0.75*genome.size, scientific=FALSE)), seln.fixed.sites), collapse=" ")
-	neut.line <- paste(c("0", as.character(format(0.25*genome.size, scientific=FALSE)), neut.fixed.sites), collapse=" ")
+	dfe.input <- paste(c(
+	"1
+", sample.size,"
+", paste(c(final.sfs.seln), collapse=" "),"
+", paste(c(final.sfs.neut), collapse=" ")
+	), collapse="")
 	
-	alpha_omega.input <- paste(c(seln.line, neut.line), collapse="\n")
-
-	write(alpha_omega.input, file=paste(c("Divergence", filename), collapse=""))	
+	if(fold == FALSE){
+		write(dfe.input, file=paste(c("Unfolded", filename), collapse=""))
+	}
+	if(fold == TRUE){
+		write(dfe.input, file=paste(c("Folded", filename), collapse=""))	
+	}
 }
 #____________________________________________________________________________________________________#
 
@@ -159,21 +168,19 @@ names(pdat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_c
 		
 gdat <- read.table(full.file, skip=full.samp.genomes.start, nrow=(full.samp.file.end - full.samp.genomes.start), sep="A")
 
+		
 
-
-## fixed data output
-# none because no fixations
 
 #____________________________________________________________________________________________________#
 
 if(args[2] == "subsample"){
-	outfile <- paste(c("_alphaOmega_subsamp_gen", as.character(args[1])), collapse="")
-	make.est_alpha_omega.input(poly.dat=pdat, genome.dat=gdat, generation=gen, num.inds.sampled=inds.sampled, genome.size=gsize, 
-	filename=outfile, use.manual.sample=TRUE)
+	outfile <- paste(c("DFE_SFS_subsamp_gen", as.character(args[1])), collapse="")
+	make.est_dfe.input(poly.dat=pdat, genome.dat=gdat, generation=gen, num.inds.sampled=inds.sampled, genome.size=gsize, 
+	filename=outfile, fold=TRUE, use.manual.sample=TRUE)
 }else{
-	outfile <- paste(c("_alphaOmega_full_gen", as.character(args[1])), collapse="")
-	make.est_alpha_omega.input(poly.dat=pdat, genome.dat=gdat, generation=gen, num.inds.sampled=pop.size, genome.size=gsize, 
-	filename=outfile, use.manual.sample=FALSE)
+	outfile <- paste(c("DFE_SFS_full_gen", as.character(args[1])), collapse="")
+	make.est_dfe.input(poly.dat=pdat, genome.dat=gdat, generation=gen, num.inds.sampled=pop.size, genome.size=gsize, 
+	filename=outfile, fold=TRUE, use.manual.sample=FALSE)
 }
 
 	

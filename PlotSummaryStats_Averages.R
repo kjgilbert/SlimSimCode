@@ -1,4 +1,4 @@
-
+library(Hmisc)
 # DAT is the deleterious summ stats calculated (a .csv)
 # BENDAT is the beneficial summ stats calculated (a .csv)
 
@@ -11,12 +11,25 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	avg.dat <- aggregate(dat[cols.to.aggregate], by=list(dat$to.average), FUN=mean, na.rm=TRUE)
 	avg.dat <- avg.dat[order(avg.dat$generation) ,]
 	
+	# also do 95% CIs:
+	avg.dat.ci95 <- aggregate(dat[cols.to.aggregate], by=list(dat$to.average), FUN=sd, na.rm=TRUE)
+	avg.dat.ci95 <- (avg.dat.ci95[cols.to.aggregate]/sqrt(10)) * 2.26
+	avg.dat.ci95 <- cbind(avg.dat$Group.1, avg.dat.ci95)		# put the file names back in there
+	names(avg.dat.ci95) <- c("Group.1", "generation", "theta", "theta.neut", "pi", "pi_n", "pi_s", "pi_n.pi_s", "mean.delet.muts.per.ind.poly", "var.delet.muts.per.ind.poly", "mean.neut.muts.per.ind.poly", "var.neut.muts.per.ind.poly", "mean.total.muts.per.ind.poly", "var.total.muts.per.ind.poly", "mean.delet.muts.per.ind.all", "var.delet.muts.per.ind.all", "mean.neut.muts.per.ind.all", "var.neut.muts.per.ind.all", "mean.total.muts.per.ind.all", "var.total.muts.per.ind.all", "num.delet.muts.fixed", "num.neut.muts.fixed", "mean.fitness.poly", "var.fitness.poly", "mean.fitness.total", "var.fitness.total")
+	
 	cols.to.aggregate <- c("generation", "theta", "theta.neut", "pi", "pi_n", "pi_s", "pi_n.pi_s", "mean.delet.muts.per.ind.poly", "var.delet.muts.per.ind.poly", "mean.ben.muts.per.ind.poly", "var.ben.muts.per.ind.poly", "mean.neut.muts.per.ind.poly", "var.neut.muts.per.ind.poly", "mean.total.muts.per.ind.poly", "var.total.muts.per.ind.poly", "mean.delet.muts.per.ind.all", "var.delet.muts.per.ind.all", "mean.ben.muts.per.ind.all", "var.ben.muts.per.ind.all", "mean.neut.muts.per.ind.all", "var.neut.muts.per.ind.all", "mean.total.muts.per.ind.all", "var.total.muts.per.ind.all", "num.delet.muts.fixed", "num.ben.muts.fixed", "num.neut.muts.fixed", "mean.fitness.poly", "var.fitness.poly", "mean.fitness.total", "var.fitness.total")
 	bendat$split.ID <- matrix(unlist(strsplit(as.character(bendat$file), split="rep")), ncol=2, byrow=TRUE)[,1]
 	bendat$to.average <- paste(bendat$split.ID, bendat$generation, sep="")
 	avg.bendat <- aggregate(bendat[cols.to.aggregate], by=list(bendat$to.average), FUN=mean, na.rm=TRUE)
 	avg.bendat <- avg.bendat[order(avg.bendat$generation) ,]
 	
+	# also do 95% CIs:
+	avg.bendat.ci95 <- aggregate(bendat[cols.to.aggregate], by=list(bendat$to.average), FUN=sd, na.rm=TRUE)
+	avg.bendat.ci95 <- (avg.bendat.ci95[cols.to.aggregate]/sqrt(10)) * 2.26
+	avg.bendat.ci95 <- cbind(avg.bendat$Group.1, avg.bendat.ci95)		# put the file names back in there
+	names(avg.bendat.ci95) <- c("Group.1", "generation", "theta", "theta.neut", "pi", "pi_n", "pi_s", "pi_n.pi_s", "mean.delet.muts.per.ind.poly", "var.delet.muts.per.ind.poly", "mean.ben.muts.per.ind.poly", "var.ben.muts.per.ind.poly", "mean.neut.muts.per.ind.poly", "var.neut.muts.per.ind.poly", "mean.total.muts.per.ind.poly", "var.total.muts.per.ind.poly", "mean.delet.muts.per.ind.all", "var.delet.muts.per.ind.all", "mean.ben.muts.per.ind.all", "var.ben.muts.per.ind.all", "mean.neut.muts.per.ind.all", "var.neut.muts.per.ind.all", "mean.total.muts.per.ind.all", "var.total.muts.per.ind.all", "num.delet.muts.fixed", "num.ben.muts.fixed", "num.neut.muts.fixed", "mean.fitness.poly", "var.fitness.poly", "mean.fitness.total", "var.fitness.total")
+
+	# subset into appropriate mating systems
 	outc.dat <- avg.dat[grep("outc", avg.dat$Group.1) ,]
 	self.dat99 <- avg.dat[grep("self0.99", avg.dat$Group.1) ,]
 	self.dat90 <- avg.dat[grep("self0.90", avg.dat$Group.1) ,]
@@ -27,6 +40,18 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	bens.self.dat90 <- avg.bendat[grep("self0.90", avg.bendat$Group.1) ,]
 	bens.asex.dat99 <- avg.bendat[grep("asex0.99", avg.bendat$Group.1) ,]
 	bens.asex.dat90 <- avg.bendat[grep("asex0.90", avg.bendat$Group.1) ,]
+
+	# subset CI data into appropriate mating systems
+	ci.outc.dat <- avg.dat.ci95[grep("outc", avg.dat.ci95$Group.1) ,]
+	ci.self.dat99 <- avg.dat.ci95[grep("self0.99", avg.dat.ci95$Group.1) ,]
+	ci.self.dat90 <- avg.dat.ci95[grep("self0.90", avg.dat.ci95$Group.1) ,]
+	ci.asex.dat99 <- avg.dat.ci95[grep("asex0.99", avg.dat.ci95$Group.1) ,]
+	ci.asex.dat90 <- avg.dat.ci95[grep("asex0.90", avg.dat.ci95$Group.1) ,]
+	ci.bens.outc.dat <- avg.bendat.ci95[grep("outc", avg.bendat.ci95$Group.1) ,]
+	ci.bens.self.dat99 <- avg.bendat.ci95[grep("self0.99", avg.bendat.ci95$Group.1) ,]
+	ci.bens.self.dat90 <- avg.bendat.ci95[grep("self0.90", avg.bendat.ci95$Group.1) ,]
+	ci.bens.asex.dat99 <- avg.bendat.ci95[grep("asex0.99", avg.bendat.ci95$Group.1) ,]
+	ci.bens.asex.dat90 <- avg.bendat.ci95[grep("asex0.90", avg.bendat.ci95$Group.1) ,]
 	
 	
 	cols <- c("green3", "green3", "darkorchid2", "darkorchid2", "blue", "blue", "orange", "orange", "red", "red")
@@ -37,6 +62,16 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	layout(matrix(c(1,2,3,3), nrow=2, ncol=2))
 	
 	plot(0, type="n", xlim=xlimits, ylim=c(0, 0.00035), xlab="Generation", ylab="Theta_W")
+	errbar(add=TRUE, outc.dat$generation, outc.dat$theta.neut, yminus=outc.dat$theta.neut-ci.outc.dat$theta.neut, yplus=outc.dat$theta.neut+ci.outc.dat$theta.neut, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$theta.neut, yminus=bens.outc.dat$theta.neut-ci.bens.outc.dat$theta.neut, yplus=bens.outc.dat$theta.neut+ci.bens.outc.dat$theta.neut, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat99$generation + (jitter*2), self.dat99$theta.neut, yminus=self.dat99$theta.neut-ci.self.dat99$theta.neut, yplus=self.dat99$theta.neut+ci.self.dat99$theta.neut, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$theta.neut, yminus=bens.self.dat99$theta.neut-ci.bens.self.dat99$theta.neut, yplus=bens.self.dat99$theta.neut+ci.bens.self.dat99$theta.neut, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat90$generation + (jitter*4), self.dat90$theta.neut, yminus=self.dat90$theta.neut-ci.self.dat90$theta.neut, yplus=self.dat90$theta.neut+ci.self.dat90$theta.neut, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$theta.neut, yminus=bens.self.dat90$theta.neut-ci.bens.self.dat90$theta.neut, yplus=bens.self.dat90$theta.neut+ci.bens.self.dat90$theta.neut, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat99$generation + (jitter*6), asex.dat99$theta.neut, yminus=asex.dat99$theta.neut-ci.asex.dat99$theta.neut, yplus=asex.dat99$theta.neut+ci.asex.dat99$theta.neut, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$theta.neut, yminus=bens.asex.dat99$theta.neut-ci.bens.asex.dat99$theta.neut, yplus=bens.asex.dat99$theta.neut+ci.bens.asex.dat99$theta.neut, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat90$generation + (jitter*8), asex.dat90$theta.neut, yminus=asex.dat90$theta.neut-ci.asex.dat90$theta.neut, yplus=asex.dat90$theta.neut+ci.asex.dat90$theta.neut , errbar.col="darkorchid2", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$theta.neut, yminus=bens.asex.dat90$theta.neut-ci.bens.asex.dat90$theta.neut, yplus=bens.asex.dat90$theta.neut+ci.bens.asex.dat90$theta.neut, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(outc.dat$generation, outc.dat$theta.neut, type="o", col="green3", lty=2, pch=2)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$theta.neut, type="o", pch=16, col="green3")
 	points(self.dat99$generation + (jitter*2), self.dat99$theta.neut, type="o", col="red", lty=2, pch=2)
@@ -51,6 +86,16 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	
 	
 	plot(0, type="n", xlim=xlimits, ylim=c(0, 3500), xlab="Generation", ylab="Mean number polymorphic muts per ind", main="Polymorphic mutations")
+	errbar(add=TRUE, outc.dat$generation, outc.dat$mean.delet.muts.per.ind.poly, yminus=outc.dat$mean.delet.muts.per.ind.poly-ci.outc.dat$mean.delet.muts.per.ind.poly, yplus=outc.dat$mean.delet.muts.per.ind.poly+ci.outc.dat$mean.delet.muts.per.ind.poly, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$mean.delet.muts.per.ind.poly, yminus=bens.outc.dat$mean.delet.muts.per.ind.poly-ci.bens.outc.dat$mean.delet.muts.per.ind.poly, yplus=bens.outc.dat$mean.delet.muts.per.ind.poly+ci.bens.outc.dat$mean.delet.muts.per.ind.poly, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat99$generation + (jitter*2), self.dat99$mean.delet.muts.per.ind.poly, yminus=self.dat99$mean.delet.muts.per.ind.poly-ci.self.dat99$mean.delet.muts.per.ind.poly, yplus=self.dat99$mean.delet.muts.per.ind.poly+ci.self.dat99$mean.delet.muts.per.ind.poly, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$mean.delet.muts.per.ind.poly, yminus=bens.self.dat99$mean.delet.muts.per.ind.poly-ci.bens.self.dat99$mean.delet.muts.per.ind.poly, yplus=bens.self.dat99$mean.delet.muts.per.ind.poly+ci.bens.self.dat99$mean.delet.muts.per.ind.poly, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat90$generation + (jitter*4), self.dat90$mean.delet.muts.per.ind.poly, yminus=self.dat90$mean.delet.muts.per.ind.poly-ci.self.dat90$mean.delet.muts.per.ind.poly, yplus=self.dat90$mean.delet.muts.per.ind.poly+ci.self.dat90$mean.delet.muts.per.ind.poly, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$mean.delet.muts.per.ind.poly, yminus=bens.self.dat90$mean.delet.muts.per.ind.poly-ci.bens.self.dat90$mean.delet.muts.per.ind.poly, yplus=bens.self.dat90$mean.delet.muts.per.ind.poly+ci.bens.self.dat90$mean.delet.muts.per.ind.poly, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat99$generation + (jitter*6), asex.dat99$mean.delet.muts.per.ind.poly, yminus=asex.dat99$mean.delet.muts.per.ind.poly-ci.asex.dat99$mean.delet.muts.per.ind.poly, yplus=asex.dat99$mean.delet.muts.per.ind.poly+ci.asex.dat99$mean.delet.muts.per.ind.poly, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$mean.delet.muts.per.ind.poly, yminus=bens.asex.dat99$mean.delet.muts.per.ind.poly-ci.bens.asex.dat99$mean.delet.muts.per.ind.poly, yplus=bens.asex.dat99$mean.delet.muts.per.ind.poly+ci.bens.asex.dat99$mean.delet.muts.per.ind.poly, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat90$generation + (jitter*8), asex.dat90$mean.delet.muts.per.ind.poly, yminus=asex.dat90$mean.delet.muts.per.ind.poly-ci.asex.dat90$mean.delet.muts.per.ind.poly, yplus=asex.dat90$mean.delet.muts.per.ind.poly+ci.asex.dat90$mean.delet.muts.per.ind.poly , errbar.col="darkorchid2", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$mean.delet.muts.per.ind.poly, yminus=bens.asex.dat90$mean.delet.muts.per.ind.poly-ci.bens.asex.dat90$mean.delet.muts.per.ind.poly, yplus=bens.asex.dat90$mean.delet.muts.per.ind.poly+ci.bens.asex.dat90$mean.delet.muts.per.ind.poly, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(outc.dat$generation, outc.dat$mean.delet.muts.per.ind.poly, type="o", col="green3", lty=2, pch=2)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$mean.delet.muts.per.ind.poly, type="o", pch=16, col="green3")
 	points(self.dat99$generation + (jitter*2), self.dat99$mean.delet.muts.per.ind.poly, type="o", col="red", lty=2, pch=2)
@@ -62,6 +107,11 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	points(asex.dat90$generation + (jitter*8), asex.dat90$mean.delet.muts.per.ind.poly, type="o", col="darkorchid2", lty=2, pch=2)
 	points(bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$mean.delet.muts.per.ind.poly, type="o", pch=16, col="darkorchid2")
 	
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$mean.ben.muts.per.ind.poly, yminus=bens.outc.dat$mean.ben.muts.per.ind.poly-ci.bens.outc.dat$mean.ben.muts.per.ind.poly, yplus=bens.outc.dat$mean.ben.muts.per.ind.poly+ci.bens.outc.dat$mean.ben.muts.per.ind.poly, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$mean.ben.muts.per.ind.poly, yminus=bens.self.dat99$mean.ben.muts.per.ind.poly-ci.bens.self.dat99$mean.ben.muts.per.ind.poly, yplus=bens.self.dat99$mean.ben.muts.per.ind.poly+ci.bens.self.dat99$mean.ben.muts.per.ind.poly, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$mean.ben.muts.per.ind.poly, yminus=bens.self.dat90$mean.ben.muts.per.ind.poly-ci.bens.self.dat90$mean.ben.muts.per.ind.poly, yplus=bens.self.dat90$mean.ben.muts.per.ind.poly+ci.bens.self.dat90$mean.ben.muts.per.ind.poly, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$mean.ben.muts.per.ind.poly, yminus=bens.asex.dat99$mean.ben.muts.per.ind.poly-ci.bens.asex.dat99$mean.ben.muts.per.ind.poly, yplus=bens.asex.dat99$mean.ben.muts.per.ind.poly+ci.bens.asex.dat99$mean.ben.muts.per.ind.poly, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$mean.ben.muts.per.ind.poly, yminus=bens.asex.dat90$mean.ben.muts.per.ind.poly-ci.bens.asex.dat90$mean.ben.muts.per.ind.poly, yplus=bens.asex.dat90$mean.ben.muts.per.ind.poly+ci.bens.asex.dat90$mean.ben.muts.per.ind.poly, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$mean.ben.muts.per.ind.poly, type="o", pch=2, col="green3")
 	points(bens.self.dat99$generation + (jitter*3), bens.self.dat99$mean.ben.muts.per.ind.poly, type="o", pch=2, col="red")
 	points(bens.self.dat90$generation + (jitter*5), bens.self.dat90$mean.ben.muts.per.ind.poly, type="o", pch=2, col="orange")
@@ -75,6 +125,16 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	#	fitness plots
 	
 	plot(0, type="n", xlim=xlimits, ylim=c(0,3), xlab="Generation", ylab="Mean fitness")
+	errbar(add=TRUE, outc.dat$generation, outc.dat$mean.fitness.poly, yminus=outc.dat$mean.fitness.poly-ci.outc.dat$mean.fitness.poly, yplus=outc.dat$mean.fitness.poly+ci.outc.dat$mean.fitness.poly, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$mean.fitness.poly, yminus=bens.outc.dat$mean.fitness.poly-ci.bens.outc.dat$mean.fitness.poly, yplus=bens.outc.dat$mean.fitness.poly+ci.bens.outc.dat$mean.fitness.poly, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat99$generation + (jitter*2), self.dat99$mean.fitness.poly, yminus=self.dat99$mean.fitness.poly-ci.self.dat99$mean.fitness.poly, yplus=self.dat99$mean.fitness.poly+ci.self.dat99$mean.fitness.poly, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$mean.fitness.poly, yminus=bens.self.dat99$mean.fitness.poly-ci.bens.self.dat99$mean.fitness.poly, yplus=bens.self.dat99$mean.fitness.poly+ci.bens.self.dat99$mean.fitness.poly, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat90$generation + (jitter*4), self.dat90$mean.fitness.poly, yminus=self.dat90$mean.fitness.poly-ci.self.dat90$mean.fitness.poly, yplus=self.dat90$mean.fitness.poly+ci.self.dat90$mean.fitness.poly, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$mean.fitness.poly, yminus=bens.self.dat90$mean.fitness.poly-ci.bens.self.dat90$mean.fitness.poly, yplus=bens.self.dat90$mean.fitness.poly+ci.bens.self.dat90$mean.fitness.poly, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat99$generation + (jitter*6), asex.dat99$mean.fitness.poly, yminus=asex.dat99$mean.fitness.poly-ci.asex.dat99$mean.fitness.poly, yplus=asex.dat99$mean.fitness.poly+ci.asex.dat99$mean.fitness.poly, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$mean.fitness.poly, yminus=bens.asex.dat99$mean.fitness.poly-ci.bens.asex.dat99$mean.fitness.poly, yplus=bens.asex.dat99$mean.fitness.poly+ci.bens.asex.dat99$mean.fitness.poly, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat90$generation + (jitter*8), asex.dat90$mean.fitness.poly, yminus=asex.dat90$mean.fitness.poly-ci.asex.dat90$mean.fitness.poly, yplus=asex.dat90$mean.fitness.poly+ci.asex.dat90$mean.fitness.poly , errbar.col="darkorchid2", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$mean.fitness.poly, yminus=bens.asex.dat90$mean.fitness.poly-ci.bens.asex.dat90$mean.fitness.poly, yplus=bens.asex.dat90$mean.fitness.poly+ci.bens.asex.dat90$mean.fitness.poly, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(outc.dat$generation, outc.dat$mean.fitness.poly, type="o", col="green3", lty=2, pch=18)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$mean.fitness.poly, type="o", pch=18, col="green3")
 	points(self.dat99$generation + (jitter*2), self.dat99$mean.fitness.poly, type="o", col="red", lty=2, pch=18)
@@ -86,6 +146,16 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	points(asex.dat90$generation + (jitter*8), asex.dat90$mean.fitness.poly, type="o", col="darkorchid2", lty=2, pch=18)
 	points(bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$mean.fitness.poly, type="o", pch=18, col="darkorchid2")
 	
+##		errbar(add=TRUE, outc.dat$generation, outc.dat$mean.fitness.total, yminus=outc.dat$mean.fitness.total-ci.outc.dat$mean.fitness.total, yplus=outc.dat$mean.fitness.total+ci.outc.dat$mean.fitness.total, errbar.col="green3", col="white", cex=0.1)
+##		errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$mean.fitness.total, yminus=bens.outc.dat$mean.fitness.total-ci.bens.outc.dat$mean.fitness.total, yplus=bens.outc.dat$mean.fitness.total+ci.bens.outc.dat$mean.fitness.total, errbar.col="green3", col="white", cex=0.1)
+##		errbar(add=TRUE, self.dat99$generation + (jitter*2), self.dat99$mean.fitness.total, yminus=self.dat99$mean.fitness.total-ci.self.dat99$mean.fitness.total, yplus=self.dat99$mean.fitness.total+ci.self.dat99$mean.fitness.total, errbar.col="red", col="white", cex=0.1)
+##		errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$mean.fitness.total, yminus=bens.self.dat99$mean.fitness.total-ci.bens.self.dat99$mean.fitness.total, yplus=bens.self.dat99$mean.fitness.total+ci.bens.self.dat99$mean.fitness.total, errbar.col="red", col="white", cex=0.1)
+##		errbar(add=TRUE, self.dat90$generation + (jitter*4), self.dat90$mean.fitness.total, yminus=self.dat90$mean.fitness.total-ci.self.dat90$mean.fitness.total, yplus=self.dat90$mean.fitness.total+ci.self.dat90$mean.fitness.total, errbar.col="orange", col="white", cex=0.1)
+##		errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$mean.fitness.total, yminus=bens.self.dat90$mean.fitness.total-ci.bens.self.dat90$mean.fitness.total, yplus=bens.self.dat90$mean.fitness.total+ci.bens.self.dat90$mean.fitness.total, errbar.col="orange", col="white", cex=0.1)
+##		errbar(add=TRUE, asex.dat99$generation + (jitter*6), asex.dat99$mean.fitness.total, yminus=asex.dat99$mean.fitness.total-ci.asex.dat99$mean.fitness.total, yplus=asex.dat99$mean.fitness.total+ci.asex.dat99$mean.fitness.total, errbar.col="blue", col="white", cex=0.1)
+##		errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$mean.fitness.total, yminus=bens.asex.dat99$mean.fitness.total-ci.bens.asex.dat99$mean.fitness.total, yplus=bens.asex.dat99$mean.fitness.total+ci.bens.asex.dat99$mean.fitness.total, errbar.col="blue", col="white", cex=0.1)
+##		errbar(add=TRUE, asex.dat90$generation + (jitter*8), asex.dat90$mean.fitness.total, yminus=asex.dat90$mean.fitness.total-ci.asex.dat90$mean.fitness.total, yplus=asex.dat90$mean.fitness.total+ci.asex.dat90$mean.fitness.total , errbar.col="darkorchid2", col="white", cex=0.1)
+##		errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$mean.fitness.total, yminus=bens.asex.dat90$mean.fitness.total-ci.bens.asex.dat90$mean.fitness.total, yplus=bens.asex.dat90$mean.fitness.total+ci.bens.asex.dat90$mean.fitness.total, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(outc.dat$generation, outc.dat$mean.fitness.total, type="o", pch=5, col="green3", lty=2)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$mean.fitness.total, type="o", pch=5, col="green3")
 	points(self.dat99$generation + (jitter*2), self.dat99$mean.fitness.total, type="o", pch=5, col="red", lty=2)
@@ -104,6 +174,16 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	
 	par(mfrow=c(2,2), mar=c(4,4,1,0.5))
 	plot(0, type="n", xlim=xlimits, ylim=c(0.25, 0.9), xlab="Generation", ylab="pi_n / pi_s", main="pi_n / pi_s")
+	errbar(add=TRUE, outc.dat$generation, outc.dat$pi_n.pi_s, yminus=outc.dat$pi_n.pi_s-ci.outc.dat$pi_n.pi_s, yplus=outc.dat$pi_n.pi_s+ci.outc.dat$pi_n.pi_s, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$pi_n.pi_s, yminus=bens.outc.dat$pi_n.pi_s-ci.bens.outc.dat$pi_n.pi_s, yplus=bens.outc.dat$pi_n.pi_s+ci.bens.outc.dat$pi_n.pi_s, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat99$generation + (jitter*2), self.dat99$pi_n.pi_s, yminus=self.dat99$pi_n.pi_s-ci.self.dat99$pi_n.pi_s, yplus=self.dat99$pi_n.pi_s+ci.self.dat99$pi_n.pi_s, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$pi_n.pi_s, yminus=bens.self.dat99$pi_n.pi_s-ci.bens.self.dat99$pi_n.pi_s, yplus=bens.self.dat99$pi_n.pi_s+ci.bens.self.dat99$pi_n.pi_s, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat90$generation + (jitter*4), self.dat90$pi_n.pi_s, yminus=self.dat90$pi_n.pi_s-ci.self.dat90$pi_n.pi_s, yplus=self.dat90$pi_n.pi_s+ci.self.dat90$pi_n.pi_s, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$pi_n.pi_s, yminus=bens.self.dat90$pi_n.pi_s-ci.bens.self.dat90$pi_n.pi_s, yplus=bens.self.dat90$pi_n.pi_s+ci.bens.self.dat90$pi_n.pi_s, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat99$generation + (jitter*6), asex.dat99$pi_n.pi_s, yminus=asex.dat99$pi_n.pi_s-ci.asex.dat99$pi_n.pi_s, yplus=asex.dat99$pi_n.pi_s+ci.asex.dat99$pi_n.pi_s, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$pi_n.pi_s, yminus=bens.asex.dat99$pi_n.pi_s-ci.bens.asex.dat99$pi_n.pi_s, yplus=bens.asex.dat99$pi_n.pi_s+ci.bens.asex.dat99$pi_n.pi_s, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat90$generation + (jitter*8), asex.dat90$pi_n.pi_s, yminus=asex.dat90$pi_n.pi_s-ci.asex.dat90$pi_n.pi_s, yplus=asex.dat90$pi_n.pi_s+ci.asex.dat90$pi_n.pi_s , errbar.col="darkorchid2", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$pi_n.pi_s, yminus=bens.asex.dat90$pi_n.pi_s-ci.bens.asex.dat90$pi_n.pi_s, yplus=bens.asex.dat90$pi_n.pi_s+ci.bens.asex.dat90$pi_n.pi_s, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(outc.dat$generation, outc.dat$pi_n.pi_s, type="o", col="green3", lty=2, pch=2)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$pi_n.pi_s, type="o", pch=16, col="green3")
 	points(self.dat99$generation + (jitter*2), self.dat99$pi_n.pi_s, type="o", col="red", lty=2, pch=2)
@@ -115,7 +195,17 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	points(asex.dat90$generation + (jitter*8), asex.dat90$pi_n.pi_s, type="o", col="darkorchid2", lty=2, pch=2)
 	points(bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$pi_n.pi_s, type="o", pch=16, col="darkorchid2")
 	
-	plot(0, type="n", xlim=xlimits, ylim=c(0, 0.001), xlab="Generation", ylab="pi", main="pi")
+	plot(0, type="n", xlim=xlimits, ylim=c(0, 0.0005), xlab="Generation", ylab="pi", main="pi")
+	errbar(add=TRUE, outc.dat$generation, outc.dat$pi, yminus=outc.dat$pi-ci.outc.dat$pi, yplus=outc.dat$pi+ci.outc.dat$pi, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$pi, yminus=bens.outc.dat$pi-ci.bens.outc.dat$pi, yplus=bens.outc.dat$pi+ci.bens.outc.dat$pi, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat99$generation + (jitter*2), self.dat99$pi, yminus=self.dat99$pi-ci.self.dat99$pi, yplus=self.dat99$pi+ci.self.dat99$pi, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$pi, yminus=bens.self.dat99$pi-ci.bens.self.dat99$pi, yplus=bens.self.dat99$pi+ci.bens.self.dat99$pi, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat90$generation + (jitter*4), self.dat90$pi, yminus=self.dat90$pi-ci.self.dat90$pi, yplus=self.dat90$pi+ci.self.dat90$pi, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$pi, yminus=bens.self.dat90$pi-ci.bens.self.dat90$pi, yplus=bens.self.dat90$pi+ci.bens.self.dat90$pi, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat99$generation + (jitter*6), asex.dat99$pi, yminus=asex.dat99$pi-ci.asex.dat99$pi, yplus=asex.dat99$pi+ci.asex.dat99$pi, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$pi, yminus=bens.asex.dat99$pi-ci.bens.asex.dat99$pi, yplus=bens.asex.dat99$pi+ci.bens.asex.dat99$pi, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat90$generation + (jitter*8), asex.dat90$pi, yminus=asex.dat90$pi-ci.asex.dat90$pi, yplus=asex.dat90$pi+ci.asex.dat90$pi , errbar.col="darkorchid2", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$pi, yminus=bens.asex.dat90$pi-ci.bens.asex.dat90$pi, yplus=bens.asex.dat90$pi+ci.bens.asex.dat90$pi, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(outc.dat$generation, outc.dat$pi, type="o", pch=2, col="green3", lty=2)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$pi, type="o", pch=16, col="green3")
 	points(self.dat99$generation + (jitter*2), self.dat99$pi, type="o", pch=2, col="red", lty=2)
@@ -128,7 +218,17 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	points(bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$pi, type="o", pch=16, col="darkorchid2")
 	legend("topright", pch=rep(c(2,16), 5), lty=rep(c(2,1), 5), col=c("green3", "green3", "darkorchid2", "darkorchid2", "blue", "blue", "orange", "orange", "red", "red"), c("Outc del", "Outc ben-del", "90% asex del", "90% asex ben-del", "99% asex del", "99% asex ben-del", "90% self del", "90% self ben-del", "99% self del", "99% self ben-del"), bg="white", ncol=2, cex=0.95)
 	
-	plot(0, type="n", xlim=xlimits, ylim=c(0, 0.001), xlab="Generation", ylab="pi_n", main="pi_n")
+	plot(0, type="n", xlim=xlimits, ylim=c(0, 0.0005), xlab="Generation", ylab="pi_n", main="pi_n")
+	errbar(add=TRUE, outc.dat$generation, outc.dat$pi_n, yminus=outc.dat$pi_n-ci.outc.dat$pi_n, yplus=outc.dat$pi_n+ci.outc.dat$pi_n, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$pi_n, yminus=bens.outc.dat$pi_n-ci.bens.outc.dat$pi_n, yplus=bens.outc.dat$pi_n+ci.bens.outc.dat$pi_n, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat99$generation + (jitter*2), self.dat99$pi_n, yminus=self.dat99$pi_n-ci.self.dat99$pi_n, yplus=self.dat99$pi_n+ci.self.dat99$pi_n, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$pi_n, yminus=bens.self.dat99$pi_n-ci.bens.self.dat99$pi_n, yplus=bens.self.dat99$pi_n+ci.bens.self.dat99$pi_n, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat90$generation + (jitter*4), self.dat90$pi_n, yminus=self.dat90$pi_n-ci.self.dat90$pi_n, yplus=self.dat90$pi_n+ci.self.dat90$pi_n, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$pi_n, yminus=bens.self.dat90$pi_n-ci.bens.self.dat90$pi_n, yplus=bens.self.dat90$pi_n+ci.bens.self.dat90$pi_n, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat99$generation + (jitter*6), asex.dat99$pi_n, yminus=asex.dat99$pi_n-ci.asex.dat99$pi_n, yplus=asex.dat99$pi_n+ci.asex.dat99$pi_n, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$pi_n, yminus=bens.asex.dat99$pi_n-ci.bens.asex.dat99$pi_n, yplus=bens.asex.dat99$pi_n+ci.bens.asex.dat99$pi_n, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat90$generation + (jitter*8), asex.dat90$pi_n, yminus=asex.dat90$pi_n-ci.asex.dat90$pi_n, yplus=asex.dat90$pi_n+ci.asex.dat90$pi_n , errbar.col="darkorchid2", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$pi_n, yminus=bens.asex.dat90$pi_n-ci.bens.asex.dat90$pi_n, yplus=bens.asex.dat90$pi_n+ci.bens.asex.dat90$pi_n, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(outc.dat$generation, outc.dat$pi_n, type="o", col="green3", lty=2, pch=2)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$pi_n, type="o", pch=16, col="green3")
 	points(self.dat99$generation + (jitter*2), self.dat99$pi_n, type="o", col="red", lty=2, pch=2)
@@ -140,7 +240,17 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	points(asex.dat90$generation + (jitter*8), asex.dat90$pi_n, type="o", col="darkorchid2", lty=2, pch=2)
 	points(bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$pi_n, type="o", pch=16, col="darkorchid2")
 	
-	plot(0, type="n", xlim=xlimits, ylim=c(0, 0.001), xlab="Generation", ylab="pi_s", main="pi_s")
+	plot(0, type="n", xlim=xlimits, ylim=c(0, 0.0005), xlab="Generation", ylab="pi_s", main="pi_s")
+	errbar(add=TRUE, outc.dat$generation, outc.dat$pi_s, yminus=outc.dat$pi_s-ci.outc.dat$pi_s, yplus=outc.dat$pi_s+ci.outc.dat$pi_s, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$pi_s, yminus=bens.outc.dat$pi_s-ci.bens.outc.dat$pi_s, yplus=bens.outc.dat$pi_s+ci.bens.outc.dat$pi_s, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat99$generation + (jitter*2), self.dat99$pi_s, yminus=self.dat99$pi_s-ci.self.dat99$pi_s, yplus=self.dat99$pi_s+ci.self.dat99$pi_s, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$pi_s, yminus=bens.self.dat99$pi_s-ci.bens.self.dat99$pi_s, yplus=bens.self.dat99$pi_s+ci.bens.self.dat99$pi_s, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat90$generation + (jitter*4), self.dat90$pi_s, yminus=self.dat90$pi_s-ci.self.dat90$pi_s, yplus=self.dat90$pi_s+ci.self.dat90$pi_s, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$pi_s, yminus=bens.self.dat90$pi_s-ci.bens.self.dat90$pi_s, yplus=bens.self.dat90$pi_s+ci.bens.self.dat90$pi_s, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat99$generation + (jitter*6), asex.dat99$pi_s, yminus=asex.dat99$pi_s-ci.asex.dat99$pi_s, yplus=asex.dat99$pi_s+ci.asex.dat99$pi_s, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$pi_s, yminus=bens.asex.dat99$pi_s-ci.bens.asex.dat99$pi_s, yplus=bens.asex.dat99$pi_s+ci.bens.asex.dat99$pi_s, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat90$generation + (jitter*8), asex.dat90$pi_s, yminus=asex.dat90$pi_s-ci.asex.dat90$pi_s, yplus=asex.dat90$pi_s+ci.asex.dat90$pi_s , errbar.col="darkorchid2", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$pi_s, yminus=bens.asex.dat90$pi_s-ci.bens.asex.dat90$pi_s, yplus=bens.asex.dat90$pi_s+ci.bens.asex.dat90$pi, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(outc.dat$generation, outc.dat$pi_s, type="o", pch=2, col="green3", lty=2)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$pi_s, type="o", pch=16, col="green3")
 	points(self.dat99$generation + (jitter*2), self.dat99$pi_s, type="o", pch=2, col="red", lty=2)
@@ -243,6 +353,16 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	
 	par(mfrow=c(2,2), mar=c(4,4,1,0.5))
 	plot(0, type="n", xlim=xlimits, ylim=c(0, 7500), xlab="Generation", ylab="Mean # (poly + fixed) mutations per individual", main="Deleterious mutations only")
+	errbar(add=TRUE, outc.dat$generation, outc.dat$mean.delet.muts.per.ind.all, yminus=outc.dat$mean.delet.muts.per.ind.all-ci.outc.dat$mean.delet.muts.per.ind.all, yplus=outc.dat$mean.delet.muts.per.ind.all+ci.outc.dat$mean.delet.muts.per.ind.all, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$mean.delet.muts.per.ind.all, yminus=bens.outc.dat$mean.delet.muts.per.ind.all-ci.bens.outc.dat$mean.delet.muts.per.ind.all, yplus=bens.outc.dat$mean.delet.muts.per.ind.all+ci.bens.outc.dat$mean.delet.muts.per.ind.all, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat99$generation + (jitter*2), self.dat99$mean.delet.muts.per.ind.all, yminus=self.dat99$mean.delet.muts.per.ind.all-ci.self.dat99$mean.delet.muts.per.ind.all, yplus=self.dat99$mean.delet.muts.per.ind.all+ci.self.dat99$mean.delet.muts.per.ind.all, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$mean.delet.muts.per.ind.all, yminus=bens.self.dat99$mean.delet.muts.per.ind.all-ci.bens.self.dat99$mean.delet.muts.per.ind.all, yplus=bens.self.dat99$mean.delet.muts.per.ind.all+ci.bens.self.dat99$mean.delet.muts.per.ind.all, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat90$generation + (jitter*4), self.dat90$mean.delet.muts.per.ind.all, yminus=self.dat90$mean.delet.muts.per.ind.all-ci.self.dat90$mean.delet.muts.per.ind.all, yplus=self.dat90$mean.delet.muts.per.ind.all+ci.self.dat90$mean.delet.muts.per.ind.all, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$mean.delet.muts.per.ind.all, yminus=bens.self.dat90$mean.delet.muts.per.ind.all-ci.bens.self.dat90$mean.delet.muts.per.ind.all, yplus=bens.self.dat90$mean.delet.muts.per.ind.all+ci.bens.self.dat90$mean.delet.muts.per.ind.all, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat99$generation + (jitter*6), asex.dat99$mean.delet.muts.per.ind.all, yminus=asex.dat99$mean.delet.muts.per.ind.all-ci.asex.dat99$mean.delet.muts.per.ind.all, yplus=asex.dat99$mean.delet.muts.per.ind.all+ci.asex.dat99$mean.delet.muts.per.ind.all, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$mean.delet.muts.per.ind.all, yminus=bens.asex.dat99$mean.delet.muts.per.ind.all-ci.bens.asex.dat99$mean.delet.muts.per.ind.all, yplus=bens.asex.dat99$mean.delet.muts.per.ind.all+ci.bens.asex.dat99$mean.delet.muts.per.ind.all, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat90$generation + (jitter*8), asex.dat90$mean.delet.muts.per.ind.all, yminus=asex.dat90$mean.delet.muts.per.ind.all-ci.asex.dat90$mean.delet.muts.per.ind.all, yplus=asex.dat90$mean.delet.muts.per.ind.all+ci.asex.dat90$mean.delet.muts.per.ind.all , errbar.col="darkorchid2", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$mean.delet.muts.per.ind.all, yminus=bens.asex.dat90$mean.delet.muts.per.ind.all-ci.bens.asex.dat90$mean.delet.muts.per.ind.all, yplus=bens.asex.dat90$mean.delet.muts.per.ind.all+ci.bens.asex.dat90$mean.delet.muts.per.ind.all, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(outc.dat$generation, outc.dat$mean.delet.muts.per.ind.all, type="o", col="green3", lty=2, pch=2)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$mean.delet.muts.per.ind.all, type="o", pch=16, col="green3")
 	points(self.dat99$generation + (jitter*2), self.dat99$mean.delet.muts.per.ind.all, type="o", col="red", lty=2, pch=2)
@@ -255,6 +375,11 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	points(bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$mean.delet.muts.per.ind.all, type="o", pch=16, col="darkorchid2")
 	
 	plot(0, type="n", xlim=xlimits, ylim=c(0, 1000), xlab="Generation", ylab="Mean # (poly + fixed) mutations per individual", main="Beneficial mutations only")
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$mean.ben.muts.per.ind.all, yminus=bens.outc.dat$mean.ben.muts.per.ind.all-ci.bens.outc.dat$mean.ben.muts.per.ind.all, yplus=bens.outc.dat$mean.ben.muts.per.ind.all+ci.bens.outc.dat$mean.ben.muts.per.ind.all, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$mean.ben.muts.per.ind.all, yminus=bens.self.dat99$mean.ben.muts.per.ind.all-ci.bens.self.dat99$mean.ben.muts.per.ind.all, yplus=bens.self.dat99$mean.ben.muts.per.ind.all+ci.bens.self.dat99$mean.ben.muts.per.ind.all, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$mean.ben.muts.per.ind.all, yminus=bens.self.dat90$mean.ben.muts.per.ind.all-ci.bens.self.dat90$mean.ben.muts.per.ind.all, yplus=bens.self.dat90$mean.ben.muts.per.ind.all+ci.bens.self.dat90$mean.ben.muts.per.ind.all, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$mean.ben.muts.per.ind.all, yminus=bens.asex.dat99$mean.ben.muts.per.ind.all-ci.bens.asex.dat99$mean.ben.muts.per.ind.all, yplus=bens.asex.dat99$mean.ben.muts.per.ind.all+ci.bens.asex.dat99$mean.ben.muts.per.ind.all, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$mean.ben.muts.per.ind.all, yminus=bens.asex.dat90$mean.ben.muts.per.ind.all-ci.bens.asex.dat90$mean.ben.muts.per.ind.all, yplus=bens.asex.dat90$mean.ben.muts.per.ind.all+ci.bens.asex.dat90$mean.ben.muts.per.ind.all, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$mean.ben.muts.per.ind.all, type="o", pch=16, col="green3")
 	points(bens.self.dat99$generation + (jitter*3), bens.self.dat99$mean.ben.muts.per.ind.all, type="o", pch=16, col="red")
 	points(bens.self.dat90$generation + (jitter*5), bens.self.dat90$mean.ben.muts.per.ind.all, type="o", pch=16, col="orange")
@@ -262,6 +387,16 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	points(bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$mean.ben.muts.per.ind.all, type="o", pch=16, col="darkorchid2")
 	
 	plot(0, type="n", xlim=xlimits, ylim=c(0, 5000), xlab="Generation", ylab="Total # Delet Fixed Mutations", main="Deleterious mutations only")
+	errbar(add=TRUE, outc.dat$generation, outc.dat$num.delet.muts.fixed, yminus=outc.dat$num.delet.muts.fixed-ci.outc.dat$num.delet.muts.fixed, yplus=outc.dat$num.delet.muts.fixed+ci.outc.dat$num.delet.muts.fixed, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$num.delet.muts.fixed, yminus=bens.outc.dat$num.delet.muts.fixed-ci.bens.outc.dat$num.delet.muts.fixed, yplus=bens.outc.dat$num.delet.muts.fixed+ci.bens.outc.dat$num.delet.muts.fixed, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat99$generation + (jitter*2), self.dat99$num.delet.muts.fixed, yminus=self.dat99$num.delet.muts.fixed-ci.self.dat99$num.delet.muts.fixed, yplus=self.dat99$num.delet.muts.fixed+ci.self.dat99$num.delet.muts.fixed, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$num.delet.muts.fixed, yminus=bens.self.dat99$num.delet.muts.fixed-ci.bens.self.dat99$num.delet.muts.fixed, yplus=bens.self.dat99$num.delet.muts.fixed+ci.bens.self.dat99$num.delet.muts.fixed, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, self.dat90$generation + (jitter*4), self.dat90$num.delet.muts.fixed, yminus=self.dat90$num.delet.muts.fixed-ci.self.dat90$num.delet.muts.fixed, yplus=self.dat90$num.delet.muts.fixed+ci.self.dat90$num.delet.muts.fixed, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$num.delet.muts.fixed, yminus=bens.self.dat90$num.delet.muts.fixed-ci.bens.self.dat90$num.delet.muts.fixed, yplus=bens.self.dat90$num.delet.muts.fixed+ci.bens.self.dat90$num.delet.muts.fixed, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat99$generation + (jitter*6), asex.dat99$num.delet.muts.fixed, yminus=asex.dat99$num.delet.muts.fixed-ci.asex.dat99$num.delet.muts.fixed, yplus=asex.dat99$num.delet.muts.fixed+ci.asex.dat99$num.delet.muts.fixed, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$num.delet.muts.fixed, yminus=bens.asex.dat99$num.delet.muts.fixed-ci.bens.asex.dat99$num.delet.muts.fixed, yplus=bens.asex.dat99$num.delet.muts.fixed+ci.bens.asex.dat99$num.delet.muts.fixed, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, asex.dat90$generation + (jitter*8), asex.dat90$num.delet.muts.fixed, yminus=asex.dat90$num.delet.muts.fixed-ci.asex.dat90$num.delet.muts.fixed, yplus=asex.dat90$num.delet.muts.fixed+ci.asex.dat90$num.delet.muts.fixed , errbar.col="darkorchid2", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$num.delet.muts.fixed, yminus=bens.asex.dat90$num.delet.muts.fixed-ci.bens.asex.dat90$num.delet.muts.fixed, yplus=bens.asex.dat90$num.delet.muts.fixed+ci.bens.asex.dat90$num.delet.muts.fixed, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(outc.dat$generation, outc.dat$num.delet.muts.fixed, type="o", col="green3", lty=2, pch=2)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$num.delet.muts.fixed, type="o", pch=16, col="green3")
 	points(self.dat99$generation + (jitter*2), self.dat99$num.delet.muts.fixed, type="o", col="red", lty=2, pch=2)
@@ -274,6 +409,11 @@ plots.summ.stats <- function(output.filename, dat, bendat, xlimits, jitter=25, g
 	points(bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$num.delet.muts.fixed, type="o", pch=16, col="darkorchid2")
 	
 	plot(0, type="n", xlim=xlimits, ylim=c(0, 1000), xlab="Generation", ylab="Total # Beneficial Fixed Mutations", main="Beneficial mutations only")
+	errbar(add=TRUE, bens.outc.dat$generation + jitter, bens.outc.dat$num.ben.muts.fixed, yminus=bens.outc.dat$num.ben.muts.fixed-ci.bens.outc.dat$num.ben.muts.fixed, yplus=bens.outc.dat$num.ben.muts.fixed+ci.bens.outc.dat$num.ben.muts.fixed, errbar.col="green3", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat99$generation + (jitter*3), bens.self.dat99$num.ben.muts.fixed, yminus=bens.self.dat99$num.ben.muts.fixed-ci.bens.self.dat99$num.ben.muts.fixed, yplus=bens.self.dat99$num.ben.muts.fixed+ci.bens.self.dat99$num.ben.muts.fixed, errbar.col="red", col="white", cex=0.1)
+	errbar(add=TRUE, bens.self.dat90$generation + (jitter*5), bens.self.dat90$num.ben.muts.fixed, yminus=bens.self.dat90$num.ben.muts.fixed-ci.bens.self.dat90$num.ben.muts.fixed, yplus=bens.self.dat90$num.ben.muts.fixed+ci.bens.self.dat90$num.ben.muts.fixed, errbar.col="orange", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat99$generation + (jitter*7), bens.asex.dat99$num.ben.muts.fixed, yminus=bens.asex.dat99$num.ben.muts.fixed-ci.bens.asex.dat99$num.ben.muts.fixed, yplus=bens.asex.dat99$num.ben.muts.fixed+ci.bens.asex.dat99$num.ben.muts.fixed, errbar.col="blue", col="white", cex=0.1)
+	errbar(add=TRUE, bens.asex.dat90$generation + (jitter*9), bens.asex.dat90$num.ben.muts.fixed, yminus=bens.asex.dat90$num.ben.muts.fixed-ci.bens.asex.dat90$num.ben.muts.fixed, yplus=bens.asex.dat90$num.ben.muts.fixed+ci.bens.asex.dat90$num.ben.muts.fixed, errbar.col="darkorchid2", col="white", cex=0.1)
 	points(bens.outc.dat$generation + jitter, bens.outc.dat$num.ben.muts.fixed, type="o", pch=16, col="green3")
 	points(bens.self.dat99$generation + (jitter*3), bens.self.dat99$num.ben.muts.fixed, type="o", pch=16, col="red")
 	points(bens.self.dat90$generation + (jitter*5), bens.self.dat90$num.ben.muts.fixed, type="o", pch=16, col="orange")
