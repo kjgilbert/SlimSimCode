@@ -1,6 +1,6 @@
 # the function:
 
-make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.inds.sampled, genome.size, filename, fold=FALSE, use.manual.sample=FALSE){
+make.est_alpha_omega.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.inds.sampled, genome.size, filename, use.manual.sample=FALSE){
 
 	# because diploid:
 	sample.size <- 2 * num.inds.sampled
@@ -14,20 +14,16 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 	#	m2, 3 = deleterious selected site in coding
 	#	m4 = beneficial selected site in coding
 		
-	if(is.null(fixed.dat)){
-		num.neut.muts.fixed <- 0
-		num.seln.muts.fixed <- 0	
-	}else{
-		# tack on fixed data and then can include counts for 0's
-		fixed.mut.dat <- fixed.dat[fixed.dat$gen.fixed > as.numeric(4000) & fixed.dat$gen.fixed <= as.numeric(generation) ,]	# only do 4N onward fixations
-			# this gives only mutations that have fixed PRIOR to and INCLUDING WITHIN the current generation time point sampled
-		fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
-		fixed.seln.mut.IDs <- fixed.mut.dat$mut.ID[-fixed.neut.muts]
-		fixed.neut.mut.IDs <- fixed.mut.dat$mut.ID[fixed.neut.muts]
-		
-		num.neut.muts.fixed <- length(fixed.neut.mut.IDs)
-		num.seln.muts.fixed <- length(fixed.seln.mut.IDs)
-	}
+# tack on fixed data and then can include counts for 0's
+	fixed.mut.dat <- fixed.dat[fixed.dat$gen.fixed > as.numeric(40000) & fixed.dat$gen.fixed <= as.numeric(generation) ,]
+		# this gives only mutations that have fixed PRIOR to and INCLUDING WITHIN the current generation time point sampled
+	fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
+	fixed.seln.mut.IDs <- fixed.mut.dat$mut.ID[-fixed.neut.muts]
+	fixed.neut.mut.IDs <- fixed.mut.dat$mut.ID[fixed.neut.muts]
+	
+	num.neut.muts.fixed <- length(fixed.neut.mut.IDs)
+	num.seln.muts.fixed <- length(fixed.seln.mut.IDs)
+	
 	
 	neut.muts <- poly.dat[poly.dat$mut.type == "m1" ,]
 	seln.muts <- poly.dat[poly.dat$mut.type != "m1" ,]
@@ -121,26 +117,17 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 	ordered.seln <- temp.seln[order(temp.seln[,1]), c(1,2)]
 	final.sfs.seln <- ordered.seln[,2]
 	
-	if(fold == TRUE){
-		# fold the site frequency table back on itself
-		# take freqs 0-99 and bin with freqs 200-101, then 100 stays on its own at the end (but it's actually 101 because R starts counting at 1, not 0)
-		final.sfs.seln <- c(final.sfs.seln[1:num.inds.sampled] + final.sfs.seln[(sample.size+1):(num.inds.sampled+2)], final.sfs.seln[(num.inds.sampled + 1)], rep(0, num.inds.sampled))
-		final.sfs.neut <- c(final.sfs.neut[1:num.inds.sampled] + final.sfs.neut[(sample.size+1):(num.inds.sampled+2)], final.sfs.neut[(num.inds.sampled + 1)], rep(0, num.inds.sampled))
-	}
+	# take just the number of fixations (last number in the sfs) as the "selected" and "neutral" "differences" because it's supposed to be a species level thing
+	seln.fixed.sites <- final.sfs.seln[(sample.size + 1)]
+	neut.fixed.sites <- final.sfs.neut[(sample.size + 1)]
 
-	dfe.input <- paste(c(
-	"1
-", sample.size,"
-", paste(c(final.sfs.seln), collapse=" "),"
-", paste(c(final.sfs.neut), collapse=" ")
-	), collapse="")
+
+	seln.line <- paste(c("1", as.character(format(0.75*genome.size, scientific=FALSE)), seln.fixed.sites), collapse=" ")
+	neut.line <- paste(c("0", as.character(format(0.25*genome.size, scientific=FALSE)), neut.fixed.sites), collapse=" ")
 	
-	if(fold == FALSE){
-		write(dfe.input, file=paste(c("Unfolded", filename), collapse=""))
-	}
-	if(fold == TRUE){
-		write(dfe.input, file=paste(c("Folded", filename), collapse=""))	
-	}
+	alpha_omega.input <- paste(c(seln.line, neut.line), collapse="\n")
+
+	write(alpha_omega.input, file=paste(c("Divergence", filename), collapse=""))	
 }
 #____________________________________________________________________________________________________#
 
@@ -149,16 +136,15 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 
 
 
-gen <- 10000
+gen <- 100000
 inds.sampled <- 100
-pop.size <- 1000
+pop.size <- 10000
 
 
 args <- commandArgs(trailingOnly=TRUE)
 
-
-gsize <- as.numeric(args[4])
-
+gsize <- as.numeric(args[4]
+)
 setwd(as.character(args[3]))
 
 #____________________________________________________________________________________________________#
@@ -188,26 +174,22 @@ if(args[2] == "subsample"){
 }		
 
 ## fixed data output
-if(length(readLines(paste(c("FixedOutput_", as.character(args[1])), collapse=""))) == 2){	# then no mutations fixed
-	fdat <- NULL
-}else{	# otherwise read in fixed mutations as normal
-	fixed.mut.id.start <- 2
-	fdat <- read.table(paste(c("FixedOutput_", as.character(args[1])), collapse=""), skip=fixed.mut.id.start)
-	names(fdat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
-}
+fixed.mut.id.start <- 2
+fdat <- read.table(paste(c("FixedOutput_", as.character(args[1])), collapse=""), skip=fixed.mut.id.start)
+names(fdat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
 
 #____________________________________________________________________________________________________#
 
 if(args[2] == "subsample"){
-	outfile <- paste(c("DFE_SFS_subsamp_", as.character(args[1])), collapse="")
-	make.est_dfe.input(poly.dat=pdat, genome.dat=gdat, fixed.dat=fdat, 
+	outfile <- paste(c("_alphaOmega_subsamp_", as.character(args[1])), collapse="")
+	make.est_alpha_omega.input(poly.dat=pdat, genome.dat=gdat, fixed.dat=fdat, 
 	generation=gen, num.inds.sampled=inds.sampled, genome.size=gsize, 
-	filename=outfile, fold=TRUE, use.manual.sample=TRUE)
+	filename=outfile, use.manual.sample=TRUE)
 }else{
-	outfile <- paste(c("DFE_SFS_full_", as.character(args[1])), collapse="")
-	make.est_dfe.input(poly.dat=pdat, genome.dat=gdat, fixed.dat=fdat, 
+	outfile <- paste(c("_alphaOmega_full_", as.character(args[1])), collapse="")
+	make.est_alpha_omega.input(poly.dat=pdat, genome.dat=gdat, fixed.dat=fdat, 
 	generation=gen, num.inds.sampled=pop.size, genome.size=gsize, 
-	filename=outfile, fold=TRUE, use.manual.sample=FALSE)
+	filename=outfile, use.manual.sample=FALSE)
 }
 
 	

@@ -32,7 +32,7 @@ then
 fi
 if echo $base_name | grep 25mbp
 then
-    genosize=25000000
+	genosize=25000000
 fi
 if echo $base_name | grep 26mbp
 then
@@ -42,17 +42,20 @@ if echo $base_name | grep 30mbp
 then
 	genosize=30000000
 fi
-Rscript CommandLine_RunSlimToDFEconversion_N1000.R $base_name subsample $dir $genosize
+# turn the sample files into a format suitable for a "FullOutput..." file
+Rscript CommandLine_MakeModifiedFullSampleFile_ForDFEinput.R $base_name $dir
+# then analyze like normal:
+Rscript CommandLine_RunSlimToDFEconversion_N1e5_4Nonward.R $base_name subsample $dir $genosize
 # create divergence file (for all of them because easier to do in this loop anyway
-Rscript CommandLine_RunSlimToAlphaOmega_N1000.R $base_name subsample $dir $genosize
+Rscript CommandLine_RunSlimToAlphaOmega_N1e5_4Nonward.R $base_name subsample $dir $genosize
 done
 
 # now all the SFS inputs for DFE are ready
 # go through each and do the DFE analyses
 
 # put all those file names in a list
-## IF ONLY DOING SUBSAMPS: ls $dir | grep DFE_SFS_sub > DFE_InputNames.txt
 ls $dir | grep DFE_SFS_sub > DFE_InputNames.txt
+
 
 for input in `cat DFE_InputNames.txt`
 do

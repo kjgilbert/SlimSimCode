@@ -14,20 +14,16 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 	#	m2, 3 = deleterious selected site in coding
 	#	m4 = beneficial selected site in coding
 		
-	if(is.null(fixed.dat)){
-		num.neut.muts.fixed <- 0
-		num.seln.muts.fixed <- 0	
-	}else{
-		# tack on fixed data and then can include counts for 0's
-		fixed.mut.dat <- fixed.dat[fixed.dat$gen.fixed > as.numeric(4000) & fixed.dat$gen.fixed <= as.numeric(generation) ,]	# only do 4N onward fixations
-			# this gives only mutations that have fixed PRIOR to and INCLUDING WITHIN the current generation time point sampled
-		fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
-		fixed.seln.mut.IDs <- fixed.mut.dat$mut.ID[-fixed.neut.muts]
-		fixed.neut.mut.IDs <- fixed.mut.dat$mut.ID[fixed.neut.muts]
-		
-		num.neut.muts.fixed <- length(fixed.neut.mut.IDs)
-		num.seln.muts.fixed <- length(fixed.seln.mut.IDs)
-	}
+# tack on fixed data and then can include counts for 0's
+	fixed.mut.dat <- fixed.dat[fixed.dat$gen.fixed > as.numeric(400000) & fixed.dat$gen.fixed <= as.numeric(generation) ,]
+		# this gives only mutations that have fixed PRIOR to and INCLUDING WITHIN the current generation time point sampled
+	fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
+	fixed.seln.mut.IDs <- fixed.mut.dat$mut.ID[-fixed.neut.muts]
+	fixed.neut.mut.IDs <- fixed.mut.dat$mut.ID[fixed.neut.muts]
+	
+	num.neut.muts.fixed <- length(fixed.neut.mut.IDs)
+	num.seln.muts.fixed <- length(fixed.seln.mut.IDs)
+	
 	
 	neut.muts <- poly.dat[poly.dat$mut.type == "m1" ,]
 	seln.muts <- poly.dat[poly.dat$mut.type != "m1" ,]
@@ -149,9 +145,10 @@ make.est_dfe.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.
 
 
 
-gen <- 10000
+gen <- 1000000
 inds.sampled <- 100
-pop.size <- 1000
+pop.size <- 100000
+last.gen.sample.size <- 1000
 
 
 args <- commandArgs(trailingOnly=TRUE)
@@ -165,36 +162,29 @@ setwd(as.character(args[3]))
 
 
 ## full data output
-full.file <- paste(c("FullOutput_", as.character(args[1])), collapse="")
+full.file <- paste(c("ModifiedSampleOutput_", as.character(args[1])), collapse="")
 
 full.samp.muts.start <- as.numeric(unlist(strsplit(system(paste(c("grep -n Mutations ", full.file), collapse=""), intern=TRUE), split=":"))[1])
-full.samp.inds.start <- as.numeric(unlist(strsplit(system(paste(c("grep -n Individuals ", full.file), collapse=""), intern=TRUE), split=":"))[1])
 full.samp.genomes.start <- as.numeric(unlist(strsplit(system(paste(c("grep -n Genomes ", full.file), collapse=""), intern=TRUE), split=":"))[1])
 full.samp.file.end <- as.numeric(head(tail(unlist(strsplit(system(paste(c("wc -l ", full.file), collapse=""), intern=TRUE), split=" ")), n=2), n=1))	
 
-pdat <- read.table(full.file, skip=full.samp.muts.start, nrow=((full.samp.inds.start-1) - full.samp.muts.start), sep=" ")
+pdat <- read.table(full.file, skip=full.samp.muts.start, nrow=((full.samp.genomes.start-1) - full.samp.muts.start), sep=" ")
 names(pdat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
 		
-gdat <- read.table(full.file, skip=full.samp.genomes.start, nrow=(pop.size*2), sep="A")
+gdat <- read.table(full.file, skip=full.samp.genomes.start, nrow=(full.samp.file.end - full.samp.genomes.start), sep="A")
 
-# run this part when subsampling, i.e. NOT using the FULL population output, otherwise gdat is not changed and all 10000 inds or whatever are used
-if(args[2] == "subsample"){
-	# sample from a vector of odd numbers since all inds have 2 paired genomes (diploid) and they start on an odd line and end on an even line
-	odd.nums <- seq(1, (pop.size * 2), by=2)
-	sub.samp <- sample(odd.nums, size=inds.sampled, replace=FALSE)
-	diploid.sub.samp <- sort(c(sub.samp, (sub.samp + 1)))
+# sample from a vector of odd numbers since all inds have 2 paired genomes (diploid) and they start on an odd line and end on an even line
+odd.nums <- seq(1, (last.gen.sample.size * 2), by=2)
+sub.samp <- sample(odd.nums, size=inds.sampled, replace=FALSE)
+diploid.sub.samp <- sort(c(sub.samp, (sub.samp + 1)))
 					
-	gdat <- gdat[diploid.sub.samp ,]	
-}		
+gdat <- gdat[diploid.sub.samp ,]	
+		
 
 ## fixed data output
-if(length(readLines(paste(c("FixedOutput_", as.character(args[1])), collapse=""))) == 2){	# then no mutations fixed
-	fdat <- NULL
-}else{	# otherwise read in fixed mutations as normal
-	fixed.mut.id.start <- 2
-	fdat <- read.table(paste(c("FixedOutput_", as.character(args[1])), collapse=""), skip=fixed.mut.id.start)
-	names(fdat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
-}
+fixed.mut.id.start <- 2
+fdat <- read.table(paste(c("FixedOutput_", as.character(args[1])), collapse=""), skip=fixed.mut.id.start)
+names(fdat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
 
 #____________________________________________________________________________________________________#
 
