@@ -1,6 +1,6 @@
 # the function:
 
-make.est_alpha_omega.input <- function(poly.dat, genome.dat, generation, num.inds.sampled, genome.size, filename, use.manual.sample=FALSE){
+make.est_alpha_omega.input <- function(poly.dat, genome.dat, fixed.dat, generation, num.inds.sampled, genome.size, filename, use.manual.sample=FALSE){
 
 	# because diploid:
 	sample.size <- 2 * num.inds.sampled
@@ -15,9 +15,14 @@ make.est_alpha_omega.input <- function(poly.dat, genome.dat, generation, num.ind
 	#	m4 = beneficial selected site in coding
 		
 # tack on fixed data and then can include counts for 0's
+	fixed.mut.dat <- fixed.dat[fixed.dat$gen.fixed <= as.numeric(generation) ,]
+		# this gives only mutations that have fixed PRIOR to and INCLUDING WITHIN the current generation time point sampled
+	fixed.neut.muts <- c(which(fixed.mut.dat$mut.type == "m1"))
+	fixed.seln.mut.IDs <- fixed.mut.dat$mut.ID[-fixed.neut.muts]
+	fixed.neut.mut.IDs <- fixed.mut.dat$mut.ID[fixed.neut.muts]
 	
-	num.neut.muts.fixed <- 0
-	num.seln.muts.fixed <- 0
+	num.neut.muts.fixed <- length(fixed.neut.mut.IDs)
+	num.seln.muts.fixed <- length(fixed.seln.mut.IDs)
 	
 	
 	neut.muts <- poly.dat[poly.dat$mut.type == "m1" ,]
@@ -162,17 +167,21 @@ gdat <- read.table(full.file, skip=full.samp.genomes.start, nrow=(full.samp.file
 
 
 ## fixed data output
-# none because no fixations
+fixed.mut.id.start <- 2
+fdat <- read.table(paste(c("FixedOutput_", paste(unlist(strsplit(as.character(args[1]), split="_"))[-1], collapse="_")), collapse=""), skip=fixed.mut.id.start)
+names(fdat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
 
 #____________________________________________________________________________________________________#
 
 if(args[2] == "subsample"){
 	outfile <- paste(c("_alphaOmega_subsamp_gen", as.character(args[1])), collapse="")
-	make.est_alpha_omega.input(poly.dat=pdat, genome.dat=gdat, generation=gen, num.inds.sampled=inds.sampled, genome.size=gsize, 
+	make.est_alpha_omega.input(poly.dat=pdat, genome.dat=gdat, fixed.dat=fdat, 
+	generation=gen, num.inds.sampled=inds.sampled, genome.size=gsize, 
 	filename=outfile, use.manual.sample=TRUE)
 }else{
 	outfile <- paste(c("_alphaOmega_full_gen", as.character(args[1])), collapse="")
-	make.est_alpha_omega.input(poly.dat=pdat, genome.dat=gdat, generation=gen, num.inds.sampled=pop.size, genome.size=gsize, 
+	make.est_alpha_omega.input(poly.dat=pdat, genome.dat=gdat, fixed.dat=fdat, 
+	generation=gen, num.inds.sampled=pop.size, genome.size=gsize, 
 	filename=outfile, use.manual.sample=FALSE)
 }
 

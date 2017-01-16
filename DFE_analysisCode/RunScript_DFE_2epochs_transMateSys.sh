@@ -28,7 +28,11 @@ then
 fi
 if echo $base_name | grep 24mbp
 then
-	genosize=24000000
+       	genosize=24000000
+fi
+if echo $base_name | grep 25mbp
+then
+	genosize=25000000
 fi
 if echo $base_name | grep 26mbp
 then
