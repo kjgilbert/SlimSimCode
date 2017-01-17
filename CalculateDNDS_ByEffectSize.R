@@ -81,7 +81,7 @@ dnds.summ.stats <- function(fixed.output.files, outfile.name, start.gens, end.ge
 			
 			dnds.stats  <- calc.dn.ds(fixeddat=fixeddat, geno.size=geno.size, from.gen=from.gen, current.gen=current.gen)
 					
-			temp.results <- c(sample.file, from.gen, current.gen, dnds.stats)
+			temp.results <- c(fixed.file, from.gen, current.gen, dnds.stats)
 			write.table(t(temp.results), append=TRUE, file=outfile.name, sep=",", col.names=FALSE)			
 		}
 		
