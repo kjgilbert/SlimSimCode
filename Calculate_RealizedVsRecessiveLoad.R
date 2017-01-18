@@ -161,15 +161,6 @@ cal.seg.load <- function(poly.mut.dat, genome.data, from.gen, current.gen, pop.s
 
 ##fixed.data <- "~/Documents/My_Documents/UofToronto/SLiM/Running_SLiM/Nov19_MatingSystemsEvery10percent/Nov19_Outputs/ResultsOnCapsicum_andOldThings/FixedOutput_Nov19_N10000_25mbp_del_outc_rep1.txt"
 ##samp.dat <- "~/Documents/My_Documents/UofToronto/SLiM/Running_SLiM/Nov19_MatingSystemsEvery10percent/Nov19_Outputs/ResultsOnCapsicum_andOldThings/SampleOutput_Nov19_N10000_25mbp_del_outc_rep1.txt"
-num.gens.sampled <- 9
-num.inds.sampled <- 100
-from.gen <- 40000
-current.gen <- 100000
-pop.size <- 10000
-		## sample data output
-		poly.mut.id.starts <- as.numeric(unlist(strsplit(system(paste(c("grep -n Mutations ", samp.dat), collapse=""), intern=TRUE), split=":"))[seq(1, (2*(num.gens.sampled)), by=2)])
-		generations <- as.numeric(matrix(unlist(strsplit(system(paste(c("grep -n ' GS ' ", samp.dat), collapse=""), intern=TRUE), split=" ")), ncol=4, byrow=TRUE)[,2])
-		genomes.starts <- as.numeric(unlist(strsplit(system(paste(c("grep -n Genomes ", samp.dat), collapse=""), intern=TRUE), split=":"))[seq(1, (2*(num.gens.sampled)), by=2)])
 
 
 
