@@ -57,7 +57,7 @@ calc.fixed.load <- function(fixeddat, from.gen, current.gen, pop.size){
 		))
 }
 
-cal.seg.load <- function(poly.mut.dat, genome.data, from.gen, current.gen, pop.size){
+cal.seg.load <- function(poly.mut.dat, genome.data, from.gen, current.gen, num.inds){
 
 	pop.total.load.w.recessive <- NULL
 	pop.total.del.load.w.recessive <- NULL
@@ -74,7 +74,7 @@ cal.seg.load <- function(poly.mut.dat, genome.data, from.gen, current.gen, pop.s
 	pop.total.load.w.realized_100_inf <- NULL
 
 	# go through inds, find muts per ind
-	for(i in seq(1, (pop.size*2), by=2)){
+	for(i in seq(1, (num.inds*2), by=2)){
 		genome.1.muts <- as.numeric(unlist(strsplit(as.character(genome.data[[i,2]]), split=" "))[-1])
 		genome.2.muts <- as.numeric(unlist(strsplit(as.character(genome.data[[(i+1),2]]), split=" "))[-1])
 	
@@ -208,7 +208,7 @@ do.load.calcs <- function(sample.files, full.files=NULL, fixed.files, pop.size, 
 				names(polydat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
 
 				odd.nums <- seq(1, (pop.size * 2), by=2)
-				sub.samp <- sample(odd.nums, size=num.inds.sampled, replace=FALSE)
+				sub.samp <- sample(odd.nums, size=inds.sampled, replace=FALSE)
 				diploid.sub.samp <- sort(c(sub.samp, (sub.samp + 1)))
 
 				genodat <- read.table(full.file, skip=full.samp.genomes.start, nrow=(pop.size*2), sep="A")
@@ -221,7 +221,7 @@ do.load.calcs <- function(sample.files, full.files=NULL, fixed.files, pop.size, 
 				genodat <- read.table(sample.file, skip=genomes.starts[j], nrow=(num.inds.sampled * 2), sep="A")		
 			}
 			fixed.load <- calc.fixed.load(fixeddat=fixeddat, from.gen, current.gen, pop.size=pop.size)
-			seg.load <- cal.seg.load(poly.mut.dat=polydat, genome.data=genodat, from.gen, current.gen, pop.size=pop.size)
+			seg.load <- cal.seg.load(poly.mut.dat=polydat, genome.data=genodat, from.gen, current.gen, pop.size=pop.size, num.inds=inds.sampled)
 			
 			temp.results <- c(sample.file, gen, fixed.load, seg.load)
 			write.table(t(temp.results), append=TRUE, file=load.stats.output.file, sep=",", col.names=FALSE)
