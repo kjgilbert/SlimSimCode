@@ -221,7 +221,7 @@ do.load.calcs <- function(sample.files, full.files=NULL, fixed.files, pop.size, 
 				genodat <- read.table(sample.file, skip=genomes.starts[j], nrow=(num.inds.sampled * 2), sep="A")		
 			}
 			fixed.load <- calc.fixed.load(fixeddat=fixeddat, from.gen, current.gen, pop.size=pop.size)
-			seg.load <- calc.seg.load(poly.mut.dat=polydat, genome.data=genodat, from.gen, current.gen, num.inds=inds.sampled)
+			seg.load <- calc.seg.load(poly.mut.dat=polydat, genome.data=genodat, from.gen=gen-pop.size, current.gen=gen, num.inds=inds.sampled)
 			
 			temp.results <- c(sample.file, gen, fixed.load, seg.load)
 			write.table(t(temp.results), append=TRUE, file=load.stats.output.file, sep=",", col.names=FALSE)
