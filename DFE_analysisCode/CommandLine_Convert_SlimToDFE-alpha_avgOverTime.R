@@ -68,14 +68,13 @@ for(i in gens){
 		taking.in.file <- paste(c("SampleOutput_", as.character(args[1])), collapse="")
 		start.line <- as.numeric(unlist(strsplit(system(paste(c("grep -n '#OUT: ", i, " ' ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
 		if(i == head(tail(gens, n=2), n=1)){	# this is gen 9N
-			end.line <- as.numeric(unlist(strsplit(system(paste(c("wc -l ", taking.in.file), collapse=""), intern=TRUE), split=" "))[1])	# on cap make this a 1, on my laptop, make it a 3 - weird parsing of spaces difference
-			system(paste(c("sed -n '", start.line, ",", end.line, " p' ", taking.in.file, " > ", spitting.out.file.name), collapse=""))
+			end.line <- as.numeric(unlist(strsplit(system(paste(c("wc -l ", taking.in.file), collapse=""), intern=TRUE), split=" "))[1])
+                        system(paste(c("sed -n '", start.line, ",", end.line, " p' ", taking.in.file, " > ", spitting.out.file.name), collapse=""))
 		}else{					# this is gens 4N-8N
 			end.line <- as.numeric(unlist(strsplit(system(paste(c("grep -n '#OUT: ", as.numeric(i)+pop.size, " ' ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
 			system(paste(c("sed -n '", start.line, ",", (end.line-1), " p' ", taking.in.file, " > ", spitting.out.file.name), collapse=""))
 		}
 	}
-	print(c(i, start.line, end.line))
 }
 
 
