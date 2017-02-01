@@ -37,16 +37,16 @@ gens <- gens[-c(1:3)]
 # add gen 10N
 gens <- c(gens, as.character(final.gen))
 
-for(i in 1:length(gens)){
-	spitting.out.file.name <- paste(c("ModifiedSampleOutput_", gens[i], "_", as.character(args[1])), collapse="")
+for(i in gens){
+	spitting.out.file.name <- paste(c("ModifiedSampleOutput_", i, "_", as.character(args[1])), collapse="")
 	
 	# subset the file to include the mutations section and the individuals section (eventually become polydat and genodat)
 
-	if(i == length(gens)){	# then it's the last gen
+	if(i == tail(gens, n=1)){	# then it's the last gen (10N)
 		taking.in.file <- paste(c("FullOutput_", as.character(args[1])), collapse="")
 		
 			## full data output
-		start.line <- as.numeric(unlist(strsplit(system(paste(c("grep -n '#OUT: ", gens[i], " ' ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
+		start.line <- as.numeric(unlist(strsplit(system(paste(c("grep -n '#OUT: ", i, " ' ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
 		# skip the 2 "populations" lines
 		skip.lines <- c(start.line+1, start.line+2)
 		full.samp.muts.start <- as.numeric(unlist(strsplit(system(paste(c("grep -n Mutations ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
@@ -65,15 +65,17 @@ for(i in 1:length(gens)){
 		system(paste(c("sed -n -e ", start.line, "p -e ", full.samp.muts.start, ",", full.samp.inds.start-1, "p -e ", full.samp.genomes.start, paste("p -e ", file.lines.to.sample1, ",", file.lines.to.sample2, sep=""), "p ", taking.in.file, " > ", spitting.out.file.name), collapse=""))
 		
 	}else{					# otherwise we're still in the middle of the file
-		start.line <- as.numeric(unlist(strsplit(system(paste(c("grep -n '#OUT: ", gens[i], " ' ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
-		if(i == length(gens)-1){
-			end.line <- as.numeric(unlist(strsplit(system(paste(c("wc -l ", taking.in.file), collapse=""), intern=TRUE), split=" "))[4])
+		taking.in.file <- paste(c("SampleOutput_", as.character(args[1])), collapse="")
+		start.line <- as.numeric(unlist(strsplit(system(paste(c("grep -n '#OUT: ", i, " ' ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
+		if(i == head(tail(gens, n=2), n=1)){	# this is gen 9N
+			end.line <- as.numeric(unlist(strsplit(system(paste(c("wc -l ", taking.in.file), collapse=""), intern=TRUE), split=" "))[1])	# on cap make this a 1, on my laptop, make it a 3 - weird parsing of spaces difference
 			system(paste(c("sed -n '", start.line, ",", end.line, " p' ", taking.in.file, " > ", spitting.out.file.name), collapse=""))
-		}else{
-			end.line <- as.numeric(unlist(strsplit(system(paste(c("grep -n '#OUT: ", gens[i+1], " ' ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
+		}else{					# this is gens 4N-8N
+			end.line <- as.numeric(unlist(strsplit(system(paste(c("grep -n '#OUT: ", as.numeric(i)+pop.size, " ' ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
 			system(paste(c("sed -n '", start.line, ",", (end.line-1), " p' ", taking.in.file, " > ", spitting.out.file.name), collapse=""))
 		}
 	}
+	print(c(i, start.line, end.line))
 }
 
 
@@ -272,8 +274,8 @@ for(j in gens){
 
 sample.size <- num.inds.sampled*2
 
-outfile <- paste(c("Avg_SFS_4N10N_", i), collapse="")
-files <- system(paste(c("ls Folded*", i), collapse=""), intern=TRUE)
+outfile <- paste(c("Avg_SFS_4N10N_", as.character(args[1])), collapse="")
+files <- system(paste(c("ls Folded*", as.character(args[1])), collapse=""), intern=TRUE)
 sfs.dat <- vector("list", length(gens))
 for(j in 1:length(gens)){
 	sfs.dat[[j]] <- as.matrix(read.table(files[j], skip=2))
@@ -297,8 +299,8 @@ write(dfe.input, file=outfile)
 
 fixed.mut.id.start <- 2
 
-outfile <- paste(c("Divergence_", as.character(args[1]))), collapse="")
-fixed.file <- read.table(paste("FixedOutput_", i, sep=""), skip=fixed.mut.id.start)
+outfile <- paste(c("Divergence_", as.character(args[1])), collapse="")
+fixed.file <- read.table(paste("FixedOutput_", as.character(args[1]), sep=""), skip=fixed.mut.id.start)
 names(fixed.file) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "gen_arose", "gen.fixed")
 
 fixed.neut.muts <- c(which(fixed.file$mut.type == "m1"))
