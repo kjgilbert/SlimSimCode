@@ -1,26 +1,23 @@
-setwd("~/Documents")
+setwd("/cap1/kgilbert/WestgridOutputs")
 
 # calculate pi:
-source('~/Documents/My_Documents/UofToronto/SLiM/SlimSimCode/CalculatePi.R', chdir = TRUE)
+source('/cap1/kgilbert/WestgridOutputs/CalculatePi.R', chdir = TRUE)
 	# gives back: pi overall, pi_n, pi_s
 
 
+##	sample.output.files <- system("ls SampleOutput_Nov19_N10000_25mbp_*", intern=TRUE)
+##	full.output.files <- system("ls FullOutput_Nov19_N10000_25mbp_*", intern=TRUE)
+##	fixed.output.files <- system("ls FixedOutput_Nov19_N10000_25mbp_*", intern=TRUE)
+##	sequence.length <- 25000000
+##	pop.size <- 10000
+##	sample.size <- 100
+##	summ.stats.output.file <- "test"
 
 
 
-
-sample.output.files <- system("ls SampleOutput_Nov19_N10000_25mbp_*", intern=TRUE)
-full.output.files <- system("ls FullOutput_Nov19_N10000_25mbp_*", intern=TRUE)
-fixed.output.files <- system("ls FixedOutput_Nov19_N10000_25mbp_*", intern=TRUE)
-sequence.length <- 25000000
-pop.size <- 10000
-sample.size <- 100
-
-summ.stats.output.file <- "test"
-
-summ.stats <- function(sample.output.files, full.output.files, fixed.output.files, summ.stats.output.file, num.inds.sampled, sequence.length, pop.size){
+est.ne <- function(sample.output.files, full.output.files, fixed.output.files, summ.stats.output.file, sample.size, sequence.length, pop.size){
 	
-	results <- data.frame(matrix(nrow=0, ncol=32))
+	results <- data.frame(matrix(nrow=0, ncol=4))
 	names(results) <- c("ignore", "file", "generation", "Ne.neutral")
 	write.table(results, append=FALSE, file=summ.stats.output.file, sep=",", col.names=TRUE)
 	
@@ -85,9 +82,8 @@ summ.stats <- function(sample.output.files, full.output.files, fixed.output.file
 		iterate <- iterate + 1
 			
 			# clear previous data, see if this solves the weird plot results
-			polydat <- NULL
-			genodat <- NULL		
-		}
+		polydat <- NULL
+		genodat <- NULL		
 		fixeddat <- NULL
 	}
 }
