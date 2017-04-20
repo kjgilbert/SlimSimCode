@@ -1,45 +1,28 @@
 source('/cap1/kgilbert/NewSims_MesserLikeParams/LoadCalculationScripts/Calculate_MeanFitness_deletOnlyAndFull_MeanNumMuts_sRange.R', chdir = TRUE)
 
-
-# Dec 14 transition mating systems with 1000 gen bottneck to N=1000
-
+# April 21 transition mating systems with and without 1000 gen bottneck to N=1000
 
 setwd("/cap1/kgilbert/NewSims_MesserLikeParams/LoadCalculationScripts")
 
 
-sample.files <- system("ls SampleOutput_Dec14_N10000_25mbp_*", intern=TRUE)
-fixed.files <- system("ls FixedOutput_Dec14_N10000_25mbp_*", intern=TRUE)
+output.file <- "RelativeLoadCalculated_Dec14_transitionAndBneck.csv"
 
 
+fixed.files <- system("ls /cap1/kgilbert/DFE*/Inputs/FixedOutput_*", intern=TRUE)
+sample.files <- system("ls /cap1/kgilbert/DFE*/Inputs/SampleOutput_*", intern=TRUE)
 
-sequence.length=(100000000 * (2.5/10))
+sequence.length=(500000)
 pop.size <- 10000
 num.inds.sampled=100
 
-gens.to.sample.at <- format(c((pop.size*10)+1, seq((pop.size*10)+2, (pop.size*10.09)+2, by=150), 
-	(pop.size*10.1)+1,
-	seq((pop.size*10.1)+2, (pop.size*10.15)+2, by=150), 
-	seq((pop.size*10.2)+2, (pop.size*10.5)+2, by=1000),
-	seq((pop.size*11)+2, (pop.size*15)+2, by=10000)), scientific=FALSE)
+gens.to.sample.at <- format(c((pop.size*10)+1, seq((pop.size*10.01),(pop.size*10.2), by=100), seq((pop.size*10.3), (pop.size*10.5), by=1000), seq((pop.size*11), (pop.size*25), by=10000)), scientific=FALSE)
 num.gens.sampled <- length(gens.to.sample.at)
 
 
-# could either do fixed bins, or quantiles (do both) - quantiles more useful since most muts will be nearer to neutrality and very few extra large effect
-
-# make quantile bins based on the main (95%) distribution of the deleterious mutations
-gamma.mean <- 0.01
-gamma.shape <- 0.3
-gamma.scale <- gamma.mean/gamma.shape
-quantiles <- qgamma(0.025*c(0:25),shape=gamma.shape,scale=gamma.scale)
-# remove the 0 and the inf
-quantiles <- quantiles[quantiles > 0 & quantiles < Inf]
-quantiles <- -quantiles
-
 effect.size.min <- c(-0.00001, -0.0001, -0.001, -0.01, -0.1, -1, -1, -1, -1, -1, -1, -0.1, -0.01, -0.001, -0.0001)                # the MOST negative in the range wanted
 effect.size.max <- c(0, 0, 0, 0, 0, 0, -0.1, -0.01, -0.001, -0.0001, -0.00001, -0.01, -0.001, -0.0001, -0.00001)
-	# the LEAST negative in the range wanted - will do everything from 0 (neutrals are automatically excluded in the calculation code)
 
-output.file <- "RelativeLoadCalculated_Dec14_transitionAndBneck.csv"
+
 
 # get: 
 #	total number fixed delet muts in that range
