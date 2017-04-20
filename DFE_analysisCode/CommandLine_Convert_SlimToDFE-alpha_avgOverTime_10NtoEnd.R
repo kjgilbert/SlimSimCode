@@ -31,10 +31,10 @@ taking.in.file <- paste(c("SampleOutput_", as.character(args[1])), collapse="")
 gens <- matrix(unlist(strsplit(system(paste(c("grep -n '#OUT: ' ", taking.in.file), collapse=""), intern=TRUE), split=" ")), byrow=TRUE, ncol=4)[,2]
 final.gen <- format(as.numeric(tail(gens, n=1))+pop.size, scientific=FALSE)
 
-# remove 1N, 2N, 3N:
+# remove 1N, 2N, 3N - 9N:
 gens <- gens[-c(1:9)]
 
-# add gen 10N
+# add last gen
 gens <- c(gens, as.character(final.gen))
 
 for(i in gens){
@@ -71,7 +71,7 @@ for(i in gens){
 			end.line <- as.numeric(unlist(strsplit(system(paste(c("wc -l ", taking.in.file), collapse=""), intern=TRUE), split=" "))[1])
                         system(paste(c("sed -n '", start.line, ",", end.line, " p' ", taking.in.file, " > ", spitting.out.file.name), collapse=""))
 		}else{					# this is gens 4N-8N
-			end.line <- as.numeric(unlist(strsplit(system(paste(c("grep -n '#OUT: ", as.numeric(i)+pop.size, " ' ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
+			end.line <- as.numeric(unlist(strsplit(system(paste(c("grep -n '#OUT: ", format(as.numeric(i)+pop.size, scientific=FALSE), " ' ", taking.in.file), collapse=""), intern=TRUE), split=":"))[1])
 			system(paste(c("sed -n '", start.line, ",", (end.line-1), " p' ", taking.in.file, " > ", spitting.out.file.name), collapse=""))
 		}
 	}
@@ -273,7 +273,7 @@ for(j in gens){
 
 sample.size <- num.inds.sampled*2
 
-outfile <- paste(c("Avg_SFS_4N10N_", as.character(args[1])), collapse="")
+outfile <- paste(c("Avg_SFS_10NtoEnd_", as.character(args[1])), collapse="")
 files <- system(paste(c("ls Folded*", as.character(args[1])), collapse=""), intern=TRUE)
 sfs.dat <- vector("list", length(gens))
 for(j in 1:length(gens)){
