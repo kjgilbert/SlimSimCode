@@ -5,7 +5,7 @@ source('/cap1/kgilbert/NewSims_MesserLikeParams/LoadCalculationScripts/Calculate
 setwd("/cap1/kgilbert/NewSims_MesserLikeParams/LoadCalculationScripts")
 
 
-output.file <- "RelativeLoadCalculated_Dec14_transitionAndBneck.csv"
+output.file <- "RelativeLoadCalculated_Apr21_TransBnecks.csv"
 
 
 fixed.files <- system("ls /cap1/kgilbert/DFE*/Inputs/FixedOutput_*", intern=TRUE)
@@ -70,9 +70,9 @@ for(i in 1:length(sample.files)){
 		names(temp.results)[2] <- "generation"
 		
 		if(i==1 & j==1){
-			write.table(t(temp.results), append=FALSE, file=paste(c(dir, "/", output.file), collapse=""), sep=",", col.names=TRUE)
+			write.table(t(temp.results), append=FALSE, file=output.file, sep=",", col.names=TRUE)
 		}else{
-			write.table(t(temp.results), append=TRUE, file=paste(c(dir, "/", output.file), collapse=""), sep=",", col.names=FALSE)
+			write.table(t(temp.results), append=TRUE, file=output.file, sep=",", col.names=FALSE)
 		}
 		iterate <- iterate + 1
 		

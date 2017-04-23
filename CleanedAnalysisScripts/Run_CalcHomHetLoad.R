@@ -1,5 +1,5 @@
 setwd("/cap1/kgilbert/NewSims_MesserLikeParams/LoadCalculationScripts")
-source('/cap1/kgilbert/NewSims_MesserLikeParams/LoadCalculationScripts/CalculateHomHetLoad.R', chdir = TRUE)
+source('/cap1/kgilbert/NewSims_MesserLikeParams/LoadCalculationScripts/CalculateHomHetLoad_andNumNeuts.R', chdir = TRUE)
 
 
 fixed.files <- system("ls /cap1/kgilbert/DFE*/Inputs/FixedOutput_*", intern=TRUE)
@@ -14,7 +14,7 @@ pop.size <- 10000
 num.inds.sampled=100
 
 
-gens.to.sample.at <- format(c((pop.size*10)+1, seq((pop.size*10.01),(pop.size*10.2), by=100), seq((pop.size*10.3), (pop.size*10.5), by=1000), seq((pop.size*11),$
+gens.to.sample.at <- format(c((pop.size*10)+1, seq((pop.size*10.01),(pop.size*10.2), by=100), seq((pop.size*10.3), (pop.size*10.5), by=1000), seq((pop.size*11), (pop.size*25), by=10000)), scientific=FALSE)
 num.gens.sampled <- length(gens.to.sample.at)
 
 
@@ -23,7 +23,7 @@ effect.size.max <- c(0, 0, 0, 0, 0, 0, -0.1, -0.01, -0.001, -0.0001, -0.00001, -
 
 
 
-output.file <- "HomHet_Load_Jan3_1e3bneck.csv"
+output.file <- "HomHet_Load_Apr21_TransitionsAndBnecks.csv"
 
 
 

@@ -14,7 +14,7 @@ sequence.length=(500000)
 pop.size <- 10000
 num.inds.sampled=100
 
-gens.to.sample.at <- format(seq(pop.size, pop.size*10, by=pop.size), scientific=FALSE)
+gens.to.sample.at <- format(c((pop.size*10)+1, seq((pop.size*10.01),(pop.size*10.2), by=100), seq((pop.size*10.3), (pop.size*10.5), by=1000), seq((pop.size*11), (pop.size*25), by=10000)), scientific=FALSE) # format(seq(pop.size, pop.size*10, by=pop.size), scientific=FALSE)
 num.gens.sampled <- length(gens.to.sample.at)
 fourNgens <- 4*pop.size
 sub.sample.final <- TRUE
@@ -24,7 +24,7 @@ effect.size.min <- c(-0.00001, -0.0001, -0.001, -0.01, -0.1, -1, -1, -1, -1, -1,
 effect.size.max <- c(0, 0, 0, 0, 0, 0, -0.1, -0.01, -0.001, -0.0001, -0.00001, -0.01, -0.001, -0.0001, -0.00001)
 
 
-output.file <- "header_MutationLoad_Nov19-N10000.csv"
+output.file <- "MutationLoad_Apr21_TransitionsAndBnecks_N10000.csv"
 
 # get: 
 #	total number fixed delet muts in that range
@@ -94,9 +94,9 @@ if(j == num.gens.sampled){
 		names(temp.results)[2] <- "generation"
 		
 		if(i==1 & j == 4){
-			write.table(t(temp.results), append=FALSE, file=paste(c(dir, "/", output.file), collapse=""), sep=",", col.names=TRUE)
+			write.table(t(temp.results), append=FALSE, file=output.file, sep=",", col.names=TRUE)
 		}else{
-			write.table(t(temp.results), append=TRUE, file=paste(c(dir, "/", output.file), collapse=""), sep=",", col.names=FALSE)
+			write.table(t(temp.results), append=TRUE, file=output.file, sep=",", col.names=FALSE)
 		}
 
 		iterate <- iterate + 1

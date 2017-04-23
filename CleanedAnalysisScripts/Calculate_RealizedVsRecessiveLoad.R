@@ -161,8 +161,9 @@ calc.seg.load <- function(poly.mut.dat, genome.data, from.gen, current.gen, num.
 
 
 
-do.load.calcs <- function(sample.files, full.files=NULL, fixed.files, pop.size, inds.sampled, from.gen, current.gen, load.stats.output.file){
+do.load.calcs <- function(sample.files, full.files=NULL, fixed.files, pop.size, inds.sampled, from.gen, current.gen, load.stats.output.file, gens.sampled){
 
+	num.inds.sampled <- inds.sampled
 	results <- data.frame(matrix(nrow=0, ncol=21))
 	names(results) <- c("ignore", "file", "generation", "del.load_0_1", "del.load_1_10", "del.load_10_100", "del.load_100_inf", "total.del.load", "total.fixed.load", "total.load.w.recessive", "total.del.load.w.recessive", "total.load.w.recessive_0_1", "total.load.w.recessive_1_10", "total.load.w.recessive_10_100", "total.load.w.recessive_100_inf", "total.load.w.realized", "total.del.load.w.realized", "total.load.w.realized_0_1", "total.load.w.realized_1_10", "total.load.w.realized_10_100", "total.load.w.realized_100_inf")
 	write.table(results, append=FALSE, file=load.stats.output.file, sep=",", col.names=TRUE)
@@ -181,13 +182,16 @@ do.load.calcs <- function(sample.files, full.files=NULL, fixed.files, pop.size, 
 		}
 	
 		## sample data output
+                generations <- as.numeric(gens.sampled)
+                num.gens.sampled <- length(generations)
+
 		poly.mut.id.starts <- as.numeric(unlist(strsplit(system(paste(c("grep -n Mutations ", sample.file), collapse=""), intern=TRUE), split=":"))[seq(1, (2*(num.gens.sampled)), by=2)])
-		generations <- as.numeric(matrix(unlist(strsplit(system(paste(c("grep -n ' GS ' ", sample.file), collapse=""), intern=TRUE), split=" ")), ncol=4, byrow=TRUE)[,2])
+#		generations <- as.numeric(matrix(unlist(strsplit(system(paste(c("grep -n ' GS ' ", sample.file), collapse=""), intern=TRUE), split=" ")), ncol=4, byrow=TRUE)[,2])
 		genomes.starts <- as.numeric(unlist(strsplit(system(paste(c("grep -n Genomes ", sample.file), collapse=""), intern=TRUE), split=":"))[seq(1, (2*(num.gens.sampled)), by=2)])
 	
-		num.gens.sampled <- length(generations)
+#		num.gens.sampled <- length(generations)
 		if(!is.null(full.files)) num.gens.sampled <- num.gens.sampled + 1
-		
+
 		## fixed data output
 		fixed.mut.id.start <- 2
 		fixeddat <- read.table(fixed.file, skip=fixed.mut.id.start)
