@@ -5,11 +5,12 @@ source('/cap1/kgilbert/NewSims_MesserLikeParams/LoadCalculationScripts/Calculate
 setwd("/cap1/kgilbert/NewSims_MesserLikeParams/LoadCalculationScripts")
 
 
-output.file <- "RelativeLoadCalculated_Apr21_TransBnecks.csv"
+output.file <- "RelativeLoadCalculated_Apr21_TransBnecks_delsOnly.csv"
 
 
-fixed.files <- system("ls /cap1/kgilbert/DFE*/Inputs/FixedOutput_*", intern=TRUE)
-sample.files <- system("ls /cap1/kgilbert/DFE*/Inputs/SampleOutput_*", intern=TRUE)
+fixed.files <- system("ls /cap1/kgilbert/DFE*/Inputs/FixedOutput_*_del*", intern=TRUE)
+full.files <- system("ls /cap1/kgilbert/DFE*/Inputs/FullOutput_*_del*", intern=TRUE)
+sample.files <- system("ls /cap1/kgilbert/DFE*/Inputs/SampleOutput_*_del*", intern=TRUE)
 
 sequence.length=(500000)
 pop.size <- 10000
@@ -35,10 +36,12 @@ for(i in 1:length(sample.files)){
 	# go through each file
 	sample.file <- sample.files[i]
 	fixed.file <- fixed.files[i]
+	full.file <- full.files[i]
 
 	## sample data output
 	poly.mut.id.starts <- as.numeric(unlist(strsplit(system(paste(c("grep -n Mutations ", sample.file), collapse=""), intern=TRUE), split=":"))[seq(1, (2*num.gens.sampled), by=2)])
-	generations <- as.numeric(matrix(unlist(strsplit(system(paste(c("grep -n ' GS ' ", sample.file), collapse=""), intern=TRUE), split=" ")), ncol=4, byrow=TRUE)[,2])
+#	generations <- as.numeric(matrix(unlist(strsplit(system(paste(c("grep -n ' GS ' ", sample.file), collapse=""), intern=TRUE), split=" ")), ncol=4, byrow=TRUE)[,2])
+	generations <- gens.to.sample.at
 	genomes.starts <- as.numeric(unlist(strsplit(system(paste(c("grep -n Genomes ", sample.file), collapse=""), intern=TRUE), split=":"))[seq(1, (2*num.gens.sampled), by=2)])
 		
 
@@ -54,12 +57,26 @@ for(i in 1:length(sample.files)){
 
 	# go through each time point of a given file and do the calculations at that point in time
 	for(j in 1:num.gens.sampled){
-		# lists mutation identities that are segregating in the ENTIRE pop, not necessarily just in this sample
-		polydat <- read.table(sample.file, skip=poly.mut.id.starts[j], nrow=((genomes.starts[j]-1) - poly.mut.id.starts[j]), sep=" ")
+		if(j == num.gens.sampled){
+			odd.nums <- seq(1, (pop.size * 2), by=2)
+			sub.samp <- sample(odd.nums, size=num.inds.sampled, replace=FALSE)
+			diploid.sub.samp <- sort(c(sub.samp, (sub.samp + 1)))
+				
+			full.samp.muts.start <- as.numeric(unlist(strsplit(system(paste(c("grep -n Mutations ", full.file), collapse=""), intern=TRUE), split=":"))[1])
+			full.samp.inds.start <- as.numeric(strsplit(system(paste(c("grep -n Individuals ", full.file), collapse=""), intern=TRUE), split=":")[[1]][1])
+			full.samp.genomes.start <- as.numeric(strsplit(system(paste(c("grep -n Genomes ", full.file), collapse=""), intern=TRUE), split=":")[[1]][1])
+			genodat <- read.table(full.file, skip=full.samp.genomes.start, nrow=(pop.size*2), sep="A")
+			genodat <- genodat[diploid.sub.samp ,]
+		
+			polydat <- read.table(full.file, skip=full.samp.muts.start, nrow=((full.samp.inds.start-1) - full.samp.muts.start), sep=" ")
+		}else{
+			# lists mutation identities that are segregating in the ENTIRE pop, not necessarily just in this sample
+			polydat <- read.table(sample.file, skip=poly.mut.id.starts[j], nrow=((genomes.starts[j]-1) - poly.mut.id.starts[j]), sep=" ")
+	
+			# lists all mutations per individual in a sample of individuals
+			genodat <- read.table(sample.file, skip=genomes.starts[j], nrow=(num.inds.sampled * 2), sep="A")
+		}
 		names(polydat) <- c("mut.ID", "unique.mut.ID", "mut.type", "base_position", "seln_coeff", "dom_coeff", "subpop_ID", "generation_arose", "mut.prev")
-
-		# lists all mutations per individual in a sample of individuals
-		genodat <- read.table(sample.file, skip=genomes.starts[j], nrow=(num.inds.sampled * 2), sep="A")
 
 		gen <- generations[j]
 
